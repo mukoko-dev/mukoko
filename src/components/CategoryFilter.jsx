@@ -1,20 +1,15 @@
-// CategoryFilter.jsx - Updated to use the new Button component
+// src/components/CategoryFilter.jsx - Simplified version
 import React from 'react'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { ScrollArea, ScrollBar } from './ui/scroll-area'
-import { Card, CardContent } from './ui/card'
-import { cn } from '../lib/utils'
-import { XMarkIcon } from '@heroicons/react/24/outline'
 
 const CategoryFilter = ({ 
   selectedCategory, 
   setSelectedCategory, 
   feeds = [],
+  categories = [],
   showStats = true
 }) => {
-  // Category configuration - simplified for horizontal layout
-  const categories = [
+  // Default categories if none provided from API
+  const defaultCategories = [
     { id: 'all', name: 'All News', emoji: '📰' },
     { id: 'politics', name: 'Politics', emoji: '🏛️' },
     { id: 'economy', name: 'Economy', emoji: '💰' },
@@ -33,6 +28,9 @@ const CategoryFilter = ({
     { id: 'finance', name: 'Finance', emoji: '💳' }
   ]
 
+  // Use API categories if available, otherwise use defaults
+  const availableCategories = categories.length > 0 ? categories : defaultCategories
+
   // Calculate category counts
   const getCategoryCount = (categoryId) => {
     if (categoryId === 'all') return feeds.length
@@ -41,75 +39,78 @@ const CategoryFilter = ({
     ).length
   }
 
-  // Filter categories that have articles
-  const availableCategories = categories.filter(category => 
-    category.id === 'all' || getCategoryCount(category.id) > 0
+  // Filter categories that have articles (or show all if we have API categories)
+  const categoriesToShow = availableCategories.filter(category => 
+    category.id === 'all' || getCategoryCount(category.id) > 0 || categories.length > 0
   )
 
   return (
-    <div className={showStats ? "space-y-4" : ""}>
+    <div className="space-y-4">
       {/* Horizontal Scrolling Category Buttons */}
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex space-x-3 items-center overflow-x-auto p-2">
-          {availableCategories.map(category => {
+      <div className="overflow-x-auto">
+        <div className="flex space-x-3 items-center overflow-x-auto px-2 pb-2 min-w-max">
+          {categoriesToShow.map(category => {
             const count = getCategoryCount(category.id)
             const isSelected = selectedCategory === category.id
             
             return (
-              <Button
+              <button
                 key={category.id}
-                variant="category"
-                size="category"
-                active={isSelected}
                 onClick={() => setSelectedCategory(category.id)}
+                className={`
+                  flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 
+                  whitespace-nowrap flex-shrink-0 min-w-max
+                  ${isSelected 
+                    ? 'bg-blue-600 text-white shadow-lg scale-105' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105'
+                  }
+                `}
                 aria-label={`Filter by ${category.name} category (${count} articles)`}
               >
-                <span className="text-category">{category.emoji}</span>
-                <span className="text-category">{category.name}</span>
-                <Badge 
-                  variant="count" 
-                  size="sm"
-                >
+                <span className="text-base">{category.emoji}</span>
+                <span>{category.name}</span>
+                <span className={`
+                  px-2 py-0.5 text-xs rounded-full font-bold
+                  ${isSelected 
+                    ? 'bg-white/20 text-white' 
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                  }
+                `}>
                   {count}
-                </Badge>
-              </Button>
+                </span>
+              </button>
             )
           })}
         </div>
-        <ScrollBar orientation="horizontal" className="invisible" />
-      </ScrollArea>
+      </div>
 
-      {showStats && (
-        <>
-          {/* Active Filter Display */}
-          {selectedCategory !== 'all' && (
-            <Card className="border-l-5 border-l-foreground">
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg">
-                    {categories.find(c => c.id === selectedCategory)?.emoji}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">
-                      Filtered by: {categories.find(c => c.id === selectedCategory)?.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Showing {getCategoryCount(selectedCategory)} articles
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="icon"
-                  size="icon"
-                  onClick={() => setSelectedCategory('all')}
-                  aria-label="Clear filter"
-                >
-                  <XMarkIcon className="h-5 w-5" />
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </>
+      {showStats && selectedCategory !== 'all' && (
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">
+                {availableCategories.find(c => c.id === selectedCategory)?.emoji}
+              </span>
+              <div>
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-100">
+                  Filtered by: {availableCategories.find(c => c.id === selectedCategory)?.name}
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-200">
+                  Showing {getCategoryCount(selectedCategory)} articles
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className="text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 p-1"
+              aria-label="Clear filter"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )

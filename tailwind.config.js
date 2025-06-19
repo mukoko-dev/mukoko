@@ -65,16 +65,7 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		fontFamily: {
-  			sans: [
-  				'Georgia',
-  				'Times New Roman',
-  				'serif'
-  			],
-  			serif: [
-  				'Georgia',
-  				'Times New Roman',
-  				'serif'
-  			]
+  			sans: ['Inter', 'system-ui', 'sans-serif'],
   		},
   		keyframes: {
   			'accordion-down': {

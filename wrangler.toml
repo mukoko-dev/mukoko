@@ -3,15 +3,37 @@ compatibility_date = "2025-05-01"
 main = "./worker/index.js"
 
 [assets]
-directory = "./dist/assets"
-binding = "ASSETS"
+directory = "./dist"
+binding = "__STATIC_CONTENT"
 
+# KV namespace
 [[kv_namespaces]]
 binding = "NEWS_STORAGE"
 id = "472195d9dcb948b7a73c10b2716375ca"
 preview_id = "8c7b7c28e9fa4abc971935876cf9ca26"
 
-# Analytics Engine Configuration
+[[kv_namespaces]]
+binding = "CONTENT_CACHE"
+id = "3933ee4aaa8246fd933b61eb1111528f"
+preview_id = "8b7a8a0285a74250910e917ba83a18bf"
+
+[[kv_namespaces]]
+binding = "CONFIG_STORAGE"
+id = "73d709fa9f6a414fbea359cda40ec7db"
+preview_id = "f11d764e7d824243a4193d74aff9107f"
+
+[[kv_namespaces]]
+binding = "USER_STORAGE"
+id = "494ec8445cd842ae8a7c50b5245fcc42"
+preview_id = "59985587dd834c75b9ab393e31f2cf17"
+
+# D1 Database
+[[d1_databases]]
+binding = "USER_DB"
+database_name = "harare_metro_users"
+database_id = "b6204614-2cf1-47ed-b9e4-1fbbeb09fe01"
+
+# Analytics Engine
 [[analytics_engine_datasets]]
 binding = "NEWS_ANALYTICS"
 dataset = "news_interactions"
@@ -24,18 +46,26 @@ dataset = "search_queries"
 binding = "CATEGORY_ANALYTICS"
 dataset = "category_clicks"
 
+[[analytics_engine_datasets]]
+binding = "USER_ANALYTICS"
+dataset = "user_sessions"
+
+[[analytics_engine_datasets]]
+binding = "PERFORMANCE_ANALYTICS"
+dataset = "performance_metrics"
+
 [triggers]
-crons = ["0 * * * *"]  # Changed from every 6 hours to every hour
+crons = ["0 * * * *"]
 
 [placement]
 mode = "smart"
 
-# Production environment with custom domain
+# Production environment (keeping your existing config)
 [[routes]]
 pattern = "www.hararemetro.co.zw/*"
 zone_name = "hararemetro.co.zw"
 
-# Staging environment configuration
+# Staging environment
 [env.staging]
 name = "harare-metro-staging"
 [[env.staging.routes]]
