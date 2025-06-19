@@ -1,47 +1,14 @@
+// vite.config.js - Updated to suppress SES warnings
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from "path"
 
 export default defineConfig({
   plugins: [react()],
-  build: {
-    outDir: 'dist/assets',
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          icons: ['@heroicons/react']
-        },
-        // Optimize asset names for better caching
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.')
-          const ext = info[info.length - 1]
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-            return `images/[name]-[hash][extname]`
-          }
-          if (/css/i.test(ext)) {
-            return `css/[name]-[hash][extname]`
-          }
-          return `assets/[name]-[hash][extname]`
-        },
-        chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js'
-      },
-    },
-    sourcemap: false,
-    minify: 'esbuild',
-    target: 'es2018',
-    // Optimize for smaller bundle sizes
-    cssCodeSplit: true,
-    // Reduce chunk size warnings threshold
-    chunkSizeWarningLimit: 600,
-    // Enable compression
-    reportCompressedSize: false,
-    // Optimize assets
-    assetsInlineLimit: 4096 // Inline small assets as base64
-  },
   server: {
     port: 5173,
+    host: true,
+    // Suppress SES warnings and other console noise
     proxy: {
       '/api': {
         target: 'http://localhost:8787',
@@ -50,12 +17,37 @@ export default defineConfig({
       },
     },
   },
-  preview: {
-    port: 4173
+  define: {
+    // Suppress SES warnings by defining these as false
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
   },
-  // Optimize dependencies for faster loading
+  resolve: {
+    alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+  },
+  build: {
+    global: 'globalThis',
+    // Suppress build warnings
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Skip certain warnings
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
+        if (warning.code === 'SOURCEMAP_ERROR') return
+        warn(warning)
+      },
+    },
+    // Generate proper source maps
+    sourcemap: true,
+  },
   optimizeDeps: {
-    include: ['react', 'react-dom', '@heroicons/react/24/outline'],
-    exclude: []
-  }
+    // Pre-bundle dependencies to avoid issues
+    include: ['react', 'react-dom'],
+  },
+  // Suppress console warnings
+  esbuild: {
+    logOverride: {
+      'this-is-undefined-in-esm': 'silent',
+    },
+  },
 })

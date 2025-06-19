@@ -1,10 +1,12 @@
 // src/components/Logo.jsx
 import React from 'react'
+import { cn } from '@/lib/utils'
 
 const Logo = ({ 
   variant = 'main', // 'main', 'horizontal', 'compact'
   theme = 'light',   // 'light', 'dark'
-  size = 'md'        // 'sm', 'md', 'lg'
+  size = 'md',       // 'sm', 'md', 'lg'
+  className = ''
 }) => {
   const sizes = {
     sm: {
@@ -46,7 +48,7 @@ const Logo = ({
         width={width} 
         height={height} 
         viewBox={`0 0 ${width} ${height}`} 
-        className="logo-main"
+        className={cn("logo-main", className)}
       >
         <rect 
           x="2" 
@@ -98,7 +100,7 @@ const Logo = ({
         width={width} 
         height={height} 
         viewBox={`0 0 ${width} ${height}`} 
-        className="logo-horizontal"
+        className={cn("logo-horizontal", className)}
       >
         <text 
           x={width * 0.17} 
@@ -148,7 +150,7 @@ const Logo = ({
       width={width} 
       height={height} 
       viewBox={`0 0 ${width} ${height}`} 
-      className="logo-compact"
+      className={cn("logo-compact", className)}
     >
       <rect 
         x="2" 
