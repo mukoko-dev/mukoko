@@ -642,6 +642,55 @@ button:focus {
   box-shadow: 0 8px 20px hsl(var(--foreground) / 0.1);
 }
 
+/* Masonry grid support */
+.columns-1 {
+  column-count: 1;
+}
+
+.columns-2 {
+  column-count: 2;
+}
+
+.columns-3 {
+  column-count: 3;
+}
+
+.break-inside-avoid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Ensure smooth masonry layout */
+.article-card {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* List view optimizations */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive masonry */
+@media (max-width: 768px) {
+  .columns-2 {
+    column-count: 1;
+  }
+  .columns-3 {
+    column-count: 1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .columns-3 {
+    column-count: 2;
+  }
+}
+
 /* Tighter spacing utilities */
 .section-spacing {
   padding: 1rem 0;

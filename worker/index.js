@@ -1,819 +1,545 @@
-// worker/index.js - Updated to match production configuration
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
-import { XMLParser } from 'fast-xml-parser'
+import ConfigService from './services/ConfigService.js'
+import { D1UserService } from './services/D1UserService.js'
+import { AnalyticsEngineService } from './services/AnalyticsEngineService.js'
+import RSSFeedService from './services/RSSFeedService.js'
+import { CacheService } from './services/CacheService.js'
+import { handleApiRequest } from './api.js'
+import { CloudflareImagesService } from './services/CloudflareImagesService.js'
 
 // Cache configuration
 const CACHE_CONFIG = {
-  ARTICLES_TTL: 14 * 24 * 60 * 60,
-  SCHEDULED_REFRESH_INTERVAL: 60 * 60,
-  MAX_ARTICLES: 10000,
-  ITEMS_PER_SOURCE: 50,
+  ARTICLES_TTL: 14 * 24 * 60 * 60, // 2 weeks in seconds
+  SCHEDULED_REFRESH_INTERVAL: 60 * 60 * 1000, // 1 hour in milliseconds
+  MAX_ARTICLES: 20000,           // Increased from 10000
+  ITEMS_PER_SOURCE: 100,         // Increased from 50
+  MIN_LIMIT: 100,                // New minimum limit
+  MAX_LIMIT: 1000,               // New maximum limit
   CACHE_HEADERS: {
     'Cache-Control': 'public, max-age=300, s-maxage=600',
-    'CDN-Cache-Control': 'max-age=600'
+    'CDN-Cache-Control': 'max-age=600',
+    'Cloudflare-CDN-Cache-Control': 'max-age=600'
   }
 }
 
-// Cache keys
-const CACHE_KEYS = {
-  ALL_ARTICLES: 'cache:all_articles',
-  LAST_REFRESH: 'cache:last_refresh',
-  ARTICLE_COUNT: 'cache:article_count',
-  REFRESH_LOCK: 'cache:refresh_lock'
-}
-
-// Configuration Service - Updated to use NEWS_STORAGE
-class ConfigService {
-  constructor(kvStorage) {
-    this.kv = kvStorage
-  }
-
-  async get(key, defaultValue = null) {
-    try {
-      const value = await this.kv.get(key, { type: 'json' })
-      return value !== null ? value : defaultValue
-    } catch (error) {
-      console.error(`Error getting config ${key}:`, error)
-      return defaultValue
-    }
-  }
-
-  async getRSSources() {
-    return await this.get('config:rss_sources', [])
-  }
-
-  async getCategories() {
-    return await this.get('config:categories', [])
-  }
-
-  async getCategoryKeywords() {
-    return await this.get('config:category_keywords', {})
-  }
-
-  async getPriorityKeywords() {
-    return await this.get('config:priority_keywords', [])
-  }
-
-  async getTrustedImageDomains() {
-    return await this.get('config:trusted_image_domains', [])
-  }
-
-  async getSiteConfig() {
-    return await this.get('config:site', {})
-  }
-}
-
-// Text processing functions
-function decodeHtmlEntities(text) {
-  if (!text || typeof text !== 'string') return text
-  
-  const entityMap = {
-    '&#8217;': "'", '&#8216;': "'", '&#8220;': '"', '&#8221;': '"',
-    '&#39;': "'", '&quot;': '"', '&apos;': "'", '&#8211;': '–',
-    '&#8212;': '—', '&#160;': ' ', '&nbsp;': ' ', '&#8230;': '…',
-    '&amp;': '&', '&lt;': '<', '&gt;': '>'
-  }
-  
-  let decoded = text
-  Object.entries(entityMap).forEach(([entity, replacement]) => {
-    decoded = decoded.replace(new RegExp(entity, 'g'), replacement)
-  })
-  
-  return decoded
-}
-
-function cleanText(text) {
-  if (!text || typeof text !== 'string') return text
-  
-  let cleaned = decodeHtmlEntities(text)
-  cleaned = cleaned.replace(/<[^>]*>/g, '')
-  cleaned = cleaned.replace(/\s+/g, ' ').trim()
-  
-  return cleaned
-}
-
-function cleanHtml(html) {
-  if (!html) return ''
-  
-  let cleaned = decodeHtmlEntities(html)
-  cleaned = cleaned.replace(/<[^>]*>/g, '')
-  cleaned = cleaned.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 300)
-    
-  return cleaned
-}
-
-// Article processing functions
-function isImageUrl(url) {
-  if (!url || typeof url !== 'string') return false
-  
-  const imageExtensions = /\.(jpe?g|png|gif|webp|svg|bmp|avif|ico|tiff?)(\?.*)?$/i
-  const imageParams = /[?&](format|f)=(jpe?g|png|gif|webp|svg|bmp|avif)/i
-  
-  return imageExtensions.test(url) || imageParams.test(url)
-}
-
-function extractImageFromContent(item, link, trustedDomains) {
-  const imageMatches = []
-  
+// Initialize services with CORRECT bindings
+function initializeServices(env) {
   try {
-    // RSS Media tags
-    if (item['media:content'] && item['media:content']['@_url']) {
-      const mediaUrl = item['media:content']['@_url']
-      if (isImageUrl(mediaUrl)) {
-        imageMatches.push(mediaUrl)
-      }
-    }
+    // FIXED: Use correct binding names
+    const configService = new ConfigService(env.CONFIG_STORAGE)
     
-    // RSS Enclosure tags
-    if (item.enclosure && item.enclosure['@_type']?.startsWith('image/') && item.enclosure['@_url']) {
-      imageMatches.push(item.enclosure['@_url'])
-    }
-    
-    // Content extraction
-    const contentFields = [item.description, item['content:encoded'], item.content, item.summary].filter(Boolean)
-    
-    contentFields.forEach((content) => {
-      try {
-        if (typeof content === 'object') {
-          content = content.text || content['#text'] || content._ || ''
-        }
-        
-        if (typeof content === 'string' && content.length > 0) {
-          const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi
-          let match
-          while ((match = imgRegex.exec(content)) !== null) {
-            imageMatches.push(match[1])
-          }
-        }
-      } catch (e) {
-        console.log('Error processing content field:', e.message)
-      }
-    })
-  } catch (e) {
-    console.log('Error extracting images:', e.message)
-  }
-  
-  const validImages = imageMatches
-    .map(img => {
-      try {
-        if (!img || typeof img !== 'string') return null
-        
-        img = img.trim()
-        
-        if (img.startsWith('//')) {
-          return `https:${img}`
-        } else if (img.startsWith('/')) {
-          const baseUrl = new URL(link)
-          return `${baseUrl.protocol}//${baseUrl.hostname}${img}`
-        } else if (!img.startsWith('http')) {
-          const baseUrl = new URL(link)
-          return `${baseUrl.protocol}//${baseUrl.hostname}/${img.replace(/^\.\//, '')}`
-        }
-        return img
-      } catch (e) {
-        return null
-      }
-    })
-    .filter(Boolean)
-    .filter(img => {
-      try {
-        if (!isImageUrl(img)) return false
-        
-        const imgUrl = new URL(img)
-        const isTrusted = trustedDomains.some(domain => 
-          imgUrl.hostname.includes(domain) || imgUrl.hostname.endsWith(domain)
-        )
-        
-        return isTrusted
-      } catch (e) {
-        return false
-      }
-    })
-    .filter((img, index, arr) => arr.indexOf(img) === index)
-  
-  return validImages.length > 0 ? validImages[0] : null
-}
-
-function detectCategory(content, categoryKeywords) {
-  let maxMatches = 0
-  let detectedCategory = null
-
-  for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    const matches = keywords.filter(keyword => 
-      content.includes(keyword.toLowerCase())
-    ).length
-
-    if (matches > maxMatches) {
-      maxMatches = matches
-      detectedCategory = category
-    }
-  }
-
-  return detectedCategory
-}
-
-function calculateRelevanceScore(content, title, priorityKeywords) {
-  let score = 0
-  
-  priorityKeywords.forEach(keyword => {
-    if (content.includes(keyword.toLowerCase())) {
-      score += title.toLowerCase().includes(keyword.toLowerCase()) ? 3 : 1
-    }
-  })
-
-  return Math.min(score, 10)
-}
-
-async function processArticleItem(item, source, configService) {
-  try {
-    const rawTitle = item.title?.text || item.title || ''
-    const title = cleanText(rawTitle)
-    if (!title || title.length < 10) return null
-
-    const rawDescription = item.description?.text || 
-                          item.description || 
-                          item.summary?.text || 
-                          item.summary || 
-                          item['content:encoded'] || ''
-    const description = cleanHtml(rawDescription)
-
-    const link = item.link?.text || item.link || item.id || item.guid?.text || item.guid || '#'
-    if (link === '#') return null
-
-    const content = `${title} ${description}`.toLowerCase()
-    
-    // Get configuration data
-    const [categoryKeywords, priorityKeywords, trustedDomains] = await Promise.all([
-      configService.getCategoryKeywords(),
-      configService.getPriorityKeywords(),
-      configService.getTrustedImageDomains()
-    ])
-    
-    const detectedCategory = detectCategory(content, categoryKeywords) || source.category
-    const isPriority = priorityKeywords.some(keyword => 
-      content.includes(keyword.toLowerCase())
+    // FIXED: CacheService expects (newsStorageKV, contentCacheKV) with correct binding names
+    const cacheService = new CacheService(
+      env.NEWS_STORAGE,      // newsStorageKV (for articles)
+      env.CONTENT_CACHE      // contentCacheKV (for search/general cache) - FIXED name
     )
-    const relevanceScore = calculateRelevanceScore(content, title, priorityKeywords)
     
-    const extractedImage = extractImageFromContent(item, link, trustedDomains)
+    // FIXED: Use USER_STORAGE instead of USER_DB
+    const userService = env.USER_STORAGE ? new D1UserService(env.USER_STORAGE) : null
+    
+    // FIXED: Analytics service with correct 3 datasets
+    const analyticsService = new AnalyticsEngineService({
+      categoryClicks: env.CATEGORY_CLICKS || null,
+      newsInteractions: env.NEWS_INTERACTIONS || null,
+      searchQueries: env.SEARCH_QUERIES || null
+    })
+    
+    const imagesService = new CloudflareImagesService(env)
+    const rssService = new RSSFeedService(configService)
 
-    let pubDate
-    try {
-      const dateStr = item.pubDate || item.published || item.updated || item.date
-      pubDate = dateStr ? new Date(dateStr).toISOString() : new Date().toISOString()
-    } catch {
-      pubDate = new Date().toISOString()
-    }
+    console.log('✅ Services initialized successfully with correct bindings')
+    console.log(`[BINDINGS] NEWS_STORAGE: ${!!env.NEWS_STORAGE}`)
+    console.log(`[BINDINGS] CONTENT_CACHE: ${!!env.CONTENT_CACHE}`)
+    console.log(`[BINDINGS] USER_STORAGE: ${!!env.USER_STORAGE}`)
+    console.log(`[BINDINGS] CONFIG_STORAGE: ${!!env.CONFIG_STORAGE}`)
 
     return {
-      id: item.guid?.text || item.guid || item.id || `${source.id}-${Date.now()}-${Math.random()}`,
-      title,
-      description,
-      link,
-      pubDate,
-      source: source.name,
-      sourceId: source.id,
-      category: detectedCategory,
-      priority: isPriority,
-      relevanceScore,
-      imageUrl: extractedImage,
-      optimizedImageUrl: extractedImage ? `/api/image-proxy?url=${encodeURIComponent(extractedImage)}` : null,
-      wordCount: (title + ' ' + description).split(' ').length,
-      processed: new Date().toISOString(),
-      sourcePriority: source.priority || 3
+      configService,
+      cacheService,
+      userService,
+      analyticsService,
+      imagesService,
+      rssService
     }
   } catch (error) {
-    console.error('Error processing article item:', error)
-    return null
+    console.error('❌ Failed to initialize services:', error.message)
+    throw error
   }
 }
 
-// Feed fetching functions
-async function fetchAllFeedsBackground(env) {
-  console.log('Background feed fetching started')
-  
-  const configService = new ConfigService(env.NEWS_STORAGE)
-  const allFeeds = []
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: '@_',
-    textNodeName: '#text',
-    ignoreNameSpace: false,
-    removeNSPrefix: false,
-    parseTagValue: true,
-    parseAttributeValue: true,
-    trimValues: true,
-    processEntities: true,
-    htmlEntities: true
-  })
-
-  const enabledSources = await configService.getRSSources()
-  const filteredSources = enabledSources.filter(source => source.enabled)
-  
-  console.log(`Processing ${filteredSources.length} RSS sources in background`)
-
-  const feedPromises = filteredSources.map(async (source) => {
-    try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000)
-
-      const response = await fetch(source.url, {
-        headers: {
-          'User-Agent': 'Harare Metro News Aggregator/2.0 (Zimbabwe)',
-          'Accept': 'application/rss+xml, application/xml, text/xml, */*',
-          'Cache-Control': 'no-cache'
-        },
-        signal: controller.signal,
-        cf: {
-          cacheTtl: 60,
-          cacheEverything: false
-        }
-      })
-
-      clearTimeout(timeoutId)
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-
-      const xmlText = await response.text()
-      if (!xmlText || xmlText.length < 100) {
-        throw new Error('Empty or invalid RSS response')
-      }
-
-      const feedData = parser.parse(xmlText)
-      
-      let items = feedData?.rss?.channel?.item || 
-                  feedData?.feed?.entry || 
-                  feedData?.channel?.item || 
-                  feedData?.rss?.item ||
-                  []
-
-      if (!Array.isArray(items)) {
-        items = items ? [items] : []
-      }
-
-      if (items.length === 0) {
-        return []
-      }
-
-      const processedItems = []
-      for (const item of items.slice(0, CACHE_CONFIG.ITEMS_PER_SOURCE)) {
-        const processed = await processArticleItem(item, source, configService)
-        if (processed) {
-          processedItems.push(processed)
-        }
-      }
-
-      return processedItems
-
-    } catch (error) {
-      console.error(`Background fetch error for ${source.name}:`, error.message)
-      return []
-    }
-  })
-
-  const feedResults = await Promise.allSettled(feedPromises)
-  
-  feedResults.forEach((result, index) => {
-    if (result.status === 'fulfilled' && Array.isArray(result.value)) {
-      allFeeds.push(...result.value)
-    } else if (result.status === 'rejected') {
-      console.error(`Background feed ${filteredSources[index].name} failed:`, result.reason)
-    }
-  })
-
-  console.log(`Background fetch collected: ${allFeeds.length} articles`)
-
-  const uniqueFeeds = removeDuplicateArticles(allFeeds)
-  const cachedArticles = await setCachedArticles(env, uniqueFeeds)
-  
-  return cachedArticles
-}
-
-function removeDuplicateArticles(articles) {
-  const seen = new Set()
-  const unique = []
-
-  for (const article of articles) {
-    const normalizedTitle = article.title
-      .toLowerCase()
-      .replace(/[^\w\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-
-    if (!seen.has(normalizedTitle)) {
-      seen.add(normalizedTitle)
-      unique.push(article)
-    }
-  }
-
-  return unique
-}
-
-async function getCachedArticles(env) {
-  try {
-    const cached = await env.NEWS_STORAGE.get(CACHE_KEYS.ALL_ARTICLES, { type: 'json' })
-    
-    if (cached && Array.isArray(cached)) {
-      console.log(`Retrieved ${cached.length} articles from cache`)
-      return cached
-    } else {
-      console.log('No valid cached articles found')
-      return []
-    }
-  } catch (error) {
-    console.error('Error retrieving cached articles:', error)
-    return []
-  }
-}
-
-async function setCachedArticles(env, articles) {
-  try {
-    const sortedArticles = articles
-      .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
-      .slice(0, CACHE_CONFIG.MAX_ARTICLES)
-
-    await env.NEWS_STORAGE.put(
-      CACHE_KEYS.ALL_ARTICLES, 
-      JSON.stringify(sortedArticles),
-      { expirationTtl: CACHE_CONFIG.ARTICLES_TTL }
-    )
-
-    await env.NEWS_STORAGE.put(
-      CACHE_KEYS.LAST_REFRESH, 
-      new Date().toISOString(),
-      { expirationTtl: CACHE_CONFIG.ARTICLES_TTL }
-    )
-
-    await env.NEWS_STORAGE.put(
-      CACHE_KEYS.ARTICLE_COUNT, 
-      sortedArticles.length.toString(),
-      { expirationTtl: CACHE_CONFIG.ARTICLES_TTL }
-    )
-
-    console.log(`Cached ${sortedArticles.length} articles`)
-    return sortedArticles
-  } catch (error) {
-    console.error('Error caching articles:', error)
-    return articles
-  }
-}
-
-// Image proxy handler
-async function handleImageProxy(request, env) {
-  try {
-    const url = new URL(request.url)
-    const imageUrl = url.searchParams.get('url')
-    
-    if (!imageUrl) {
-      return new Response('Missing url parameter', { status: 400 })
-    }
-
-    // Get trusted domains
-    const configService = new ConfigService(env.NEWS_STORAGE)
-    const trustedDomains = await configService.getTrustedImageDomains()
-    
-    // Validate domain
-    try {
-      const imgUrl = new URL(imageUrl)
-      const isTrusted = trustedDomains.some(domain => 
-        imgUrl.hostname.includes(domain) || imgUrl.hostname.endsWith(domain)
-      )
-      
-      if (!isTrusted) {
-        return new Response('Untrusted domain', { status: 403 })
-      }
-    } catch (e) {
-      return new Response('Invalid URL', { status: 400 })
-    }
-
-    // Fetch and proxy the image
-    const response = await fetch(imageUrl, {
-      headers: {
-        'User-Agent': 'Harare Metro Image Proxy/2.0'
-      },
-      cf: {
-        cacheTtl: 86400, // 24 hours
-        cacheEverything: true
-      }
-    })
-
-    if (!response.ok) {
-      return new Response('Image fetch failed', { status: response.status })
-    }
-
-    const newResponse = new Response(response.body, response)
-    newResponse.headers.set('Cache-Control', 'public, max-age=86400')
-    newResponse.headers.set('Access-Control-Allow-Origin', '*')
-    
-    return newResponse
-  } catch (error) {
-    console.error('Image proxy error:', error)
-    return new Response('Proxy error', { status: 500 })
-  }
-}
-
-// API handlers
-async function handleApiRequest(request, env, ctx) {
-  const url = new URL(request.url)
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-ID',
-    'Access-Control-Max-Age': '86400'
-  }
-
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
-
-  try {
-    console.log(`API Request: ${request.method} ${url.pathname}`)
-
-    const path = url.pathname.replace('/api/', '')
-    
-    // Initialize config service
-    const configService = new ConfigService(env.NEWS_STORAGE)
-    
-    switch (path) {
-      case 'health':
-        return await handleHealthCheck(env, corsHeaders)
-      case 'feeds':
-        return await handleFeedsRequest(request, env, corsHeaders, ctx)
-      case 'config/sources':
-        return await handleSourcesConfig(configService, corsHeaders)
-      case 'config/categories':
-        return await handleCategoriesConfig(configService, corsHeaders)
-      default:
-        if (path.startsWith('image-proxy')) {
-          return await handleImageProxy(request, env)
-        }
-        return new Response(JSON.stringify({
-          error: 'API endpoint not found',
-          available: [
-            '/api/health', '/api/feeds', '/api/config/sources', '/api/config/categories'
-          ]
-        }), { 
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-    }
-  } catch (error) {
-    console.error('API request error:', error)
-    return new Response(JSON.stringify({ 
-      error: 'Internal server error',
-      message: error.message,
-      timestamp: new Date().toISOString()
-    }), { 
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-}
-
-async function handleHealthCheck(env, corsHeaders) {
-  const lastRefresh = await env.NEWS_STORAGE.get(CACHE_KEYS.LAST_REFRESH)
-  const articleCount = await env.NEWS_STORAGE.get(CACHE_KEYS.ARTICLE_COUNT)
-  
-  return new Response(JSON.stringify({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    lastRefresh: lastRefresh || 'Never',
-    cachedArticles: parseInt(articleCount) || 0,
-    maxArticles: CACHE_CONFIG.MAX_ARTICLES,
-    refreshInterval: `${CACHE_CONFIG.SCHEDULED_REFRESH_INTERVAL / 60} minutes`,
-    services: {
-      news_storage: 'connected'
-    }
-  }), {
-    headers: { 
-      ...corsHeaders, 
-      'Content-Type': 'application/json',
-      ...CACHE_CONFIG.CACHE_HEADERS
-    }
-  })
-}
-
-async function handleFeedsRequest(request, env, corsHeaders, ctx) {
-  try {
-    const url = new URL(request.url)
-    const limit = Math.min(parseInt(url.searchParams.get('limit')) || 100, 1000)
-    const category = url.searchParams.get('category')
-    const search = url.searchParams.get('search')
-    
-    // Background refresh if needed
-    ctx.waitUntil(runScheduledRefresh(env))
-    
-    let allFeeds = await getCachedArticles(env)
-    
-    if (!allFeeds || allFeeds.length === 0) {
-      allFeeds = await fetchAllFeedsBackground(env)
-    }
-
-    if (!Array.isArray(allFeeds)) {
-      allFeeds = []
-    }
-
-    let filteredFeeds = allFeeds
-
-    if (category && category !== 'all') {
-      filteredFeeds = filteredFeeds.filter(feed => 
-        feed && feed.category === category
-      )
-    }
-
-    if (search) {
-      const searchLower = search.toLowerCase()
-      filteredFeeds = filteredFeeds.filter(feed =>
-        feed && (
-          (feed.title && feed.title.toLowerCase().includes(searchLower)) ||
-          (feed.description && feed.description.toLowerCase().includes(searchLower)) ||
-          (feed.source && feed.source.toLowerCase().includes(searchLower))
-        )
-      )
-    }
-
-    const sortedFeeds = filteredFeeds
-      .filter(feed => feed && feed.title)
-      .sort((a, b) => {
-        if (a.priority !== b.priority) return b.priority - a.priority
-        if (a.relevanceScore !== b.relevanceScore) return b.relevanceScore - a.relevanceScore
-        if (a.sourcePriority !== b.sourcePriority) return b.sourcePriority - a.sourcePriority
-        return new Date(b.pubDate) - new Date(a.pubDate)
-      })
-      .slice(0, limit)
-
-    const configService = new ConfigService(env.NEWS_STORAGE)
-    const [categoriesConfig, sourcesConfig] = await Promise.all([
-      configService.getCategories(),
-      configService.getRSSources()
-    ])
-
-    return new Response(JSON.stringify({
-      success: true,
-      articles: sortedFeeds,
-      meta: {
-        total: filteredFeeds.length,
-        returned: sortedFeeds.length,
-        cached: true,
-        lastRefresh: await env.NEWS_STORAGE.get(CACHE_KEYS.LAST_REFRESH) || new Date().toISOString(),
-        categories: categoriesConfig.map(c => ({ id: c.id, name: c.name, emoji: c.emoji })),
-        sources: sourcesConfig.filter(s => s.enabled).map(s => ({ id: s.id, name: s.name }))
-      }
-    }), {
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json',
-        ...CACHE_CONFIG.CACHE_HEADERS
-      }
-    })
-  } catch (error) {
-    console.error('Feeds request error:', error)
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: 'Failed to fetch feeds',
-      message: error.message,
-      articles: [],
-      meta: { total: 0, returned: 0, cached: false }
-    }), { 
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-}
-
-async function handleSourcesConfig(configService, corsHeaders) {
-  try {
-    const sources = await configService.getRSSources()
-    return new Response(JSON.stringify({
-      success: true,
-      sources: sources
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  } catch (error) {
-    console.error('Sources config error:', error)
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'Failed to load sources configuration',
-      sources: []
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-}
-
-async function handleCategoriesConfig(configService, corsHeaders) {
-  try {
-    const categories = await configService.getCategories()
-    return new Response(JSON.stringify({
-      success: true,
-      categories: categories
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  } catch (error) {
-    console.error('Categories config error:', error)
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'Failed to load categories configuration',
-      categories: []
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
-  }
-}
-
+// Background scheduled refresh function - FULLY AUTONOMOUS
 async function runScheduledRefresh(env) {
+  const startTime = Date.now()
+  
   try {
-    const lockKey = CACHE_KEYS.REFRESH_LOCK
-    const lock = await env.NEWS_STORAGE.get(lockKey)
+    console.info('[CRON] Starting autonomous scheduled refresh')
     
-    if (lock) {
-      console.log('Refresh already in progress')
-      return { success: false, reason: 'Already running' }
+    const { cacheService, rssService } = initializeServices(env)
+    
+    // Check if refresh is needed (autonomous decision)
+    const needsRefresh = await cacheService.shouldRunScheduledRefresh(CACHE_CONFIG.SCHEDULED_REFRESH_INTERVAL)
+    if (!needsRefresh) {
+      console.info('[CRON] Scheduled refresh not needed yet')
+      return { success: true, reason: 'Not time for refresh', skipped: true }
     }
 
-    await env.NEWS_STORAGE.put(lockKey, 'locked', { expirationTtl: 1800 })
-
-    console.log('Starting scheduled background refresh')
-    const startTime = Date.now()
-    
-    const freshArticles = await fetchAllFeedsBackground(env)
-    
-    await env.NEWS_STORAGE.delete(lockKey)
-
-    const duration = Date.now() - startTime
-    console.log(`Scheduled refresh completed in ${duration}ms, fetched ${freshArticles.length} articles`)
-    
-    return { 
-      success: true, 
-      articlesCount: freshArticles.length,
-      duration: duration,
-      timestamp: new Date().toISOString()
+    // Try to acquire lock (autonomous)
+    const lockAcquired = await cacheService.acquireRefreshLock()
+    if (!lockAcquired) {
+      console.warn('[CRON] Could not acquire refresh lock - another process running')
+      return { success: true, reason: 'Another refresh in progress', skipped: true }
     }
+
+    console.info('[CRON] Starting RSS fetch from all sources')
+    
+    // Fetch fresh articles autonomously
+    const freshArticles = await rssService.fetchAllFeedsBackground(
+      CACHE_CONFIG.ITEMS_PER_SOURCE,
+      CACHE_CONFIG.MAX_ARTICLES
+    )
+    
+    if (freshArticles && freshArticles.length > 0) {
+      // Cache the articles using CacheService
+      await cacheService.setCachedArticles(freshArticles)
+      await cacheService.setLastScheduledRun()
+      
+      const duration = Date.now() - startTime
+      console.info(`[CRON] Autonomous refresh completed successfully in ${duration}ms, cached ${freshArticles.length} articles`)
+      
+      return { 
+        success: true, 
+        articlesCount: freshArticles.length,
+        duration: duration,
+        timestamp: new Date().toISOString(),
+        autonomous: true
+      }
+    } else {
+      console.warn('[CRON] No articles fetched during refresh')
+      return { 
+        success: false, 
+        reason: 'No articles fetched',
+        articlesCount: 0 
+      }
+    }
+    
   } catch (error) {
-    console.error('Scheduled refresh failed:', error)
-    await env.NEWS_STORAGE.delete(CACHE_KEYS.REFRESH_LOCK)
+    const duration = Date.now() - startTime
+    console.error('[CRON] Autonomous refresh failed', { 
+      error: error.message, 
+      duration: `${duration}ms`,
+      stack: error.stack?.substring(0, 500)
+    })
+    return { 
+      success: false, 
+      reason: error.message,
+      autonomous: true,
+      duration: duration
+    }
+  } finally {
+    // Always release lock
+    try {
+      const { cacheService } = initializeServices(env)
+      await cacheService.releaseRefreshLock()
+      console.info('[CRON] Refresh lock released')
+    } catch (lockError) {
+      console.error('[CRON] Failed to release lock:', lockError.message)
+    }
+  }
+}
+
+// Initial data loading function - AUTONOMOUS
+async function ensureInitialData(env) {
+  try {
+    console.info('[INIT] Checking if initial data load is needed')
+    
+    const { cacheService, rssService } = initializeServices(env)
+    
+    // Check if we have any cached articles
+    const existingArticles = await cacheService.getCachedArticles()
+    
+    if (existingArticles && existingArticles.length > 0) {
+      console.info(`[INIT] Found ${existingArticles.length} cached articles, no initial load needed`)
+      return { success: true, reason: 'Data already available', articlesCount: existingArticles.length }
+    }
+    
+    console.info('[INIT] No cached data found, performing initial load')
+    
+    // Try to acquire lock for initial load
+    const lockAcquired = await cacheService.acquireRefreshLock()
+    if (!lockAcquired) {
+      console.info('[INIT] Another process is loading data, waiting...')
+      return { success: true, reason: 'Another process loading', skipped: true }
+    }
+    
+    try {
+      // Perform initial RSS fetch
+      const articles = await rssService.fetchAllFeedsBackground(
+        CACHE_CONFIG.ITEMS_PER_SOURCE,
+        CACHE_CONFIG.MAX_ARTICLES
+      )
+      
+      if (articles && articles.length > 0) {
+        await cacheService.setCachedArticles(articles)
+        await cacheService.setLastScheduledRun()
+        
+        console.info(`[INIT] Initial load completed: ${articles.length} articles`)
+        return { 
+          success: true, 
+          articlesCount: articles.length,
+          initialLoad: true 
+        }
+      } else {
+        console.warn('[INIT] No articles loaded during initial fetch')
+        return { success: false, reason: 'No articles fetched' }
+      }
+      
+    } finally {
+      await cacheService.releaseRefreshLock()
+    }
+    
+  } catch (error) {
+    console.error('[INIT] Initial data load failed:', error.message)
     return { success: false, reason: error.message }
   }
 }
 
-// Main Worker export
+// MISSING: Validate environment function with CORRECT binding names
+function validateEnvironment(env) {
+  const issues = []
+  const warnings = []
+  
+  // Critical bindings - FIXED names
+  if (!env.NEWS_STORAGE) issues.push('NEWS_STORAGE KV binding missing')
+  if (!env.CONFIG_STORAGE) issues.push('CONFIG_STORAGE KV binding missing')
+  if (!env.CONTENT_CACHE) issues.push('CONTENT_CACHE KV binding missing')
+  
+  // Optional but recommended - FIXED name
+  if (!env.USER_STORAGE) warnings.push('USER_STORAGE binding missing (user features disabled)')
+  if (!env.CATEGORY_CLICKS) warnings.push('CATEGORY_CLICKS Analytics binding missing')
+  if (!env.NEWS_INTERACTIONS) warnings.push('NEWS_INTERACTIONS Analytics binding missing')
+  if (!env.SEARCH_QUERIES) warnings.push('SEARCH_QUERIES Analytics binding missing')
+  
+  // Image service
+  if (!env.CLOUDFLARE_ACCOUNT_ID) warnings.push('CLOUDFLARE_ACCOUNT_ID missing (image optimization disabled)')
+  if (!env.CLOUDFLARE_API_TOKEN) warnings.push('CLOUDFLARE_API_TOKEN missing (image optimization disabled)')
+  
+  return {
+    valid: issues.length === 0,
+    issues,
+    warnings,
+    bindingsOk: issues.length === 0,
+    allFeaturesAvailable: issues.length === 0 && warnings.length === 0
+  }
+}
+
+// Basic HTML fallback with embedded React app
+function getBasicHTML() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harare Metro - Zimbabwe News</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🇿🇼</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 40px 20px; 
+            text-align: center;
+        }
+        .logo {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .logo h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2563eb;
+        }
+        .logo p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .loading {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        .feature h3 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            .logo { padding: 30px 20px; }
+            .logo h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🇿🇼 Harare Metro</h1>
+            <p>Zimbabwe's Premier News Aggregator</p>
+        </div>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <h3>Loading Latest News...</h3>
+            <p>Aggregating news from trusted Zimbabwean sources</p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>📰 Local Sources</h3>
+                <p>News from Herald, NewsDay, ZimLive, and more</p>
+            </div>
+            <div class="feature">
+                <h3>🔍 Smart Search</h3>
+                <p>Find exactly what you're looking for</p>
+            </div>
+            <div class="feature">
+                <h3>📱 Mobile Ready</h3>
+                <p>Perfect experience on any device</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="root"></div>
+    
+    <script>
+        // Auto-refresh after 5 seconds if still showing fallback
+        setTimeout(() => {
+            if (document.getElementById('root').innerHTML === '') {
+                window.location.reload();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>`
+}
+
+// Export utility functions that the API file might need
+export {
+  CACHE_CONFIG,
+  initializeServices,
+  runScheduledRefresh
+}
+
+// Main Cloudflare Worker export
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url)
-    
     try {
-      console.log(`Worker request: ${request.method} ${url.pathname}`)
-
-      // Handle image proxy
-      if (url.pathname.startsWith('/api/image-proxy')) {
-        return await handleImageProxy(request, env)
+      const url = new URL(request.url)
+      
+      // Pass CONFIG_STORAGE to ConfigService, not the main KV storage
+      const configService = new ConfigService(env.CONFIG_STORAGE) // ✅ Correct
+      
+      // Handle CORS preflight requests
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-ID',
+          }
+        })
       }
-
-      // Handle API routes
+      
+      // Handle API requests (delegates to api.js)
       if (url.pathname.startsWith('/api/')) {
         return await handleApiRequest(request, env, ctx)
       }
-
-      // Handle static assets
-      if (url.pathname.startsWith('/assets/') || url.pathname.includes('.')) {
+      
+      // Handle static files - SIMPLIFIED for Vite build structure
+      const isAssetRequest = (
+        url.pathname.startsWith('/assets/') ||     // Vite assets folder
+        url.pathname.endsWith('.js') || 
+        url.pathname.endsWith('.css') || 
+        url.pathname.endsWith('.ico') ||
+        url.pathname.endsWith('.png') ||
+        url.pathname.endsWith('.svg') ||
+        url.pathname.endsWith('.jpg') ||
+        url.pathname.endsWith('.jpeg') ||
+        url.pathname.endsWith('.webp') ||
+        url.pathname.endsWith('.woff') ||
+        url.pathname.endsWith('.woff2') ||
+        url.pathname.endsWith('.ttf') ||
+        url.pathname.endsWith('.map') ||          // Add source maps
+        url.pathname === '/favicon.ico' ||
+        url.pathname === '/vite.svg' ||
+        url.pathname === '/manifest.json'
+      )
+      
+      if (isAssetRequest) {
         try {
+          // Check if we have static content binding
+          if (!env.__STATIC_CONTENT) {
+            // For source maps, return 404 silently
+            if (url.pathname.endsWith('.map')) {
+              return new Response('Source map not available', { 
+                status: 404,
+                headers: { 'Content-Type': 'text/plain' }
+              })
+            }
+            
+            console.warn(`Static content not available for: ${url.pathname}`)
+            
+            // For missing favicon, return a simple one
+            if (url.pathname === '/favicon.ico' || url.pathname === '/vite.svg') {
+              return new Response(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                  <text y="24" font-size="24">🇿🇼</text>
+                </svg>
+              `, { 
+                status: 200,
+                headers: { 
+                  'Content-Type': 'image/svg+xml',
+                  'Cache-Control': 'public, max-age=86400'
+                }
+              })
+            }
+            
+            return new Response('Static content not configured', { 
+              status: 503,
+              headers: { 'Content-Type': 'text/plain' }
+            })
+          }
+
+          // Try to get the asset directly from KV
           const response = await getAssetFromKV({
             request,
             waitUntil: ctx.waitUntil.bind(ctx),
           }, {
-            ASSET_NAMESPACE: env.ASSETS || env.__STATIC_CONTENT,
+            ASSET_NAMESPACE: env.__STATIC_CONTENT,
             ASSET_MANIFEST: __STATIC_CONTENT_MANIFEST,
           })
           
           const newResponse = new Response(response.body, response)
-          newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+          
+          // Set appropriate cache headers based on file type
+          if (url.pathname.startsWith('/assets/')) {
+            // Vite assets are hashed and immutable
+            newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+          } else if (url.pathname.endsWith('.css') || url.pathname.endsWith('.js')) {
+            newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+          } else if (url.pathname.endsWith('.map')) {
+            // Source maps - shorter cache
+            newResponse.headers.set('Cache-Control', 'public, max-age=3600')
+          } else {
+            newResponse.headers.set('Cache-Control', 'public, max-age=86400')
+          }
+          
           return newResponse
+          
         } catch (e) {
-          console.log('Asset not found:', url.pathname)
+          // Handle source maps silently
+          if (url.pathname.endsWith('.map')) {
+            return new Response('Source map not found', { 
+              status: 404,
+              headers: { 'Content-Type': 'text/plain' }
+            })
+          }
+          
+          // Only log actual missing assets, not common ones
+          if (!url.pathname.includes('favicon') && 
+              !url.pathname.includes('vite.svg') && 
+              !url.pathname.includes('manifest.json') &&
+              !url.pathname.endsWith('.map')) {
+            console.warn(`Asset not found: ${url.pathname}`)
+          }
+          
+          // For missing favicon/vite.svg, return a simple SVG
+          if (url.pathname === '/favicon.ico' || url.pathname === '/vite.svg') {
+            return new Response(`
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <circle cx="16" cy="16" r="14" fill="#2563eb"/>
+                <text x="16" y="22" font-size="16" text-anchor="middle" fill="white">🇿🇼</text>
+              </svg>
+            `, { 
+              status: 200,
+              headers: { 
+                'Content-Type': 'image/svg+xml',
+                'Cache-Control': 'public, max-age=86400'
+              }
+            })
+          }
+          
+          // Return proper 404 for other missing assets
+          return new Response('Asset not found', { 
+            status: 404,
+            headers: { 'Content-Type': 'text/plain' }
+          })
         }
       }
 
-      // Serve React app
+      // Serve React app (SPA fallback) for all other routes
       try {
+        // Check if we have static content
+        if (!env.__STATIC_CONTENT) {
+          console.info('Static content not available, serving enhanced fallback HTML')
+          return new Response(getBasicHTML(), {
+            headers: { 
+              'Content-Type': 'text/html;charset=UTF-8',
+              'Cache-Control': 'public, max-age=300'
+            }
+          })
+        }
+
+        // Always serve index.html for SPA routes
         const response = await getAssetFromKV({
           request: new Request(new URL('/index.html', request.url)),
           waitUntil: ctx.waitUntil.bind(ctx),
         }, {
-          ASSET_NAMESPACE: env.ASSETS || env.__STATIC_CONTENT,
+          ASSET_NAMESPACE: env.__STATIC_CONTENT,
           ASSET_MANIFEST: __STATIC_CONTENT_MANIFEST,
         })
         
         const newResponse = new Response(response.body, response)
         newResponse.headers.set('Cache-Control', 'public, max-age=3600')
+        newResponse.headers.set('Content-Type', 'text/html;charset=UTF-8')
         return newResponse
+        
       } catch (e) {
-        console.log('Serving fallback HTML')
+        console.info('index.html not found, serving enhanced fallback HTML')
         return new Response(getBasicHTML(), {
           headers: { 
             'Content-Type': 'text/html;charset=UTF-8',
@@ -823,67 +549,32 @@ export default {
       }
 
     } catch (error) {
-      console.error('Worker error:', error)
-      
-      return new Response(JSON.stringify({
-        error: 'Internal Server Error',
-        message: error.message,
-        timestamp: new Date().toISOString()
-      }), { 
-        status: 500,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+      console.error('Worker error:', { 
+        error: error.message, 
+        url: request.url,
+        stack: error.stack 
       })
+      return new Response('Internal Server Error', { status: 500 })
     }
   },
 
+  // Scheduled event handler for Cloudflare Cron Triggers
   async scheduled(controller, env, ctx) {
-    console.log('Scheduled event triggered:', new Date().toISOString())
+    console.info('[CRON] Cron trigger executed')
     
     try {
       const result = await runScheduledRefresh(env)
-      console.log('Scheduled refresh result:', result)
+      
+      if (result.success) {
+        console.info(`[CRON] Scheduled refresh successful: ${result.articlesCount} articles in ${result.duration}ms`)
+      } else {
+        console.warn(`[CRON] Scheduled refresh skipped: ${result.reason}`)
+      }
+      
+      return result
     } catch (error) {
-      console.error('Scheduled refresh error:', error)
+      console.error('[CRON] Scheduled event handler failed:', error)
+      return { success: false, error: error.message }
     }
   }
-}
-
-function getBasicHTML() {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harare Metro - Zimbabwe News</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 40px 20px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .container { text-align: center; max-width: 500px; }
-      .flag { font-size: 4em; margin-bottom: 20px; }
-      h1 { font-size: 2.5em; margin: 0 0 10px 0; }
-      p { font-size: 1.2em; opacity: 0.9; margin: 0 0 30px 0; }
-      .loading { animation: pulse 2s infinite; }
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="flag">🇿🇼</div>
-        <h1>Harare Metro</h1>
-        <p class="loading">Loading Zimbabwe's latest news...</p>
-    </div>
-</body>
-</html>`
 }

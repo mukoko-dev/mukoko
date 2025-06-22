@@ -40,7 +40,7 @@ const buttonVariants = cva(
         
         // Link variant
         link: 
-          "text-primary underline-offset-4 bg-transparent border-none hover:bg-transparent hover:text-primary-foreground active:bg-transparent active:text-primary-foreground focus-visible:ring-0",
+          "text-primary underline-offset-2 bg-transparent border-none hover:bg-transparent hover:text-primary-foreground active:bg-transparent active:text-primary-foreground focus-visible:ring-0",
       },
       size: {
         default: "h-10 px-4 py-3",

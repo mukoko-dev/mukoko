@@ -30,12 +30,15 @@ export default defineConfig({
     global: 'globalThis',
     // Suppress build warnings
     rollupOptions: {
-      onwarn(warning, warn) {
-        // Skip certain warnings
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
-        if (warning.code === 'SOURCEMAP_ERROR') return
-        warn(warning)
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        sw: path.resolve(__dirname, 'public/sw.js')
       },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'sw' ? 'sw.js' : '[name]-[hash].js'
+        }
+      }
     },
     // Generate proper source maps
     sourcemap: true,

@@ -1,4 +1,4 @@
-// src/components/ProfilePage.jsx - TikTok-styled with Personal Insights integration
+// src/components/ProfilePage.jsx - Updated with proper shadcn/ui components
 import React, { useState, useMemo } from 'react'
 import {
   UserCircle,
@@ -22,10 +22,20 @@ import {
   User,
   Heart,
   Target,
-  Lightbulb
+  Lightbulb,
+  Edit,
+  Camera,
+  Mail,
+  Calendar
 } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
+import { Switch } from './ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Textarea } from './ui/textarea'
 import SaveForLater from './SaveForLater'
 import PersonalInsights from './PersonalInsights'
 
@@ -42,8 +52,6 @@ const ProfilePage = ({
   lastUpdated,
   className = ''
 }) => {
-  const [activeTab, setActiveTab] = useState('overview')
-
   // Enhanced user data with personal insights integration
   const userData = useMemo(() => {
     const readArticles = JSON.parse(localStorage.getItem('harare_metro_read_articles') || '[]')
@@ -117,516 +125,735 @@ const ProfilePage = ({
       description: 'Deep insights into your reading habits and time patterns',
       icon: BarChart3,
       status: 'Live Now!',
-      variant: 'success'
+      variant: 'default'
     },
     {
       name: 'Personalized Recommendations',
       description: 'AI-curated news based on your reading history',
       icon: Lightbulb,
       status: 'Live Now!',
-      variant: 'success'
+      variant: 'default'
     },
     {
       name: 'Push Notifications',
       description: 'Get notified about breaking news and saved articles',
       icon: Bell,
       status: 'Planned',
-      variant: 'muted'
+      variant: 'secondary'
     },
     {
       name: 'Social Sharing',
       description: 'Share and discuss articles with friends',
       icon: Share,
       status: 'Planned',
-      variant: 'muted'
+      variant: 'secondary'
     }
   ]
 
-  const tabs = [
-    { id: 'overview', name: 'Overview', icon: UserCircle },
-    { id: 'insights', name: 'Insights', icon: BarChart3 },
-    { id: 'saved', name: 'Saved Articles', icon: Bookmark },
-    { id: 'settings', name: 'Preferences', icon: Settings }
-  ]
+  const renderEditProfile = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Profile Picture */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <Camera className="h-6 w-6 text-muted-foreground" />
+            <span>Profile Picture</span>
+          </CardTitle>
+          <CardDescription>
+            Update your profile avatar
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-pink-500 via-yellow-400 to-purple-500 flex items-center justify-center shadow-lg">
+              <span className="text-white text-4xl font-bold select-none">
+                {userData.name.split(' ').map(n => n[0]).join('')}
+              </span>
+            </div>
+            
+            <div className="space-y-2">
+              <Button variant="outline" className="w-full">
+                <Camera className="h-4 w-4 mr-2" />
+                Change Avatar
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                JPG, GIF or PNG. 1MB max.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-  // Custom Toggle Component - fixed to look like proper toggle switches
-  const Toggle = ({ checked, onChange, disabled = false }) => (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => !disabled && onChange(!checked)}
-      disabled={disabled}
-      className={`
-        relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200
-        ${disabled 
-          ? 'cursor-not-allowed opacity-50 bg-gray-200 dark:bg-gray-700' 
-          : checked 
-            ? 'bg-blue-600 dark:bg-blue-500' 
-            : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
-        }
-        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-      `}
-    >
-      <span
-        className={`
-          inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out
-          ${checked ? 'translate-x-6' : 'translate-x-1'}
-          ${disabled ? 'opacity-50' : 'shadow-lg'}
-        `}
-      />
-    </button>
+      {/* Basic Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <User className="h-6 w-6 text-muted-foreground" />
+            <span>Basic Information</span>
+          </CardTitle>
+          <CardDescription>
+            Update your personal details
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Display Name</Label>
+            <Input 
+              id="name" 
+              defaultValue={userData.name}
+              placeholder="Your display name"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address</Label>
+            <Input 
+              id="email" 
+              type="email"
+              defaultValue={userData.email}
+              placeholder="your@email.com"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea 
+              id="bio" 
+              placeholder="Tell us about yourself..."
+              defaultValue="Passionate about news, technology, and staying informed. #HarareMetro"
+              rows={3}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="website">Website</Label>
+            <Input 
+              id="website" 
+              defaultValue="hararemetro.co.zw"
+              placeholder="Your website URL"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Account Settings */}
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <Settings className="h-6 w-6 text-muted-foreground" />
+            <span>Account Settings</span>
+          </CardTitle>
+          <CardDescription>
+            Manage your account preferences
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Privacy Settings</h4>
+              
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <div>
+                  <Label className="font-medium">Public Profile</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Make your reading stats visible to others
+                  </p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <div>
+                  <Label className="font-medium">Show Reading Activity</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Display your recent reading activity
+                  </p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="font-semibold text-foreground">Email Preferences</h4>
+              
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <div>
+                  <Label className="font-medium">Weekly Summary</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Get a weekly summary of your reading
+                  </p>
+                </div>
+                <Switch />
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <div>
+                  <Label className="font-medium">Breaking News Alerts</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Important news updates via email
+                  </p>
+                </div>
+                <Switch />
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Button className="flex-1">
+              Save Changes
+            </Button>
+            <Button variant="outline" className="flex-1">
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="lg:col-span-2 border-destructive/20">
+        <CardHeader>
+          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardDescription>
+            Irreversible and destructive actions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+            <div>
+              <h4 className="font-semibold text-destructive">Delete Account</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Permanently delete your account and all associated data
+              </p>
+            </div>
+            <Button variant="destructive" className="mt-4 sm:mt-0">
+              Delete Account
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 
   const renderOverview = () => (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Quick Insights Preview */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6`}>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-            <User className="h-5 w-5 mr-2 text-blue-500" />
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <User className="h-6 w-6 mr-3 text-primary" />
             Your Reading Journey
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          </CardTitle>
+          <CardDescription>
             Quick overview of your reading habits and achievements
-          </p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg shadow bg-blue-50 dark:bg-blue-900/20">
-            <div className="text-center">
-              <Heart className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <Card className="p-6 text-center bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+              <Heart className="h-10 w-10 text-blue-500 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {userData.readingStats.totalLikes}
               </div>
-              <div className="text-sm text-blue-600 dark:text-blue-400">
-                Liked
+              <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                Articles Liked
               </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg shadow bg-green-50 dark:bg-green-900/20">
-            <div className="text-center">
-              <Bookmark className="h-8 w-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            </Card>
+            
+            <Card className="p-6 text-center bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+              <Bookmark className="h-10 w-10 text-green-500 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {savedArticles.length}
               </div>
-              <div className="text-sm text-green-600 dark:text-green-400">
-                Saved
+              <div className="text-sm font-medium text-green-600 dark:text-green-400">
+                Articles Saved
               </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg shadow bg-orange-50 dark:bg-orange-900/20">
-            <div className="text-center">
-              <Flame className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            </Card>
+            
+            <Card className="p-6 text-center bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800">
+              <Flame className="h-10 w-10 text-orange-500 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {userData.readingStats.readingStreak}
               </div>
-              <div className="text-sm text-orange-600 dark:text-orange-400">
+              <div className="text-sm font-medium text-orange-600 dark:text-orange-400">
                 Day Streak
               </div>
-            </div>
-          </div>
-          
-          <div className="p-4 rounded-lg shadow bg-purple-50 dark:bg-purple-900/20">
-            <div className="text-center">
-              <Eye className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            </Card>
+            
+            <Card className="p-6 text-center bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800">
+              <Eye className="h-10 w-10 text-purple-500 mx-auto mb-3" />
+              <div className="text-3xl font-bold text-foreground mb-1">
                 {userData.readingStats.articlesRead}
               </div>
-              <div className="text-sm text-purple-600 dark:text-purple-400">
+              <div className="text-sm font-medium text-purple-600 dark:text-purple-400">
                 Articles Read
               </div>
-            </div>
+            </Card>
           </div>
-        </div>
-        
-        <div className="mt-6 text-center">
-          <Button
-            variant="outline"
-            onClick={() => setActiveTab('insights')}
-            className="inline-flex items-center space-x-2"
-          >
-            <Lightbulb className="h-4 w-4" />
-            <span>View Detailed Insights</span>
-          </Button>
-        </div>
-      </div>
+          
+          <div className="text-center">
+            <Button variant="outline" className="inline-flex items-center space-x-2 px-6 py-3">
+              <Lightbulb className="h-5 w-5" />
+              <span>View Detailed Insights</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Features & Updates */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6`}>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Features & Updates
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle>Features & Updates</CardTitle>
+          <CardDescription>
             What's new and what's coming next
-          </p>
-        </div>
-        <div className="space-y-4">
-          {upcomingFeatures.map((feature, index) => (
-            <div 
-              key={index} 
-              className="flex items-center justify-between p-4 rounded-lg shadow bg-gray-50 dark:bg-gray-800/50"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
-                  <feature.icon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {upcomingFeatures.map((feature, index) => (
+              <Card key={index} className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-muted rounded-xl">
+                      <feature.icon className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">
+                        {feature.name}
+                      </h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant={feature.variant} className="ml-4">
+                    {feature.status}
+                  </Badge>
                 </div>
-                <div>
-                  <h4 className="font-medium text-gray-900 dark:text-white">
-                    {feature.name}
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
-              <Badge variant={feature.variant} size="sm">
-                {feature.status}
-              </Badge>
-            </div>
-          ))}
-        </div>
-      </div>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 
   const renderReadingStats = () => {
     return (
-      <div className="space-y-4">
-        <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-4`}>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-            <span>Reading Summary</span>
-          </h3>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  Favorite Category
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Your most read topic
-                </p>
-              </div>
-              <Badge variant="default" size="sm">
-                {userData.readingStats.favoriteCategory}
-              </Badge>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-3">
+              <TrendingUp className="h-6 w-6 text-muted-foreground" />
+              <span>Reading Summary</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-foreground text-lg">
+                      Favorite Category
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      Your most read topic
+                    </p>
+                  </div>
+                  <Badge variant="default">
+                    {userData.readingStats.favoriteCategory}
+                  </Badge>
+                </div>
+              </Card>
+              
+              <Card className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-foreground text-lg">
+                      Reading Level
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      Based on your activity
+                    </p>
+                  </div>
+                  <Badge variant="default">
+                    {userData.readingStats.articlesRead > 100 ? 'Avid Reader' : 
+                     userData.readingStats.articlesRead > 50 ? 'Regular Reader' : 
+                     'Getting Started'}
+                  </Badge>
+                </div>
+              </Card>
+              
+              <Card className="p-5 md:col-span-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-foreground text-lg">
+                      Member Duration
+                    </p>
+                    <p className="text-muted-foreground mt-1">
+                      Days since you joined Harare Metro
+                    </p>
+                  </div>
+                  <Badge variant="outline">
+                    {userData.readingStats.daysSince} days
+                  </Badge>
+                </div>
+              </Card>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  Reading Level
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Based on your activity
-                </p>
+          </CardContent>
+        </Card>
+        
+        {/* Additional stats */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Stats</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-foreground">
+                {userData.readingStats.totalSessions}
               </div>
-              <Badge variant="success" size="sm">
-                {userData.readingStats.articlesRead > 100 ? 'Avid Reader' : 
-                 userData.readingStats.articlesRead > 50 ? 'Regular Reader' : 
-                 'Getting Started'}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  Member Duration
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Days since you joined
-                </p>
+              <div className="text-sm text-muted-foreground">
+                Total Sessions
               </div>
-              <Badge variant="default" size="sm">
-                {userData.readingStats.daysSince} days
-              </Badge>
             </div>
-          </div>
-        </div>
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-foreground">
+                {userData.readingStats.timeSpent}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Time Spent
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   const renderSettings = () => (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Appearance Settings */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6`}>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-xl">
               {theme === 'dark' ? (
-                <Moon className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                <Moon className="h-5 w-5 text-muted-foreground" />
               ) : (
-                <Sun className="h-4 w-4 text-yellow-500" />
+                <Sun className="h-5 w-5 text-yellow-500" />
               )}
             </div>
             <span>Appearance</span>
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          </CardTitle>
+          <CardDescription>
             Customize how the app looks and feels
-          </p>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-5 bg-muted rounded-xl">
             <div className="space-y-1">
-              <label className="text-base font-medium text-gray-900 dark:text-white">
+              <label className="text-lg font-semibold text-foreground">
                 Dark Mode
               </label>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground">
                 {theme === 'dark' ? 'Dark mode is enabled' : 'Light mode is enabled'}
               </p>
             </div>
-            <Toggle
+            <Switch
               checked={theme === 'dark'}
-              onChange={onThemeChange}
+              onCheckedChange={onThemeChange}
             />
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Notification Settings - Coming Soon */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6 opacity-60`}>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <Bell className="h-4 w-4 text-gray-400" />
+      <Card className="opacity-60">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-xl">
+              <Bell className="h-5 w-5 text-muted-foreground" />
             </div>
             <span>Notifications</span>
-            <Badge variant="muted" size="sm">
+            <Badge variant="secondary">
               Coming Soon
             </Badge>
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          </CardTitle>
+          <CardDescription>
             Stay updated with breaking news and your saved articles
-          </p>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <Bell className="h-5 w-5 text-gray-400" />
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-5 bg-muted rounded-xl">
+            <div className="flex items-center space-x-4">
+              <Bell className="h-6 w-6 text-muted-foreground" />
               <div>
-                <label className="text-base font-medium text-gray-900 dark:text-white">
+                <label className="text-lg font-semibold text-foreground">
                   Breaking News
                 </label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-muted-foreground mt-1">
                   Get notified about important news updates
                 </p>
               </div>
             </div>
-            <Toggle checked={false} onChange={() => {}} disabled />
+            <Switch checked={false} disabled />
           </div>
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <Smartphone className="h-5 w-5 text-gray-400" />
+          
+          <div className="flex items-center justify-between p-5 bg-muted rounded-xl">
+            <div className="flex items-center space-x-4">
+              <Smartphone className="h-6 w-6 text-muted-foreground" />
               <div>
-                <label className="text-base font-medium text-gray-900 dark:text-white">
+                <label className="text-lg font-semibold text-foreground">
                   Push Notifications
                 </label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-muted-foreground mt-1">
                   Receive notifications on your device
                 </p>
               </div>
             </div>
-            <Toggle checked={false} onChange={() => {}} disabled />
+            <Switch checked={false} disabled />
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Privacy Settings - Coming Soon */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6 opacity-60`}>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg">
-              <ShieldCheck className="h-4 w-4 text-gray-400" />
+      <Card className="opacity-60 lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-muted rounded-xl">
+              <ShieldCheck className="h-5 w-5 text-muted-foreground" />
             </div>
             <span>Privacy & Data</span>
-            <Badge variant="muted" size="sm">
+            <Badge variant="secondary">
               Coming Soon
             </Badge>
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          </CardTitle>
+          <CardDescription>
             Control your data and privacy preferences
-          </p>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <ShieldCheck className="h-5 w-5 text-gray-400" />
-              <div>
-                <label className="text-base font-medium text-gray-900 dark:text-white">
-                  Data Collection
-                </label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Allow anonymous usage analytics
-                </p>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-5 bg-muted rounded-xl">
+              <div className="flex items-center space-x-4">
+                <ShieldCheck className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <label className="text-lg font-semibold text-foreground">
+                    Data Collection
+                  </label>
+                  <p className="text-muted-foreground mt-1">
+                    Allow anonymous usage analytics
+                  </p>
+                </div>
               </div>
+              <Switch checked={false} disabled />
             </div>
-            <Toggle checked={false} onChange={() => {}} disabled />
-          </div>
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <Globe className="h-5 w-5 text-gray-400" />
-              <div>
-                <label className="text-base font-medium text-gray-900 dark:text-white">
-                  Personalized Content
-                </label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Customize content based on reading habits
-                </p>
+            
+            <div className="flex items-center justify-between p-5 bg-muted rounded-xl">
+              <div className="flex items-center space-x-4">
+                <Globe className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <label className="text-lg font-semibold text-foreground">
+                    Personalized Content
+                  </label>
+                  <p className="text-muted-foreground mt-1">
+                    Customize content based on reading habits
+                  </p>
+                </div>
               </div>
+              <Switch checked={false} disabled />
             </div>
-            <Toggle checked={false} onChange={() => {}} disabled />
           </div>
-        </div>
-      </div>
-
-      {/* Separator */}
-      <div className="border-t border-gray-200 dark:border-gray-700"></div>
+        </CardContent>
+      </Card>
 
       {/* App Info */}
-      <div className={`${currentColors.cardBg} shadow-lg rounded-xl p-6 bg-gray-50 dark:bg-gray-800/50`}>
-        <div className="text-center space-y-2">
-          <h3 className="font-medium text-gray-900 dark:text-white">
-            Harare Metro News
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Version 2.1.0 • Built with ❤️ in Zimbabwe
-          </p>
-        </div>
-      </div>
+      <Card className="bg-muted/50 lg:col-span-2">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-3">
+            <h3 className="text-xl font-semibold text-foreground">
+              Harare Metro News
+            </h3>
+            <p className="text-muted-foreground">
+              Version 2.1.0 • Built with ❤️ in Zimbabwe
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 
   return (
-    <div className={`max-w-4xl mx-auto space-y-6 p-3 ${className}`}>
-      {/* Profile Header */}
-      <div className={`px-4 pt-3 flex flex-col items-center sm:flex-row sm:items-start sm:space-x-8 justify-center bottom-0 sm:justify-start bg-white dark:bg-gray-900 rounded-lg shadow-lg`}>
-        {/* Avatar */}
-        <div className="flex-shrink-0 flex flex-col items-center">
-          <div className="h-24 w-24 rounded-full bg-gradient-to-br from-pink-500 via-yellow-400 to-purple-500 flex items-center justify-center shadow-lg overflow-hidden">
-            <span className="text-white dark:text-gray-900 text-3xl font-bold select-none">
-              {userData.name.split(' ').map(n => n[0]).join('')}
-            </span>
-          </div>
-          {/* Badges */}
-          <div className="flex space-x-3 mt-2 gap-2 items-center justify-center">
-            <Badge variant="success" size="sm" className="mt-2">
-              Active Reader
-            </Badge>
-            <Badge variant="default" size="sm" className="flex items-center space-x-1">
-              <Check className="h-4 w-4 mr-1" />
-              <span>Verified Member</span>
-            </Badge>
-          </div>
-        </div>
+    <div className={`min-h-screen ${className}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        {/* Profile Info */}
-        <div className="flex-1 mt-4 sm:mt-0 flex flex-col items-center sm:items-start w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center w-full justify-center sm:justify-center">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center sm:text-left">
-                {userData.name}
-              </h2>
-              <div className="flex items-center justify-center sm:justify-start space-x-2 mt-1">
-                <span className="text-gray-500 dark:text-gray-400 text-sm font-mono">@newsreader</span>
-                <span className="text-xs text-gray-400">•</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Member since {new Date(userData.joinDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+        <Tabs defaultValue="overview" className="space-y-8">
+          {/* Profile Header with integrated tab navigation */}
+          <Card>
+            <CardContent className="p-6 lg:p-8">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:space-x-8">
+                
+                {/* Avatar and Basic Info */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-6 lg:flex-col lg:items-center lg:space-x-0">
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className="h-32 w-32 lg:h-40 lg:w-40 rounded-full bg-gradient-to-br from-pink-500 via-yellow-400 to-purple-500 flex items-center justify-center shadow-lg">
+                      <span className="text-white text-4xl lg:text-5xl font-bold select-none">
+                        {userData.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                    
+                    {/* Badges */}
+                    <div className="flex flex-col sm:flex-row lg:flex-col space-y-2 sm:space-y-0 sm:space-x-2 lg:space-x-0 lg:space-y-2 mt-4">
+                      <Badge variant="default">
+                        Active Reader
+                      </Badge>
+                      <Badge variant="outline" className="flex items-center space-x-1">
+                        <Check className="h-4 w-4" />
+                        <span>Verified Member</span>
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  {/* Profile Details */}
+                  <div className="flex-1 mt-6 sm:mt-0 lg:mt-6 text-center sm:text-left lg:text-center">
+                    <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
+                      {userData.name}
+                    </h2>
+                    
+                    <div className="flex items-center justify-center sm:justify-start lg:justify-center space-x-2 mt-2">
+                      <span className="text-muted-foreground font-mono">@newsreader</span>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-muted-foreground">
+                        Member since {new Date(userData.joinDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                    
+                    {/* Bio */}
+                    <div className="mt-4 text-muted-foreground max-w-md">
+                      <p>
+                        Passionate about news, technology, and staying informed. <span className="text-primary">#HarareMetro</span>
+                      </p>
+                    </div>
+                    
+                    {/* Website Link */}
+                    <div className="mt-3">
+                      <a
+                        href="https://hararemetro.co.zw"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        hararemetro.co.zw
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stats Grid */}
+                <div className="flex-1 mt-8 lg:mt-0">
+                  <div className="grid grid-cols-3 gap-6 lg:gap-8">
+                    <div className="text-center">
+                      <div className="text-2xl lg:text-3xl font-bold text-foreground">
+                        {userData.readingStats.totalLikes}
+                      </div>
+                      <div className="text-sm lg:text-base text-muted-foreground uppercase tracking-wide">
+                        Likes
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl lg:text-3xl font-bold text-foreground">
+                        {userData.readingStats.articlesRead}
+                      </div>
+                      <div className="text-sm lg:text-base text-muted-foreground uppercase tracking-wide">
+                        Articles
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl lg:text-3xl font-bold text-foreground">
+                        {userData.readingStats.readingStreak}
+                      </div>
+                      <div className="text-sm lg:text-base text-muted-foreground uppercase tracking-wide">
+                        Streak
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            {/* Stats Row */}
-            <div className="flex justify-center items-center text-center py-2 gap-x-8 w-full mt-4">
-              <div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">{userData.readingStats.totalLikes}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Likes</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">{userData.readingStats.articlesRead}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Articles</div>
-              </div>
-              <div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">{userData.readingStats.readingStreak}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Streak</div>
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div className="mt-3 text-gray-700 dark:text-gray-300 text-center sm:text-left text-sm max-w-md w-full">
-              <span>
-                Passionate about news, technology, and staying informed. <span className="text-blue-500">#HarareMetro</span>
-              </span>
-            </div>
-
-            {/* Personal Link */}
-            <div className="mt-2 flex items-center justify-center sm:justify-start space-x-2">
-              <a
-                href="https://hararemetro.co.zw"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
-              >
-                hararemetro.co.zw
-              </a>
-            </div>
               
-            {/* Edit Profile */}
-            <div className="flex items-center space-x-2 mt-3 sm:mt-2 justify-center">
-              <Button
-                variant="link"
-                size="link"
-                onClick={() => {/* Open edit profile modal */}}
-                className="font-medium"
-              >
-                Edit Profile
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Tab Navigation */}
-        <nav className="p-2 flex gap-4 items-center justify-around w-full sm:w-auto">
-          {tabs.map((tab) => (
-            <Button
-              key={tab.id}
-              variant="icon"
-              size="lg"
-              onClick={() => setActiveTab(tab.id)}
-              className={`p-3 rounded-xl transition-all duration-200 shadow ${
-                activeTab === tab.id
-                  ? 'bg-white text-gray-900 shadow-md dark:bg-gray-900 dark:text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700'
-              }`}
-            >
-              <tab.icon className="h-6 w-6" />
-              <span className="hidden sm:inline">{tab.name}</span>
-            </Button>
-          ))}
-        </nav>
-      </div>
-      
-      {/* Tab Content */}
-      <div>
-        {activeTab === 'overview' && renderOverview()}
-        {activeTab === 'insights' && (
-          <div className="space-y-6">
+              {/* Tab Navigation - Properly positioned under profile */}
+              <div className="mt-4 p-2 border-t border-border gap-2 item-center justify-center">
+                <TabsList className="inline-flex items-center justify-around gap-2">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="flex items-center gap-2 px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <UserCircle className="h-4 w-4" />
+                    <span className="hidden sm:inline">Overview</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="insights" 
+                    className="flex items-center gap-2 px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Insights</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="saved" 
+                    className="flex items-center gap-2 px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <Bookmark className="h-4 w-4" />
+                    <span className="hidden sm:inline">Saved</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="edit" 
+                    className="flex items-center gap-2 px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <Edit className="h-4 w-4" />
+                    <span className="hidden sm:inline">Edit Profile</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="settings" 
+                    className="flex items-center gap-2 px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span className="hidden sm:inline">Settings</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Tab Content */}
+          <TabsContent value="overview" className="mt-8">
+            {renderOverview()}
+          </TabsContent>
+          
+          <TabsContent value="insights" className="mt-8">
             <PersonalInsights 
               currentColors={currentColors} 
               allFeeds={allFeeds || []}
               lastUpdated={lastUpdated}
             />
-          </div>
-        )}
-        {activeTab === 'saved' && (
-          <SaveForLater
-            savedArticles={savedArticles}
-            onToggleSave={onToggleSave}
-            onShare={onShare}
-            onArticleClick={onArticleClick}
-            currentColors={currentColors}
-          />
-        )}
-        {activeTab === 'settings' && renderSettings()}
+          </TabsContent>
+          
+          <TabsContent value="saved" className="mt-8">
+            <SaveForLater
+              savedArticles={savedArticles}
+              onToggleSave={onToggleSave}
+              onShare={onShare}
+              onArticleClick={onArticleClick}
+              currentColors={currentColors}
+            />
+          </TabsContent>
+          
+          <TabsContent value="edit" className="mt-8">
+            {renderEditProfile()}
+          </TabsContent>
+          
+          <TabsContent value="settings" className="mt-8">
+            {renderSettings()}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

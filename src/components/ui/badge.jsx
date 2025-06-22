@@ -55,10 +55,10 @@ const badgeVariants = cva(
           "bg-transparent text-foreground/70 border-transparent [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
       },
       size: {
-        default: "px-2 py-0.5 text-xs leading-none",
-        sm: "px-1.5 py-0.25 text-xs leading-none",
-        lg: "px-3 py-1 text-sm leading-none",
-        icon: "p-1 leading-none",
+        default: "px-3 py-1 text-xs leading-none",     // Increased from px-2 py-0.5
+        sm: "px-2.5 py-0.5 text-xs leading-none",      // Increased from px-1.5 py-0.25  
+        lg: "px-4 py-1.5 text-sm leading-none",        // Increased from px-3 py-1
+        icon: "p-1.5 leading-none",                    // Increased from p-1
       },
     },
     defaultVariants: {

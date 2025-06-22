@@ -1,5 +1,8 @@
 // src/components/FilterControls.jsx - Simplified version
 import React, { useState } from 'react'
+import { LayoutGrid, List } from 'lucide-react'
+import { IconGroup } from './ui/icon-group'
+import { IconButton } from './ui/icon-button'
 
 const FilterControls = ({
   selectedTimeframe,
@@ -8,8 +11,6 @@ const FilterControls = ({
   setSortBy,
   viewMode,
   setViewMode,
-  feeds = [],
-  currentColors,
   className = ''
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -157,39 +158,27 @@ const FilterControls = ({
       </div>
 
       {/* View Mode Toggle */}
-      <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-        <button
+      <IconGroup variant="contained" className="p-1">
+        <IconButton
+          variant="icon"
+          size="icon"
           onClick={() => setViewMode?.('grid')}
-          className={`
-            p-2 rounded-md transition-all duration-200
-            ${viewMode === 'grid' 
-              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }
-          `}
-          title="Grid View"
+          className={viewMode === 'grid' ? 'bg-primary text-primary-foreground' : ''}
+          tooltip="Grid View"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/>
-          </svg>
-        </button>
+          <LayoutGrid className="w-4 h-4" />
+        </IconButton>
         
-        <button
+        <IconButton
+          variant="icon"
+          size="icon"
           onClick={() => setViewMode?.('list')}
-          className={`
-            p-2 rounded-md transition-all duration-200
-            ${viewMode === 'list' 
-              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' 
-              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }
-          `}
-          title="List View"
+          className={viewMode === 'list' ? 'bg-primary text-primary-foreground' : ''}
+          tooltip="List View"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-          </svg>
-        </button>
-      </div>
+          <List className="w-4 h-4" />
+        </IconButton>
+      </IconGroup>
     </div>
   )
 }

@@ -1,234 +1,541 @@
+// worker/services/D1UserService.js
 export class D1UserService {
-  constructor(db) {
-    this.db = db
+  constructor(d1Database) {
+    this.db = d1Database
+    this.initialized = false
   }
 
-  async upsertUser(userId, userData = {}) {
+  async initialize() {
+    if (this.initialized || !this.db) {
+      return
+    }
+
     try {
+      // Create users table
+      await this.db.prepare(`
+        CREATE TABLE IF NOT EXISTS users (
+          id TEXT PRIMARY KEY,
+          email TEXT UNIQUE,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          preferences TEXT DEFAULT '{}',
+          stats TEXT DEFAULT '{}'
+        )
+      `).run()
+
+      // Create user_likes table
+      await this.db.prepare(`
+        CREATE TABLE IF NOT EXISTS user_likes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          article_id TEXT NOT NULL,
+          article_title TEXT,
+          article_source TEXT,
+          article_category TEXT,
+          liked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(user_id, article_id),
+          FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+      `).run()
+
+      // Create user_bookmarks table
+      await this.db.prepare(`
+        CREATE TABLE IF NOT EXISTS user_bookmarks (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          article_id TEXT NOT NULL,
+          article_title TEXT,
+          article_description TEXT,
+          article_source TEXT,
+          article_category TEXT,
+          article_link TEXT,
+          article_image_url TEXT,
+          article_pub_date DATETIME,
+          saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(user_id, article_id),
+          FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+      `).run()
+
+      // Create user_reading_history table
+      await this.db.prepare(`
+        CREATE TABLE IF NOT EXISTS user_reading_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT NOT NULL,
+          article_id TEXT NOT NULL,
+          article_title TEXT,
+          article_source TEXT,
+          article_category TEXT,
+          read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          time_spent INTEGER DEFAULT 0,
+          FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+      `).run()
+
+      // Create indexes for better performance
+      await this.db.prepare(`
+        CREATE INDEX IF NOT EXISTS idx_user_likes_user_id ON user_likes(user_id)
+      `).run()
+
+      await this.db.prepare(`
+        CREATE INDEX IF NOT EXISTS idx_user_bookmarks_user_id ON user_bookmarks(user_id)
+      `).run()
+
+      await this.db.prepare(`
+        CREATE INDEX IF NOT EXISTS idx_user_reading_history_user_id ON user_reading_history(user_id)
+      `).run()
+
+      this.initialized = true
+      console.log('D1UserService initialized successfully')
+    } catch (error) {
+      console.log('Error initializing D1UserService:', error)
+      throw error
+    }
+  }
+
+  // User Management
+  async createUser(userId, userData = {}) {
+    try {
+      await this.initialize()
+
+      const { email, preferences = {}, stats = {} } = userData
+
       const result = await this.db.prepare(`
-        INSERT INTO users (id, email, preferences, last_active)
-        VALUES (?1, ?2, ?3, ?4)
-        ON CONFLICT(id) DO UPDATE SET 
-          email = COALESCE(?2, email),
-          preferences = ?3,
-          last_active = ?4,
-          updated_at = CURRENT_TIMESTAMP
+        INSERT INTO users (id, email, preferences, stats)
+        VALUES (?, ?, ?, ?)
       `).bind(
         userId,
-        userData.email || null,
-        JSON.stringify(userData.preferences || {}),
-        new Date().toISOString()
+        email || null,
+        JSON.stringify(preferences),
+        JSON.stringify(stats)
       ).run()
 
-      return { success: true, changes: result.changes }
+      if (result.success) {
+        return { success: true, user: await this.getUser(userId) }
+      } else {
+        throw new Error('Failed to create user')
+      }
     } catch (error) {
-      console.error('Error upserting user:', error)
-      throw error
+      console.log('Error creating user:', error)
+      return { success: false, error: error.message }
     }
   }
 
   async getUser(userId) {
     try {
-      const user = await this.db.prepare(`
-        SELECT u.*,
-          COUNT(CASE WHEN ua.interaction_type = 'like' THEN 1 END) as total_likes,
-          COUNT(CASE WHEN ua.interaction_type = 'bookmark' THEN 1 END) as total_bookmarks,
-          COUNT(CASE WHEN ua.interaction_type = 'view' THEN 1 END) as total_views,
-          COUNT(CASE WHEN ua.interaction_type = 'share' THEN 1 END) as total_shares,
-          MAX(ua.created_at) as last_interaction
-        FROM users u
-        LEFT JOIN user_articles ua ON u.id = ua.user_id
-        WHERE u.id = ?1
-        GROUP BY u.id
+      await this.initialize()
+
+      const result = await this.db.prepare(`
+        SELECT * FROM users WHERE id = ?
       `).bind(userId).first()
-      
-      if (user) {
-        user.preferences = JSON.parse(user.preferences || '{}')
-        
-        // Get reading stats
-        const readingStats = await this.db.prepare(`
-          SELECT 
-            AVG(reading_time_seconds) as avg_reading_time,
-            SUM(reading_time_seconds) as total_reading_time,
-            COUNT(DISTINCT DATE(created_at)) as active_days
-          FROM user_articles 
-          WHERE user_id = ?1 AND interaction_type = 'view'
-        `).bind(userId).first()
-        
-        user.reading_stats = readingStats
+
+      if (result) {
+        return {
+          ...result,
+          preferences: JSON.parse(result.preferences || '{}'),
+          stats: JSON.parse(result.stats || '{}')
+        }
       }
 
-      return user
+      // If user doesn't exist, create them
+      return await this.createUser(userId)
     } catch (error) {
-      console.error('Error getting user:', error)
-      return null
+      console.log('Error getting user:', error)
+      return {
+        id: userId,
+        created_at: new Date().toISOString(),
+        preferences: {},
+        stats: {
+          total_likes: 0,
+          total_bookmarks: 0,
+          total_views: 0
+        }
+      }
     }
   }
 
-  async recordInteraction(userId, article, interactionType, metadata = {}) {
+  async updateUser(userId, userData) {
     try {
-      await this.db.prepare(`
-        INSERT INTO user_articles (
-          user_id, article_id, article_title, article_source, 
-          article_category, interaction_type, reading_time_seconds, 
-          scroll_depth_percent, metadata
-        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
-        ON CONFLICT(user_id, article_id, interaction_type) DO UPDATE SET
-          reading_time_seconds = reading_time_seconds + ?7,
-          scroll_depth_percent = MAX(scroll_depth_percent, ?8),
-          metadata = ?9,
-          created_at = CURRENT_TIMESTAMP
-      `).bind(
-        userId, 
-        article.id || article.link, 
-        article.title, 
-        article.source,
-        article.category, 
-        interactionType, 
-        metadata.reading_time_seconds || 0,
-        metadata.scroll_depth_percent || 0,
-        JSON.stringify(metadata)
-      ).run()
+      await this.initialize()
 
-      // Update user stats
-      if (interactionType === 'view') {
-        await this.db.prepare(`
-          UPDATE users 
-          SET total_articles_read = total_articles_read + 1,
-              last_active = CURRENT_TIMESTAMP
-          WHERE id = ?1
-        `).bind(userId).run()
+      const { email, preferences, stats } = userData
+      const updates = []
+      const bindings = []
+
+      if (email !== undefined) {
+        updates.push('email = ?')
+        bindings.push(email)
+      }
+      if (preferences !== undefined) {
+        updates.push('preferences = ?')
+        bindings.push(JSON.stringify(preferences))
+      }
+      if (stats !== undefined) {
+        updates.push('stats = ?')
+        bindings.push(JSON.stringify(stats))
       }
 
-      return { success: true }
+      updates.push('updated_at = CURRENT_TIMESTAMP')
+      bindings.push(userId)
+
+      const result = await this.db.prepare(`
+        UPDATE users SET ${updates.join(', ')} WHERE id = ?
+      `).bind(...bindings).run()
+
+      if (result.success) {
+        return { success: true, user: await this.getUser(userId) }
+      } else {
+        throw new Error('Failed to update user')
+      }
     } catch (error) {
-      console.error('Error recording interaction:', error)
-      throw error
+      console.log('Error updating user:', error)
+      return { success: false, error: error.message }
     }
   }
 
-  async getUserInteractions(userId, interactionType = null, limit = 100, offset = 0) {
+  // User Likes Management
+  async getUserLikes(userId, limit = 100, offset = 0) {
     try {
-      let query = `
-        SELECT ua.*, 
-               CASE WHEN ua.metadata != '{}' THEN ua.metadata ELSE NULL END as metadata_json
-        FROM user_articles ua 
-        WHERE ua.user_id = ?1
-      `
-      const params = [userId]
+      await this.initialize()
 
-      if (interactionType) {
-        query += ` AND ua.interaction_type = ?2`
-        params.push(interactionType)
-      }
+      const results = await this.db.prepare(`
+        SELECT * FROM user_likes 
+        WHERE user_id = ? 
+        ORDER BY liked_at DESC 
+        LIMIT ? OFFSET ?
+      `).bind(userId, limit, offset).all()
 
-      query += ` ORDER BY ua.created_at DESC LIMIT ?${params.length + 1} OFFSET ?${params.length + 2}`
-      params.push(limit, offset)
-
-      const results = await this.db.prepare(query).bind(...params).all()
-      
-      return results.results.map(row => ({
-        ...row,
-        metadata: row.metadata_json ? JSON.parse(row.metadata_json) : {}
-      }))
+      return results.results || []
     } catch (error) {
-      console.error('Error getting user interactions:', error)
+      console.log('Error getting user likes:', error)
       return []
     }
   }
 
-  async recordSearchQuery(userId, searchData) {
+  async addUserLike(userId, article) {
     try {
-      await this.db.prepare(`
-        INSERT INTO search_queries (
-          user_id, query, results_count, clicked_result_position,
-          clicked_article_id, search_time_ms, filters_applied
-        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+      await this.initialize()
+
+      const articleId = article.id || article.link
+      
+      const result = await this.db.prepare(`
+        INSERT OR REPLACE INTO user_likes 
+        (user_id, article_id, article_title, article_source, article_category)
+        VALUES (?, ?, ?, ?, ?)
       `).bind(
         userId,
-        searchData.query,
-        searchData.results_count || 0,
-        searchData.clicked_result_position || null,
-        searchData.clicked_article_id || null,
-        searchData.search_time_ms || 0,
-        JSON.stringify(searchData.filters_applied || {})
+        articleId,
+        article.title,
+        article.source,
+        article.category
       ).run()
 
-      return { success: true }
+      if (result.success) {
+        // Update user stats
+        await this.updateUserStats(userId, 'total_likes', 1)
+        return { success: true }
+      } else {
+        throw new Error('Failed to add like')
+      }
     } catch (error) {
-      console.error('Error recording search query:', error)
-      throw error
+      console.log('Error adding user like:', error)
+      return { success: false, error: error.message }
     }
   }
 
-  async getUserSearchHistory(userId, limit = 50) {
+  async removeUserLike(userId, articleId) {
     try {
-      const results = await this.db.prepare(`
-        SELECT * FROM search_queries 
-        WHERE user_id = ?1 
-        ORDER BY created_at DESC 
-        LIMIT ?2
-      `).bind(userId, limit).all()
+      await this.initialize()
 
-      return results.results.map(row => ({
-        ...row,
-        filters_applied: JSON.parse(row.filters_applied || '{}')
-      }))
+      const result = await this.db.prepare(`
+        DELETE FROM user_likes WHERE user_id = ? AND article_id = ?
+      `).bind(userId, articleId).run()
+
+      if (result.success) {
+        // Update user stats
+        await this.updateUserStats(userId, 'total_likes', -1)
+        return { success: true }
+      } else {
+        throw new Error('Failed to remove like')
+      }
     } catch (error) {
-      console.error('Error getting search history:', error)
+      console.log('Error removing user like:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  async isArticleLiked(userId, articleId) {
+    try {
+      await this.initialize()
+
+      const result = await this.db.prepare(`
+        SELECT id FROM user_likes WHERE user_id = ? AND article_id = ?
+      `).bind(userId, articleId).first()
+
+      return !!result
+    } catch (error) {
+      console.log('Error checking if article is liked:', error)
+      return false
+    }
+  }
+
+  // User Bookmarks Management
+  async getUserBookmarks(userId, limit = 100, offset = 0) {
+    try {
+      await this.initialize()
+
+      const results = await this.db.prepare(`
+        SELECT * FROM user_bookmarks 
+        WHERE user_id = ? 
+        ORDER BY saved_at DESC 
+        LIMIT ? OFFSET ?
+      `).bind(userId, limit, offset).all()
+
+      return results.results || []
+    } catch (error) {
+      console.log('Error getting user bookmarks:', error)
       return []
     }
   }
 
-  async updateTrendingArticles(articles) {
+  async addUserBookmark(userId, article) {
     try {
-      for (const article of articles) {
-        await this.db.prepare(`
-          INSERT INTO trending_articles (
-            article_id, title, source, category, view_count_24h,
-            like_count_24h, bookmark_count_24h, share_count_24h,
-            trend_score, updated_at
-          ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
-          ON CONFLICT(article_id) DO UPDATE SET
-            view_count_24h = ?5,
-            like_count_24h = ?6,
-            bookmark_count_24h = ?7,
-            share_count_24h = ?8,
-            trend_score = ?9,
-            updated_at = ?10
-        `).bind(
-          article.id,
-          article.title,
-          article.source,
-          article.category,
-          article.view_count_24h || 0,
-          article.like_count_24h || 0,
-          article.bookmark_count_24h || 0,
-          article.share_count_24h || 0,
-          article.trend_score || 0,
-          new Date().toISOString()
-        ).run()
+      await this.initialize()
+
+      const articleId = article.id || article.link
+      
+      const result = await this.db.prepare(`
+        INSERT OR REPLACE INTO user_bookmarks 
+        (user_id, article_id, article_title, article_description, article_source, 
+         article_category, article_link, article_image_url, article_pub_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        userId,
+        articleId,
+        article.title,
+        article.description,
+        article.source,
+        article.category,
+        article.link,
+        article.imageUrl,
+        article.pubDate
+      ).run()
+
+      if (result.success) {
+        // Update user stats
+        await this.updateUserStats(userId, 'total_bookmarks', 1)
+        return { success: true }
+      } else {
+        throw new Error('Failed to add bookmark')
+      }
+    } catch (error) {
+      console.log('Error adding user bookmark:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  async removeUserBookmark(userId, articleId) {
+    try {
+      await this.initialize()
+
+      const result = await this.db.prepare(`
+        DELETE FROM user_bookmarks WHERE user_id = ? AND article_id = ?
+      `).bind(userId, articleId).run()
+
+      if (result.success) {
+        // Update user stats
+        await this.updateUserStats(userId, 'total_bookmarks', -1)
+        return { success: true }
+      } else {
+        throw new Error('Failed to remove bookmark')
+      }
+    } catch (error) {
+      console.log('Error removing user bookmark:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  async isArticleBookmarked(userId, articleId) {
+    try {
+      await this.initialize()
+
+      const result = await this.db.prepare(`
+        SELECT id FROM user_bookmarks WHERE user_id = ? AND article_id = ?
+      `).bind(userId, articleId).first()
+
+      return !!result
+    } catch (error) {
+      console.log('Error checking if article is bookmarked:', error)
+      return false
+    }
+  }
+
+  // Reading History Management
+  async addReadingHistory(userId, article, timeSpent = 0) {
+    try {
+      await this.initialize()
+
+      const articleId = article.id || article.link
+      
+      const result = await this.db.prepare(`
+        INSERT INTO user_reading_history 
+        (user_id, article_id, article_title, article_source, article_category, time_spent)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        userId,
+        articleId,
+        article.title,
+        article.source,
+        article.category,
+        timeSpent
+      ).run()
+
+      if (result.success) {
+        // Update user stats
+        await this.updateUserStats(userId, 'total_views', 1)
+        return { success: true }
+      } else {
+        throw new Error('Failed to add reading history')
+      }
+    } catch (error) {
+      console.log('Error adding reading history:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  async getUserReadingHistory(userId, limit = 50, offset = 0) {
+    try {
+      await this.initialize()
+
+      const results = await this.db.prepare(`
+        SELECT * FROM user_reading_history 
+        WHERE user_id = ? 
+        ORDER BY read_at DESC 
+        LIMIT ? OFFSET ?
+      `).bind(userId, limit, offset).all()
+
+      return results.results || []
+    } catch (error) {
+      console.log('Error getting user reading history:', error)
+      return []
+    }
+  }
+
+  // User Statistics
+  async updateUserStats(userId, statKey, increment) {
+    try {
+      const user = await this.getUser(userId)
+      const currentStats = user.stats || {}
+      
+      currentStats[statKey] = Math.max(0, (currentStats[statKey] || 0) + increment)
+      
+      await this.updateUser(userId, { stats: currentStats })
+    } catch (error) {
+      console.log('Error updating user stats:', error)
+    }
+  }
+
+  async getUserStats(userId) {
+    try {
+      const user = await this.getUser(userId)
+      return user.stats || {
+        total_likes: 0,
+        total_bookmarks: 0,
+        total_views: 0
+      }
+    } catch (error) {
+      console.log('Error getting user stats:', error)
+      return {
+        total_likes: 0,
+        total_bookmarks: 0,
+        total_views: 0
+      }
+    }
+  }
+
+  // Cleanup and Maintenance
+  async cleanupOldData(daysOld = 90) {
+    try {
+      await this.initialize()
+
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - daysOld)
+      const cutoffDateString = cutoffDate.toISOString()
+
+      // Clean up old reading history
+      const result = await this.db.prepare(`
+        DELETE FROM user_reading_history WHERE read_at < ?
+      `).bind(cutoffDateString).run()
+
+      console.log(`Cleaned up ${result.changes} old reading history entries`)
+      return { success: true, cleanedEntries: result.changes }
+    } catch (error) {
+      console.log('Error cleaning up old data:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  // Batch operations for better performance
+  async batchAddLikes(userId, articles) {
+    try {
+      await this.initialize()
+
+      const stmt = this.db.prepare(`
+        INSERT OR REPLACE INTO user_likes 
+        (user_id, article_id, article_title, article_source, article_category)
+        VALUES (?, ?, ?, ?, ?)
+      `)
+
+      const batch = articles.map(article => {
+        const articleId = article.id || article.link
+        return stmt.bind(userId, articleId, article.title, article.source, article.category)
+      })
+
+      const results = await this.db.batch(batch)
+      const successCount = results.filter(r => r.success).length
+
+      if (successCount > 0) {
+        await this.updateUserStats(userId, 'total_likes', successCount)
       }
 
-      return { success: true }
+      return { success: true, added: successCount, total: articles.length }
     } catch (error) {
-      console.error('Error updating trending articles:', error)
-      throw error
+      console.log('Error batch adding likes:', error)
+      return { success: false, error: error.message }
     }
   }
 
-  async getTrendingArticles(limit = 20) {
+  async batchAddBookmarks(userId, articles) {
     try {
-      const results = await this.db.prepare(`
-        SELECT * FROM trending_articles 
-        ORDER BY trend_score DESC 
-        LIMIT ?1
-      `).bind(limit).all()
+      await this.initialize()
 
-      return results.results
+      const stmt = this.db.prepare(`
+        INSERT OR REPLACE INTO user_bookmarks 
+        (user_id, article_id, article_title, article_description, article_source, 
+         article_category, article_link, article_image_url, article_pub_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+
+      const batch = articles.map(article => {
+        const articleId = article.id || article.link
+        return stmt.bind(
+          userId, articleId, article.title, article.description,
+          article.source, article.category, article.link,
+          article.imageUrl, article.pubDate
+        )
+      })
+
+      const results = await this.db.batch(batch)
+      const successCount = results.filter(r => r.success).length
+
+      if (successCount > 0) {
+        await this.updateUserStats(userId, 'total_bookmarks', successCount)
+      }
+
+      return { success: true, added: successCount, total: articles.length }
     } catch (error) {
-      console.error('Error getting trending articles:', error)
-      return []
+      console.log('Error batch adding bookmarks:', error)
+      return { success: false, error: error.message }
     }
   }
 }

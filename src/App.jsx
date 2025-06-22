@@ -1,275 +1,48 @@
-// src/App.jsx - Updated with shadcn/ui components and fixes
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { cn } from './lib/utils'
-
-// Import shadcn/ui components
-import { Button } from './components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card'
-import { Badge } from './components/ui/badge'
-import { Alert, AlertDescription } from './components/ui/alert'
+// src/App.jsx - Updated to use consolidated useFeeds hook
+import React, { useState, useEffect, useCallback } from 'react'
 
 // Import existing components
 import HeaderNavigation from './components/HeaderNavigation'
 import MobileNavigation from './components/MobileNavigation'
 import FilterControls from './components/FilterControls'
 import CategoryFilter from './components/CategoryFilter'
+import ArticleCard from './components/ArticleCard'
 import SearchPage from './components/SearchPage'
 import ProfilePage from './components/ProfilePage'
 import NewsBytes from './components/NewsBytes'
 import SaveForLater from './components/SaveForLater'
 import PersonalInsights from './components/PersonalInsights'
 import ErrorBoundary from './components/ErrorBoundary'
-import PWAPrompt from './components/PWAPrompt'
 
-// Import existing hooks
-import { usePWA } from './hooks/usePWA'
+// Import hooks - UPDATED to use consolidated useFeeds
 import { useHead } from './hooks/useHead'
-import { useScrollAndFeed } from './hooks/useScrollAndFeed'
+import { useFeeds } from './hooks/useFeeds'
+import { useAnalytics } from './hooks/useAnalytics'
 
-// Icons
-import { 
-  ArrowUpIcon, 
-  ArrowPathIcon, 
-  XMarkIcon, 
-  CheckIcon, 
-  HeartIcon, 
-  BookmarkIcon,
-  GlobeAltIcon,
-  PhotoIcon 
-} from '@heroicons/react/24/outline'
-import { 
-  HeartIcon as HeartSolidIcon, 
-  BookmarkIcon as BookmarkSolidIcon 
-} from '@heroicons/react/24/solid'
-
-// User ID generation and management
-function generateUserId() {
-  const stored = localStorage.getItem('harare_metro_user_id')
-  if (stored) return stored
-  
-  const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2)
-  localStorage.setItem('harare_metro_user_id', newId)
-  return newId
+// Simple cn utility function
+function cn(...classes) {
+  return classes.filter(Boolean).join(' ')
 }
 
-// Categories data
-const CATEGORIES = [
-  { id: 'all', name: 'All News', emoji: '📰' },
-  { id: 'politics', name: 'Politics', emoji: '🏛️' },
-  { id: 'economy', name: 'Economy', emoji: '💰' },
-  { id: 'business', name: 'Business', emoji: '💼' },
-  { id: 'sports', name: 'Sports', emoji: '⚽' },
-  { id: 'harare', name: 'Harare', emoji: '🏙️' },
-  { id: 'technology', name: 'Technology', emoji: '💻' },
-  { id: 'agriculture', name: 'Agriculture', emoji: '🌾' },
-  { id: 'health', name: 'Health', emoji: '🏥' },
-  { id: 'education', name: 'Education', emoji: '🎓' },
-  { id: 'entertainment', name: 'Entertainment', emoji: '🎭' },
-  { id: 'environment', name: 'Environment', emoji: '🌍' },
-  { id: 'crime', name: 'Crime & Security', emoji: '🚔' },
-  { id: 'international', name: 'International', emoji: '🌐' },
-  { id: 'lifestyle', name: 'Lifestyle', emoji: '✨' },
-  { id: 'finance', name: 'Finance', emoji: '💳' }
-]
-
-// Enhanced ArticleCard component using shadcn/ui
-function ArticleCard({ article, onClick, likedArticles, bookmarkedArticles, onLike, onBookmark, onShare }) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
-  
-  const categoryInfo = CATEGORIES.find(cat => cat.id === article.category)
-  const hasImage = article.optimizedImageUrl && !imageError
-  const articleId = article.id || article.link
-  const isLiked = likedArticles?.has(articleId)
-  const isBookmarked = bookmarkedArticles?.some(b => (b.id || b.link) === articleId)
-
-  const handleImageLoad = useCallback(() => {
-    setImageLoaded(true)
-  }, [])
-
-  const handleImageError = useCallback(() => {
-    setImageError(true)
-  }, [])
-
-  const getCategoryColor = (category) => {
-    const colors = {
-      politics: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-      economy: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-      business: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-      sports: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-      harare: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-      technology: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-      default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-    }
-    return colors[category] || colors.default
-  }
-
-  return (
-    <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1" onClick={onClick}>
-      {/* Image Section */}
-      {hasImage && (
-        <div className="relative w-full h-48 overflow-hidden rounded-t-lg">
-          {!imageLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-              <div className="animate-pulse flex flex-col items-center">
-                <PhotoIcon className="h-12 w-12 text-muted-foreground mb-2" />
-                <div className="text-xs text-muted-foreground">Loading image...</div>
-              </div>
-            </div>
-          )}
-          
-          <img
-            src={article.optimizedImageUrl}
-            alt={article.imageAlt || article.title}
-            className={cn(
-              "w-full h-full object-cover transition-opacity duration-300",
-              imageLoaded ? "opacity-100" : "opacity-0"
-            )}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            loading="lazy"
-          />
-
-          {/* Action buttons overlay */}
-          <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              size="sm"
-              variant={isLiked ? "default" : "secondary"}
-              className={cn(
-                "h-8 w-8 rounded-full p-0",
-                isLiked ? "bg-red-500 hover:bg-red-600" : ""
-              )}
-              onClick={(e) => {
-                e.stopPropagation()
-                onLike?.(article)
-              }}
-            >
-              {isLiked ? (
-                <HeartSolidIcon className="h-4 w-4 text-white" />
-              ) : (
-                <HeartIcon className="h-4 w-4" />
-              )}
-            </Button>
-            
-            <Button
-              size="sm"
-              variant={isBookmarked ? "default" : "secondary"}
-              className={cn(
-                "h-8 w-8 rounded-full p-0",
-                isBookmarked ? "bg-blue-500 hover:bg-blue-600" : ""
-              )}
-              onClick={(e) => {
-                e.stopPropagation()
-                onBookmark?.(article)
-              }}
-            >
-              {isBookmarked ? (
-                <BookmarkSolidIcon className="h-4 w-4 text-white" />
-              ) : (
-                <BookmarkIcon className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between mb-2">
-          <Badge variant="outline" className="text-xs font-medium">
-            {article.source}
-          </Badge>
-          <time className="text-xs text-muted-foreground">
-            {new Date(article.pubDate).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric'
-            })}
-          </time>
-        </div>
-        
-        <CardTitle className="text-lg leading-tight line-clamp-2">
-          {article.title}
-          {article.priority && (
-            <Badge className="ml-2 bg-gradient-to-r from-green-500 to-yellow-500 text-white">
-              🇿🇼 Priority
-            </Badge>
-          )}
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="pt-0">
-        {article.description && (
-          <CardDescription className="text-sm leading-relaxed line-clamp-3 mb-4">
-            {article.description}
-          </CardDescription>
-        )}
-        
-        <div className="flex items-center justify-between pt-3 border-t">
-          <Badge variant="secondary" className={getCategoryColor(article.category)}>
-            <span className="mr-1">{categoryInfo?.emoji || '📰'}</span>
-            {article.category}
-          </Badge>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs group"
-            asChild
-          >
-            <a
-              href={article.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Read Full Article
-              <GlobeAltIcon className="w-3 h-3 ml-1 group-hover:translate-x-0.5 transition-transform" />
-            </a>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+// Lucide React icons
+import { 
+  ArrowUp, 
+  RefreshCw, 
+  X, 
+  Check
+} from 'lucide-react'
 
 function App() {
-  const { isOffline } = usePWA()
-  const userId = useMemo(() => generateUserId(), [])
-
-  // Core state
-  const [allFeeds, setAllFeeds] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState(null)
-  const [lastUpdated, setLastUpdated] = useState(null)
+  // UI state
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [currentView, setCurrentView] = useState('home')
+  const [viewMode, setViewMode] = useState('grid')
+  const [theme, setTheme] = useState('dark')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedTimeframe, setSelectedTimeframe] = useState('all')
+  const [sortBy, setSortBy] = useState('newest')
   
-  // Configuration state
-  const [categories, setCategories] = useState([])
-  const [sources, setSources] = useState([])
-  
-  // Background refresh state
-  const [backgroundRefreshing, setBackgroundRefreshing] = useState(false)
-  const [newArticlesAvailable, setNewArticlesAvailable] = useState(0)
-  const [showNewArticlesBanner, setShowNewArticlesBanner] = useState(false)
-  
-  // User data state (localStorage based)
-  const [likedArticles, setLikedArticles] = useState(() => {
-    try {
-      const saved = localStorage.getItem('harare_metro_liked_articles')
-      return new Set(saved ? JSON.parse(saved) : [])
-    } catch {
-      return new Set()
-    }
-  })
-  
-  const [bookmarkedArticles, setBookmarkedArticles] = useState(() => {
-    try {
-      const saved = localStorage.getItem('harare_metro_bookmarked_articles')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
-  
+  // User preferences state (localStorage based)
   const [userPreferences, setUserPreferences] = useState(() => {
     try {
       const saved = localStorage.getItem('harare_metro_preferences')
@@ -288,14 +61,6 @@ function App() {
     }
   })
   
-  // UI state
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [currentView, setCurrentView] = useState('home')
-  const [viewMode, setViewMode] = useState('grid')
-  const [theme, setTheme] = useState('dark')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedTimeframe, setSelectedTimeframe] = useState('all')
-  const [sortBy, setSortBy] = useState('newest')
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
       const saved = localStorage.getItem('harare_metro_recent_searches')
@@ -305,22 +70,92 @@ function App() {
     }
   })
 
-  // Use unified scroll and feed hook
+  // HOOK ORDER IS CRITICAL - ALL HOOKS MUST BE CALLED IN THE SAME ORDER EVERY TIME
   const {
-    displayedFeeds,
-    filteredFeeds,
-    loadingMore,
-    hasMore,
-    scrollToTop,
-    hasReached25Percent
-  } = useScrollAndFeed({
+    // Feed data
+    feeds,
     allFeeds,
+    loading,
+    loadingMore,
+    error,
+    totalCount,
+    hasMore,
+    meta,
+    
+    // User data
+    likes: likedArticles,
+    bookmarks: bookmarkedArticles,
+    userProfile,
+    
+    // Actions
+    loadFeeds,
+    loadMoreFeeds,
+    refreshFeeds,
+    forceRefresh,
+    loadUserData,
+    toggleLike,
+    toggleBookmark,
+    
+    // Scroll
+    scrollDirection,
+    hasReached25Percent,
+    scrollToTop,
+    
+    // Analytics
+    trackEvent,
+    
+    // Utilities
+    isLiked,
+    isBookmarked,
+    clearError,
+    
+    // Status
+    isInitialLoad,
+    isEmpty
+  } = useFeeds({
     selectedCategory,
     searchQuery,
     selectedTimeframe,
     sortBy,
-    itemsPerPage: 25
+    itemsPerPage: 25,
+    enableInfiniteScroll: true,
+    autoRefresh: false,
+    refreshInterval: 5 * 60 * 1000
   })
+
+  const {
+    trackCategoryClick,
+    trackSearch,
+    trackArticleClick,
+    trackPageView,
+    trackFeedLoad
+  } = useAnalytics()
+
+  // Use head hook for SEO - MOVED TO AFTER ALL MAIN HOOKS
+  useHead({
+    title: `Harare Metro - Zimbabwe News${selectedCategory !== 'all' ? ` - ${selectedCategory}` : ''}${searchQuery ? ` - "${searchQuery}"` : ''}`,
+    description: "Stay informed with the latest news from Zimbabwe",
+    keywords: "Zimbabwe news, Harare Metro, politics, economy, sports"
+  })
+
+  // Extract categories and sources from meta
+  const categories = meta?.categories || []
+  const sources = meta?.sources || []
+
+  // Theme colors
+  const currentColors = {
+    bg: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50',
+    headerBg: theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/95',
+    text: theme === 'dark' ? 'text-white' : 'text-gray-900',
+    cardBg: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
+    textMuted: theme === 'dark' ? 'text-gray-400' : 'text-gray-500',
+    border: theme === 'dark' ? 'border-gray-700' : 'border-gray-200',
+    categoryButton: theme === 'dark' ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    categoryButtonActive: theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white',
+    accent: theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500',
+    accentText: theme === 'dark' ? 'text-blue-400' : 'text-blue-600',
+    input: theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'
+  }
 
   // Initialize theme
   useEffect(() => {
@@ -335,15 +170,7 @@ function App() {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
-  // Save user data to localStorage
-  useEffect(() => {
-    localStorage.setItem('harare_metro_liked_articles', JSON.stringify(Array.from(likedArticles)))
-  }, [likedArticles])
-
-  useEffect(() => {
-    localStorage.setItem('harare_metro_bookmarked_articles', JSON.stringify(bookmarkedArticles))
-  }, [bookmarkedArticles])
-
+  // Save user preferences to localStorage
   useEffect(() => {
     localStorage.setItem('harare_metro_preferences', JSON.stringify(userPreferences))
   }, [userPreferences])
@@ -356,134 +183,83 @@ function App() {
     localStorage.setItem('harare_metro_recent_searches', JSON.stringify(recentSearches))
   }, [recentSearches])
 
-  // Load feeds with enhanced error handling
-  const loadFeeds = useCallback(async (forceRefresh = false) => {
-    try {
-      if (forceRefresh) setRefreshing(true)
-      else setLoading(true)
-      setError(null)
-
-      const params = new URLSearchParams({
-        category: selectedCategory,
-        limit: '500',
-        format: 'json'
-      })
-
-      if (forceRefresh) {
-        params.append('timestamp', Date.now().toString())
-      }
-
-      const response = await fetch(`/api/feeds?${params}`)
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
-      const data = await response.json()
-      
-      if (data.success && Array.isArray(data.articles)) {
-        setAllFeeds(data.articles)
-        setLastUpdated(new Date())
-        
-        // Update categories and sources from meta
-        if (data.meta) {
-          if (data.meta.categories) {
-            setCategories(data.meta.categories)
-          }
-          if (data.meta.sources) {
-            setSources(data.meta.sources)
-          }
+  // Initialize the app
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        console.log('🚀 Initializing Harare Metro...')
+        if (loadUserData) {
+          await loadUserData()
         }
-      } else {
-        throw new Error(data.message || 'Invalid response format')
+      } catch (error) {
+        console.warn('Failed to load user data, continuing with defaults:', error.message)
       }
-
-    } catch (err) {
-      console.error('Error loading feeds:', err)
-      if (err.message.includes('429')) {
-        setError('Too many requests. Please try again in a moment.')
-      } else if (err.message.includes('NetworkError') || err.message.includes('Failed to fetch')) {
-        setError('Network connection failed. Please check your connection.')
-      } else {
-        setError(`Failed to load news: ${err.message}`)
-      }
-    } finally {
-      setRefreshing(false)
-      setLoading(false)
     }
-  }, [selectedCategory])
-
-  // Background refresh for new articles
-  const backgroundRefresh = useCallback(async () => {
-    if (backgroundRefreshing || isOffline) return
     
-    try {
-      setBackgroundRefreshing(true)
-      
-      const params = new URLSearchParams({
+    initializeApp()
+  }, [loadUserData])
+
+  // Track page view on mount
+  useEffect(() => {
+    if (trackPageView) {
+      trackPageView('home', document.referrer)
+    }
+  }, [trackPageView])
+
+  // Track feed loads
+  useEffect(() => {
+    if (!loading && feeds && feeds.length > 0 && trackFeedLoad) {
+      trackFeedLoad({
         category: selectedCategory,
-        limit: '500',
-        format: 'json',
-        timestamp: Date.now()
+        searchQuery,
+        sortBy,
+        timeframe: selectedTimeframe,
+        resultCount: feeds.length
       })
-
-      const response = await fetch(`/api/feeds?${params}`)
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
-      const data = await response.json()
-      
-      if (data.success && Array.isArray(data.articles)) {
-        const existingIds = new Set(allFeeds.map(article => article.id || article.link))
-        const newArticles = data.articles.filter(article => 
-          !existingIds.has(article.id || article.link)
-        )
-
-        if (newArticles.length > 0) {
-          setNewArticlesAvailable(newArticles.length)
-          setShowNewArticlesBanner(true)
-          console.log(`📥 Background refresh: ${newArticles.length} new articles available`)
-        }
-      }
-      
-    } catch (err) {
-      console.error('Background refresh failed:', err)
-    } finally {
-      setBackgroundRefreshing(false)
     }
-  }, [selectedCategory, allFeeds, backgroundRefreshing, isOffline])
+  }, [loading, feeds?.length, selectedCategory, searchQuery, sortBy, selectedTimeframe, trackFeedLoad])
 
-  // Apply new articles when user chooses to
-  const applyNewArticles = useCallback(async () => {
-    await loadFeeds(true)
-    setNewArticlesAvailable(0)
-    setShowNewArticlesBanner(false)
-  }, [loadFeeds])
-
-  // User interaction handlers (localStorage only)
-  const handleLikeArticle = useCallback((article) => {
-    const articleId = article.id || article.link
-    const isLiked = likedArticles.has(articleId)
-
-    setLikedArticles(prev => {
-      const newSet = new Set(prev)
-      if (isLiked) {
-        newSet.delete(articleId)
-      } else {
-        newSet.add(articleId)
+  // UPDATED handlers to use new consolidated functions
+  const handleLikeArticle = useCallback(async (article) => {
+    try {
+      if (toggleLike) {
+        await toggleLike(article)
       }
-      return newSet
-    })
-  }, [likedArticles])
-
-  const handleBookmarkArticle = useCallback((article) => {
-    const articleId = article.id || article.link
-    const isBookmarked = bookmarkedArticles.some(b => (b.id || b.link) === articleId)
-
-    if (isBookmarked) {
-      setBookmarkedArticles(prev => prev.filter(b => (b.id || b.link) !== articleId))
-    } else {
-      setBookmarkedArticles(prev => [...prev, { ...article, savedAt: new Date().toISOString() }])
+      // Track analytics using new method
+      if (trackEvent) {
+        await trackEvent('article_view', {
+          articleId: article.id || article.link,
+          articleTitle: article.title,
+          source: article.source,
+          category: article.category,
+          action: 'like'
+        })
+      }
+    } catch (error) {
+      console.log('Error liking article:', error)
     }
-  }, [bookmarkedArticles])
+  }, [toggleLike, trackEvent])
 
-  const handleArticleView = useCallback((article) => {
+  const handleBookmarkArticle = useCallback(async (article) => {
+    try {
+      if (toggleBookmark) {
+        await toggleBookmark(article)
+      }
+      if (trackEvent) {
+        await trackEvent('article_view', {
+          articleId: article.id || article.link,
+          articleTitle: article.title,
+          source: article.source,
+          category: article.category,
+          action: 'bookmark'
+        })
+      }
+    } catch (error) {
+      console.log('Error bookmarking article:', error)
+    }
+  }, [toggleBookmark, trackEvent])
+
+  const handleArticleView = useCallback(async (article) => {
     const historyEntry = {
       ...article,
       viewedAt: new Date().toISOString(),
@@ -491,14 +267,42 @@ function App() {
     }
     
     setReadingHistory(prev => [historyEntry, ...prev.slice(0, 99)])
-  }, [])
+    
+    // Track analytics
+    if (trackEvent) {
+      await trackEvent('article_view', {
+        articleId: article.id || article.link,
+        articleTitle: article.title,
+        source: article.source,
+        category: article.category
+      })
+    }
+  }, [trackEvent])
 
-  const handleAddRecentSearch = useCallback((query) => {
+  const handleAddRecentSearch = useCallback(async (query) => {
     setRecentSearches(prev => {
       const newSearches = [query, ...prev.filter(s => s !== query)].slice(0, 10)
       return newSearches
     })
-  }, [])
+    
+    // Track search analytics
+    if (trackEvent) {
+      await trackEvent('search', {
+        query,
+        resultsCount: feeds?.length || 0,
+        searchTime: Date.now()
+      })
+    }
+  }, [trackEvent, feeds?.length])
+
+  const handleCategoryChange = useCallback(async (category) => {
+    setSelectedCategory(category)
+    
+    // Track category analytics
+    if (trackEvent) {
+      await trackEvent('category_click', { category })
+    }
+  }, [trackEvent])
 
   const handleShare = useCallback(async (article) => {
     if (navigator.share) {
@@ -509,38 +313,23 @@ function App() {
           url: article.link
         })
       } catch (error) {
-        console.error('Error sharing:', error)
+        console.log('Error sharing:', error)
       }
     } else {
       try {
         await navigator.clipboard.writeText(article.link)
       } catch (error) {
-        console.error('Error copying to clipboard:', error)
+        console.log('Error copying to clipboard:', error)
       }
     }
   }, [])
 
-  // Load feeds on mount and category change
-  useEffect(() => {
-    loadFeeds(false)
-  }, [loadFeeds])
-
-  // Set up background refresh interval
-  useEffect(() => {
-    if (loading || isOffline) return
-
-    const interval = setInterval(() => {
-      backgroundRefresh()
-    }, 5 * 60 * 1000) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [backgroundRefresh, loading, isOffline])
-
-  // Hide new articles banner after category change
-  useEffect(() => {
-    setShowNewArticlesBanner(false)
-    setNewArticlesAvailable(0)
-  }, [selectedCategory])
+  // SIMPLIFIED refresh handlers (now handled by useFeeds)
+  const handleForceRefresh = useCallback(async () => {
+    if (forceRefresh) {
+      await forceRefresh()
+    }
+  }, [forceRefresh])
 
   // Navigation handlers
   const handleSearchClick = () => setCurrentView('search')
@@ -549,21 +338,38 @@ function App() {
   const handleSavedClick = () => setCurrentView('saved')
   const handleInsightsClick = () => setCurrentView('insights')
 
+  // Track category changes
+  const handleCategoryChangeTracked = (newCategory) => {
+    setSelectedCategory(newCategory)
+    if (trackCategoryClick) {
+      trackCategoryClick(newCategory, 'category_filter')
+    }
+  }
+
+  // Track search
+  const handleSearchTracked = (query) => {
+    setSearchQuery(query)
+    if (query.trim() && trackSearch) {
+      trackSearch(query, selectedCategory, feeds?.length || 0)
+    }
+  }
+
+  // Track article clicks
+  const handleArticleClickTracked = (article) => {
+    if (trackArticleClick) {
+      trackArticleClick(article)
+    }
+    // Open article logic here
+  }
+
   // Articles with images for bytes view
-  const articlesWithImages = allFeeds.filter(article => article.optimizedImageUrl)
+  const articlesWithImages = allFeeds ? allFeeds.filter(article => article.optimizedImageUrl) : []
 
-  // Use head hook for SEO
-  useHead({
-    title: `Harare Metro - Zimbabwe News${selectedCategory !== 'all' ? ` - ${selectedCategory}` : ''}${searchQuery ? ` - "${searchQuery}"` : ''}`,
-    description: "Stay informed with the latest news from Zimbabwe",
-    keywords: "Zimbabwe news, Harare Metro, politics, economy, sports"
-  })
-
-  // Loading state
-  if (loading) {
+  // LOADING STATE - Show loading while initializing
+  if (isInitialLoad) {
     return (
       <ErrorBoundary>
-        <div className="min-h-screen bg-background">
+        <div className={`min-h-screen ${currentColors.bg}`}>
           <HeaderNavigation
             theme={theme}
             setTheme={setTheme}
@@ -577,8 +383,8 @@ function App() {
           />
           <div className="pt-12 lg:pt-16">
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mb-4"></div>
-              <p className="text-lg text-muted-foreground">Loading news...</p>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 dark:border-white mb-4"></div>
+              <p className={`text-lg ${currentColors.textMuted}`}>Loading news...</p>
             </div>
           </div>
           <MobileNavigation
@@ -597,9 +403,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-background transition-colors duration-300">
-        <PWAPrompt />
-        
+      <div className={`min-h-screen ${currentColors.bg} transition-colors duration-300`}>
         {/* Header */}
         <HeaderNavigation
           theme={theme}
@@ -611,8 +415,8 @@ function App() {
           onSearchClick={handleSearchClick}
           onBytesClick={handleBytesClick}
           onProfileClick={handleProfileClick}
-          likedCount={likedArticles.size}
-          bookmarkedCount={bookmarkedArticles.length}
+          likedCount={likedArticles?.size || 0}
+          bookmarkedCount={bookmarkedArticles?.length || 0}
         />
 
         {/* Main Content */}
@@ -620,10 +424,11 @@ function App() {
           {/* Search View */}
           {currentView === 'search' && (
             <SearchPage
-              allFeeds={allFeeds}
+              currentColors={currentColors}
+              allFeeds={allFeeds || []}
               onClose={() => setCurrentView('home')}
               onSelectArticle={handleArticleView}
-              lastUpdated={lastUpdated}
+              lastUpdated={meta?.lastRefresh}
               recentSearches={recentSearches}
               onAddRecentSearch={handleAddRecentSearch}
             />
@@ -632,6 +437,7 @@ function App() {
           {/* Profile View */}
           {currentView === 'profile' && (
             <ProfilePage 
+              currentColors={currentColors}
               userPreferences={userPreferences}
               onUpdatePreferences={setUserPreferences}
             />
@@ -640,6 +446,7 @@ function App() {
           {/* News Bytes View */}
           {currentView === 'bytes' && (
             <NewsBytes 
+              currentColors={currentColors}
               articles={articlesWithImages}
               viewMode={viewMode}
               onLikeArticle={handleLikeArticle}
@@ -655,10 +462,11 @@ function App() {
           {/* Saved Articles View */}
           {currentView === 'saved' && (
             <SaveForLater
-              savedArticles={bookmarkedArticles}
+              savedArticles={bookmarkedArticles || []}
               onToggleSave={handleBookmarkArticle}
               onShare={handleShare}
               onArticleClick={handleArticleView}
+              currentColors={currentColors}
               className="max-w-7xl mx-auto px-4 lg:px-6 py-6"
             />
           )}
@@ -666,8 +474,9 @@ function App() {
           {/* Personal Insights View */}
           {currentView === 'insights' && (
             <PersonalInsights
-              allFeeds={allFeeds}
-              lastUpdated={lastUpdated}
+              currentColors={currentColors}
+              allFeeds={allFeeds || []}
+              lastUpdated={meta?.lastRefresh}
               readingHistory={readingHistory}
               className="max-w-7xl mx-auto px-4 lg:px-6 py-6"
             />
@@ -676,89 +485,42 @@ function App() {
           {/* Home View */}
           {currentView === 'home' && (
             <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-              {/* New Articles Banner */}
-              {showNewArticlesBanner && newArticlesAvailable > 0 && (
-                <div className="mb-3">
-                  <Alert>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse mr-3"></div>
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-medium">New Articles Available</h3>
-                          <AlertDescription>
-                            {newArticlesAvailable} new article{newArticlesAvailable !== 1 ? 's' : ''} ready to view
-                          </AlertDescription>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button onClick={applyNewArticles} size="sm">
-                          <CheckIcon className="h-4 w-4 mr-1" />
-                          Load New
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowNewArticlesBanner(false)}
-                        >
-                          <XMarkIcon className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </Alert>
-                </div>
-              )}
-
-              {/* Background Refresh Indicator */}
-              {backgroundRefreshing && (
-                <div className="mb-3">
-                  <Alert>
-                    <div className="flex items-center">
-                      <ArrowPathIcon className="h-4 w-4 mr-2 animate-spin" />
-                      <AlertDescription>Checking for new articles...</AlertDescription>
-                    </div>
-                  </Alert>
-                </div>
-              )}
-
               {/* Error State */}
               {error && (
                 <div className="mb-3">
-                  <Alert variant="destructive">
+                  <div className="bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 border rounded-xl p-3">
                     <div className="flex items-center">
-                      <XMarkIcon className="h-5 w-5 mr-3" />
+                      <X className="h-5 w-5 text-red-400 mr-3" />
                       <div>
-                        <h3 className="text-sm font-medium">
-                          {isOffline ? 'Offline Mode' : 'Error Loading News'}
+                        <h3 className="text-sm font-medium text-red-800 dark:text-red-100">
+                          Error Loading News
                         </h3>
-                        <AlertDescription>
-                          {isOffline ? 'Showing cached articles. Connect to internet for latest updates.' : error}
-                        </AlertDescription>
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-200">
+                          {error.message}
+                        </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => loadFeeds(true)}
-                        disabled={isOffline}
-                        className="ml-auto"
+                      <button
+                        onClick={handleForceRefresh}
+                        className="ml-auto text-red-600 dark:text-red-300"
                       >
-                        <ArrowPathIcon className="h-4 w-4" />
-                      </Button>
+                        <RefreshCw className="h-4 w-4" />
+                      </button>
                     </div>
-                  </Alert>
+                  </div>
                 </div>
               )}
 
               {/* Manual Refreshing Indicator */}
-              {refreshing && (
+              {loading && (
                 <div className="mb-3">
-                  <Alert>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 border rounded-xl p-3">
                     <div className="flex items-center">
-                      <ArrowPathIcon className="h-5 w-5 mr-3 animate-spin" />
-                      <AlertDescription>Refreshing news...</AlertDescription>
+                      <RefreshCw className="h-5 w-5 text-blue-400 mr-3 animate-spin" />
+                      <p className="text-sm text-blue-800 dark:text-blue-100">
+                        Refreshing news...
+                      </p>
                     </div>
-                  </Alert>
+                  </div>
                 </div>
               )}
 
@@ -766,8 +528,8 @@ function App() {
               <div className="mb-3">
                 <CategoryFilter
                   selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  feeds={allFeeds}
+                  setSelectedCategory={handleCategoryChangeTracked}
+                  feeds={allFeeds || []}
                   categories={categories}
                 />
               </div>
@@ -781,100 +543,96 @@ function App() {
                   setSortBy={setSortBy}
                   viewMode={viewMode}
                   setViewMode={setViewMode}
-                  feeds={allFeeds}
+                  feeds={allFeeds || []}
+                  currentColors={currentColors}
                 />
               </div>
 
-              {/* Articles Grid with Infinite Scroll */}
-              {displayedFeeds.length === 0 ? (
-                <Card className="p-8 text-center">
-                  <div className="text-6xl mb-4">
-                    {searchQuery ? '🔍' : selectedCategory !== 'all' ? '📂' : '📰'}
+              {/* Articles display */}
+              {feeds && feeds.length > 0 ? (
+                viewMode === 'grid' ? (
+                  // Masonry Grid for card view
+                  <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+                    {feeds.map((article, index) => (
+                      <div key={`${article.link || article.id}-${index}`} className="break-inside-avoid mb-4">
+                        <ArticleCard
+                          article={article}
+                          currentColors={currentColors}
+                          onShare={handleShare}
+                          savedArticles={bookmarkedArticles || []}
+                          onToggleSave={handleBookmarkArticle}
+                          viewMode={viewMode}
+                          onArticleClick={handleArticleView}
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <CardTitle className="text-xl mb-2">
-                    {searchQuery ? 'No Search Results' : 'No Articles Found'}
-                  </CardTitle>
-                  <CardDescription>
-                    {searchQuery 
-                      ? `No articles found for "${searchQuery}". Try different search terms.`
-                      : 'Try adjusting your filters or check back later for new content.'
-                    }
-                  </CardDescription>
-                  {(searchQuery || selectedCategory !== 'all') && (
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => {
-                        setSearchQuery('')
-                        setSelectedCategory('all')
-                      }}
-                    >
-                      Clear Filters
-                    </Button>
-                  )}
-                </Card>
-              ) : (
-                <>
-                  {/* Articles Count */}
-                  <div className="mb-4">
-                    <p className="text-sm text-muted-foreground">
-                      Showing {displayedFeeds.length} of {filteredFeeds.length} articles
-                      {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-                      {searchQuery && ` matching "${searchQuery}"`}
-                      {lastUpdated && (
-                        <span className="ml-2">
-                          • Last updated {new Date(lastUpdated).toLocaleTimeString()}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Articles Grid */}
-                  <div className={cn(
-                    "grid gap-4",
-                    viewMode === 'grid' 
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-                      : "grid-cols-1"
-                  )}>
-                    {displayedFeeds.map((article, index) => (
+                ) : (
+                  // Compact List for list view
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {feeds.map((article, index) => (
                       <ArticleCard
                         key={`${article.link || article.id}-${index}`}
                         article={article}
-                        onClick={() => handleArticleView(article)}
-                        likedArticles={likedArticles}
-                        bookmarkedArticles={bookmarkedArticles}
-                        onLike={handleLikeArticle}
-                        onBookmark={handleBookmarkArticle}
+                        currentColors={currentColors}
                         onShare={handleShare}
+                        savedArticles={bookmarkedArticles || []}
+                        onToggleSave={handleBookmarkArticle}
+                        viewMode={viewMode}
+                        onArticleClick={handleArticleView}
                       />
                     ))}
                   </div>
+                )
+              ) : null}
 
-                  {/* Loading More Indicator */}
-                  {loadingMore && (
-                    <div className="flex justify-center py-6">
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                        <span className="text-sm text-muted-foreground">
-                          Loading more articles...
-                        </span>
-                      </div>
-                    </div>
-                  )}
+              {/* Loading More Indicator */}
+              {loadingMore && (
+                <div className="flex justify-center py-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white"></div>
+                    <span className={`text-sm ${currentColors.textMuted}`}>
+                      Loading more articles...
+                    </span>
+                  </div>
+                </div>
+              )}
 
-                  {/* End of Results */}
-                  {!hasMore && displayedFeeds.length > 0 && (
-                    <div className="text-center py-8">
-                      <div className="text-4xl mb-2">🎉</div>
-                      <p className="text-muted-foreground mb-2">
-                        You've reached the end!
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {filteredFeeds.length} total articles loaded
-                      </p>
-                    </div>
-                  )}
-                </>
+              {/* Empty State */}
+              {isEmpty && !loading && (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📰</div>
+                  <h3 className={`text-lg font-medium ${currentColors.text} mb-2`}>
+                    No articles found
+                  </h3>
+                  <p className={`${currentColors.textMuted} mb-4`}>
+                    {searchQuery 
+                      ? `No articles match "${searchQuery}"`
+                      : selectedCategory !== 'all' 
+                        ? `No articles in ${selectedCategory} category`
+                        : 'No articles available'
+                    }
+                  </p>
+                  <button
+                    onClick={handleForceRefresh}
+                    className={`px-4 py-2 ${currentColors.accent} text-white rounded-lg hover:opacity-90 transition-opacity`}
+                  >
+                    Refresh Articles
+                  </button>
+                </div>
+              )}
+
+              {/* End of Results */}
+              {!hasMore && feeds && feeds.length > 0 && !isEmpty && (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">🎉</div>
+                  <p className={`${currentColors.textMuted} mb-2`}>
+                    You've reached the end!
+                  </p>
+                  <p className={`text-sm ${currentColors.textMuted}`}>
+                    {totalCount} total articles loaded
+                  </p>
+                </div>
               )}
             </main>
           )}
@@ -889,19 +647,22 @@ function App() {
           onProfileClick={handleProfileClick}
           onSavedClick={handleSavedClick}
           onInsightsClick={handleInsightsClick}
-          likedCount={likedArticles.size}
-          bookmarkedCount={bookmarkedArticles.length}
+          likedCount={likedArticles?.size || 0}
+          bookmarkedCount={bookmarkedArticles?.length || 0}
         />
 
         {/* Scroll to Top Button */}
         {hasReached25Percent && (
-          <Button
+          <button
             onClick={scrollToTop}
-            size="icon"
-            className="fixed bottom-24 lg:bottom-6 right-4 z-40 rounded-full shadow-lg"
+            className={cn(
+              "fixed bottom-24 lg:bottom-6 right-4 z-40 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110",
+              "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+            )}
+            aria-label="Scroll to top"
           >
-            <ArrowUpIcon className="h-5 w-5" />
-          </Button>
+            <ArrowUp className="h-5 w-5" />
+          </button>
         )}
       </div>
     </ErrorBoundary>

@@ -1,3 +1,6 @@
+// PWA Prompt - TEMPORARILY DISABLED
+
+/*
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -57,3 +60,9 @@ const PWAPrompt = ({ onInstall, currentColors }) => {
 }
 
 export default PWAPrompt
+*/
+
+// Simple disabled component
+export default function PWAPrompt() {
+  return null
+}
