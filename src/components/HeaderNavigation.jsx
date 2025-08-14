@@ -37,7 +37,7 @@ const HeaderNavigation = ({
   setCurrentView,
   viewMode,
   setViewMode,
-  title = "Harare Metro"
+  title = "Mukoko"
 }) => {
   const navigation = [
     { id: 'home', name: 'Feed', icon: Squares2X2Icon, iconSolid: Squares2X2SolidIcon },

@@ -77,7 +77,7 @@ const Logo = ({
           fontWeight="bold" 
           fill={fill}
         >
-          HM
+          MK
         </text>
         <text 
           x={width / 2} 
@@ -88,7 +88,7 @@ const Logo = ({
           fill={subtitle} 
           letterSpacing="2px"
         >
-          HARARE METRO
+          MUKOKO
         </text>
       </svg>
     )
@@ -111,7 +111,7 @@ const Logo = ({
           fontWeight="bold" 
           fill={fill}
         >
-          HM
+          MK
         </text>
         <line 
           x1={width * 0.28} 
@@ -129,7 +129,7 @@ const Logo = ({
           fontWeight="bold" 
           fill={fill}
         >
-          HARARE
+          MUKOKO
         </text>
         <text 
           x={width * 0.37} 
@@ -138,7 +138,7 @@ const Logo = ({
           fontSize={height * 0.28} 
           fill={subtitle}
         >
-          METRO
+          NEWS
         </text>
       </svg>
     )
@@ -170,7 +170,7 @@ const Logo = ({
         fontWeight="bold" 
         fill={fill}
       >
-        HM
+        MK
       </text>
     </svg>
   )

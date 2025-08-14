@@ -45,7 +45,7 @@ function App() {
   // User preferences state (localStorage based)
   const [userPreferences, setUserPreferences] = useState(() => {
     try {
-      const saved = localStorage.getItem('harare_metro_preferences')
+      const saved = localStorage.getItem('mukoko_preferences')
       return saved ? JSON.parse(saved) : {}
     } catch {
       return {}
@@ -54,7 +54,7 @@ function App() {
   
   const [readingHistory, setReadingHistory] = useState(() => {
     try {
-      const saved = localStorage.getItem('harare_metro_reading_history')
+      const saved = localStorage.getItem('mukoko_reading_history')
       return saved ? JSON.parse(saved) : []
     } catch {
       return []
@@ -63,7 +63,7 @@ function App() {
   
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
-      const saved = localStorage.getItem('harare_metro_recent_searches')
+      const saved = localStorage.getItem('mukoko_recent_searches')
       return saved ? JSON.parse(saved) : []
     } catch {
       return []
@@ -172,22 +172,22 @@ function App() {
 
   // Save user preferences to localStorage
   useEffect(() => {
-    localStorage.setItem('harare_metro_preferences', JSON.stringify(userPreferences))
+    localStorage.setItem('mukoko_preferences', JSON.stringify(userPreferences))
   }, [userPreferences])
 
   useEffect(() => {
-    localStorage.setItem('harare_metro_reading_history', JSON.stringify(readingHistory.slice(0, 100)))
+    localStorage.setItem('mukoko_reading_history', JSON.stringify(readingHistory.slice(0, 100)))
   }, [readingHistory])
 
   useEffect(() => {
-    localStorage.setItem('harare_metro_recent_searches', JSON.stringify(recentSearches))
+    localStorage.setItem('mukoko_recent_searches', JSON.stringify(recentSearches))
   }, [recentSearches])
 
   // Initialize the app
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('🚀 Initializing Harare Metro...')
+        console.log('🚀 Initializing Mukoko...')
         if (loadUserData) {
           await loadUserData()
         }

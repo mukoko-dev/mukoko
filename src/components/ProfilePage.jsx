@@ -54,10 +54,10 @@ const ProfilePage = ({
 }) => {
   // Enhanced user data with personal insights integration
   const userData = useMemo(() => {
-    const readArticles = JSON.parse(localStorage.getItem('harare_metro_read_articles') || '[]')
-    const likedArticles = JSON.parse(localStorage.getItem('harare_metro_liked_articles') || '[]')
-    const bookmarkedArticles = JSON.parse(localStorage.getItem('harare_metro_bookmarks') || '[]')
-    const visitHistory = JSON.parse(localStorage.getItem('harare_metro_visit_history') || '[]')
+    const readArticles = JSON.parse(localStorage.getItem('mukoko_read_articles') || '[]')
+    const likedArticles = JSON.parse(localStorage.getItem('mukoko_liked_articles') || '[]')
+    const bookmarkedArticles = JSON.parse(localStorage.getItem('mukoko_bookmarks') || '[]')
+    const visitHistory = JSON.parse(localStorage.getItem('mukoko_visit_history') || '[]')
     
     const memberSince = visitHistory.length > 0 
       ? new Date(Math.min(...visitHistory.map(v => new Date(v.timestamp))))

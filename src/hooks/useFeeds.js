@@ -3,11 +3,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 
 // User ID management
 function generateUserId() {
-  const stored = localStorage.getItem('harare_metro_user_id')
+  const stored = localStorage.getItem('mukoko_user_id')
   if (stored) return stored
   
   const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2)
-  localStorage.setItem('harare_metro_user_id', newId)
+  localStorage.setItem('mukoko_user_id', newId)
   return newId
 }
 
@@ -48,7 +48,7 @@ export function useFeeds({
   // User interaction state with localStorage initialization
   const [likes, setLikes] = useState(() => {
     try {
-      const saved = localStorage.getItem('harare_metro_likes')
+      const saved = localStorage.getItem('mukoko_likes')
       return saved ? new Set(JSON.parse(saved)) : new Set()
     } catch {
       return new Set()
@@ -57,7 +57,7 @@ export function useFeeds({
 
   const [bookmarks, setBookmarks] = useState(() => {
     try {
-      const saved = localStorage.getItem('harare_metro_bookmarks')
+      const saved = localStorage.getItem('mukoko_bookmarks')
       return saved ? JSON.parse(saved) : []
     } catch {
       return []
@@ -360,7 +360,7 @@ export function useFeeds({
       }
       
       // Save to localStorage
-      localStorage.setItem('harare_metro_likes', JSON.stringify([...newSet]))
+      localStorage.setItem('mukoko_likes', JSON.stringify([...newSet]))
       return newSet
     })
     
@@ -400,7 +400,7 @@ export function useFeeds({
       }
       
       // Save to localStorage
-      localStorage.setItem('harare_metro_bookmarks', JSON.stringify(newBookmarksmarks))
+      localStorage.setItem('mukoko_bookmarks', JSON.stringify(newBookmarksmarks))
       return newBookmarksmarks
     })
     
@@ -410,7 +410,7 @@ export function useFeeds({
   // Refresh analytics data from localStorage
   const refreshAnalytics = useCallback(() => {
     try {
-      const events = JSON.parse(localStorage.getItem('harare_metro_analytics') || '[]')
+      const events = JSON.parse(localStorage.getItem('mukoko_analytics') || '[]')
       if (events.length > 0) {
         console.log('📊 Analytics events:', events)
         
@@ -431,7 +431,7 @@ export function useFeeds({
         }
         
         // Clear sent events
-        localStorage.setItem('harare_metro_analytics', JSON.stringify([]))
+        localStorage.setItem('mukoko_analytics', JSON.stringify([]))
       }
     } catch (error) {
       console.log('Error reading analytics from localStorage:', error)
