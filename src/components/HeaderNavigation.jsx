@@ -3,6 +3,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
 import { IconGroup, IconGroupToolbar } from '@/components/ui/icon-group'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { 
   MagnifyingGlassIcon,
@@ -37,7 +38,10 @@ const HeaderNavigation = ({
   setCurrentView,
   viewMode,
   setViewMode,
-  title = "Mukoko"
+  title = "Mukoko",
+  isAuthenticated = false,
+  user = null,
+  profile = null
 }) => {
   const navigation = [
     { id: 'home', name: 'Feed', icon: Squares2X2Icon, iconSolid: Squares2X2SolidIcon },
@@ -100,69 +104,113 @@ const HeaderNavigation = ({
             </div>
           </div>
 
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-3 lg:flex-none">
-            
-            {/* Desktop Navigation - Using IconGroupToolbar */}
-            <nav className="hidden lg:block">
-              <IconGroupToolbar>
-                {navigation.map((item) => {
-                  const isActive = currentView === item.id
-                  const IconComponent = isActive ? item.iconSolid : item.icon
-                  
-                  return (
-                    <IconButton
-                      key={item.id}
-                      variant="icon"
-                      size="icon"
-                      onClick={() => handleNavClick(item.id)}
-                      tooltip={item.name}
-                      className={cn(
-                        "transition-all duration-200",
-                        isActive && "text-black dark:text-white",
-                        !isActive && "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
-                      )}
-                    >
-                      <IconComponent className="h-5 w-5" />
-                    </IconButton>
-                  )
-                })}
-              </IconGroupToolbar>
-            </nav>
+          {/* Desktop: Center Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
+            {navigation.map((item) => {
+              const Icon = currentView === item.id ? item.iconSolid : item.icon
+              return (
+                <Button
+                  key={item.id}
+                  variant={currentView === item.id ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => handleNavClick(item.id)}
+                  className="flex items-center space-x-2"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Button>
+              )
+            })}
+          </div>
 
+          {/* Desktop: Right Actions */}
+          <div className="hidden lg:flex items-center space-x-2">
             {/* Theme Toggle */}
             <IconButton
-              variant="icon"
-              size="icon"
+              variant="ghost"
+              size="sm"
               onClick={handleThemeToggle}
-              tooltip={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-all duration-200"
+              aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
-                <SunSolidIcon className="h-5 w-5" />
+                <SunIcon className="h-4 w-4" />
               ) : (
-                <MoonIcon className="h-5 w-5" />
+                <MoonIcon className="h-4 w-4" />
               )}
             </IconButton>
 
-            {/* Profile Icon - Furthest Right on Desktop */}
+            {/* User Profile / Auth */}
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleNavClick('profile')}
+                className="flex items-center space-x-2"
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
+                  <AvatarFallback className="text-xs">
+                    {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden sm:inline">
+                  {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                </span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleNavClick('profile')}
+                className="flex items-center space-x-2"
+              >
+                <UserCircleIcon className="h-4 w-4" />
+                <span>Sign In</span>
+              </Button>
+            )}
+          </div>
+
+          {/* Mobile: Right Actions */}
+          <div className="flex items-center lg:hidden space-x-2">
+            {/* Theme Toggle */}
             <IconButton
-              variant="icon"
-              size="icon"
-              onClick={() => handleNavClick('profile')}
-              tooltip="Profile"
-              className={cn(
-                "hidden lg:flex transition-all duration-200",
-                currentView === 'profile' && "text-black dark:text-white",
-                currentView !== 'profile' && "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
-              )}
+              variant="ghost"
+              size="sm"
+              onClick={handleThemeToggle}
+              aria-label="Toggle theme"
             >
-              {currentView === 'profile' ? (
-                <UserCircleSolidIcon className="h-5 w-5" />
+              {theme === 'dark' ? (
+                <SunIcon className="h-4 w-4" />
               ) : (
-                <UserCircleIcon className="h-5 w-5" />
+                <MoonIcon className="h-4 w-4" />
               )}
             </IconButton>
+
+            {/* User Profile / Auth */}
+            {isAuthenticated ? (
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleNavClick('profile')}
+                aria-label="Profile"
+              >
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
+                  <AvatarFallback className="text-xs">
+                    {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </IconButton>
+            ) : (
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={() => handleNavClick('profile')}
+                aria-label="Sign in"
+              >
+                <UserCircleIcon className="h-4 w-4" />
+              </IconButton>
+            )}
           </div>
         </div>
       </div>

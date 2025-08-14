@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { auth, db } from '@/lib/supabase'
+import { auth, db, supabase } from '@/lib/supabase'
 
 const AuthContext = createContext({})
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     initializeAuth()
 
     // Listen for auth changes
-    const { data: { subscription } } = auth.supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id)
         
