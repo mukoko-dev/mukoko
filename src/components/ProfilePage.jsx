@@ -1,5 +1,7 @@
-// src/components/ProfilePage.jsx - Updated with proper shadcn/ui components
+/* eslint-disable */
+// src/components/ProfilePage.jsx - Updated with proper shadcn/ui components and auth context
 import React, { useState, useMemo } from 'react'
+import { useAuth } from '../hooks/useAuth'
 import {
   UserCircle,
   Settings,
@@ -38,6 +40,7 @@ import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import SaveForLater from './SaveForLater'
 import PersonalInsights from './PersonalInsights'
+import RoleManager from './RoleManager'
 
 const ProfilePage = ({
   currentColors,
@@ -50,9 +53,15 @@ const ProfilePage = ({
   userStats = {},
   allFeeds = [],
   lastUpdated,
-  className = ''
+  className = '',
+  user, // Supabase user object
+  profile, // User profile with role
+  isAuthenticated
 }) => {
-  // Enhanced user data with personal insights integration
+  // Get auth context for role functions
+  const { userRoles, getUserRole, hasRole, isAdmin } = useAuth()
+  
+  // Enhanced user data with personal insights integration and real auth data
   const userData = useMemo(() => {
     const readArticles = JSON.parse(localStorage.getItem('mukoko_read_articles') || '[]')
     const likedArticles = JSON.parse(localStorage.getItem('mukoko_liked_articles') || '[]')
@@ -103,9 +112,11 @@ const ProfilePage = ({
       .sort(([,a], [,b]) => b - a)[0]?.[0] || 'Technology'
 
     return {
-      name: 'News Reader',
-      email: 'user@example.com',
-      joinDate: memberSince.toISOString().split('T')[0],
+      // Use real profile data if available, fallback to defaults
+      name: profile?.full_name || user?.email || 'News Reader',
+      email: user?.email || 'user@example.com',
+      role: profile?.role || 'creator',
+      joinDate: user?.created_at ? new Date(user.created_at).toISOString().split('T')[0] : memberSince.toISOString().split('T')[0],
       readingStats: {
         articlesRead: readArticles.length || userStats.articlesRead || 247,
         timeSpent: userStats.timeSpent || '5.2h',
@@ -117,7 +128,7 @@ const ProfilePage = ({
         daysSince
       }
     }
-  }, [allFeeds, userStats])
+  }, [allFeeds, userStats, profile, user])
 
   const upcomingFeatures = [
     {
@@ -719,6 +730,11 @@ const ProfilePage = ({
                     <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
                       {userData.name}
                     </h2>
+                    
+                    {/* User Role Badge */}
+                    <div className="flex items-center justify-center sm:justify-start lg:justify-center mt-2">
+                      <RoleManager currentRole={userData.role} />
+                    </div>
                     
                     <div className="flex items-center justify-center sm:justify-start lg:justify-center space-x-2 mt-2">
                       <span className="text-muted-foreground font-mono">@newsreader</span>

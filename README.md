@@ -1,6 +1,22 @@
-# Mukoko - Modern News Aggregation Platform
+# Mukoko - News Aggregation Platform
 
-A modern, enterprise-grade news aggregation platform built with React, Cloudflare Workers, and Supabase. Mukoko provides real-time news aggregation, advanced user authentication, and robust analytics capabilities.
+A modern news aggregation platform built with React and Cloudflare Workers. Mukoko provides a clean, fast interface for staying informed with the latest news from trusted sources.
+
+## 🌟 Features
+
+### Core Features
+- **Clean, Modern UI**: Beautiful, responsive design that works on all devices
+- **Dark/Light Theme**: Toggle between dark and light themes
+- **Fast Loading**: Built on Cloudflare Workers for global edge deployment
+- **Mobile Optimized**: Seamless experience on mobile devices
+- **Progressive Web App**: Install as a native app on your device
+
+### Coming Soon
+- **Real-time News Aggregation**: Fetch latest articles from multiple sources
+- **User Authentication**: Secure login with OAuth providers
+- **Smart Search**: Find exactly what you're looking for
+- **Personalized Recommendations**: AI-powered content suggestions
+- **Offline Reading**: Read articles even without internet connection
 
 ## 🌟 Features
 
@@ -27,10 +43,9 @@ A modern, enterprise-grade news aggregation platform built with React, Cloudflar
 
 - **Frontend**: React SPA with Tailwind CSS and shadcn/ui
 - **Backend**: Cloudflare Worker with KV storage and D1 database
-- **Authentication**: Supabase Auth with OAuth providers
-- **Database**: Supabase PostgreSQL with real-time subscriptions
 - **Build Tool**: Vite for fast development and optimized builds
 - **Deployment**: Single Cloudflare Worker serving both frontend and API
+- **Domain**: app.mukoko.com
 
 ## 📰 News Sources
 
@@ -384,7 +399,21 @@ crons = ["0 * * * *"]  # Every hour
 - Use `npm run build:check` to test builds without deployment
 - Check Supabase dashboard for database queries and auth logs
 
-## 📄 License
+## � Documentation
+
+For detailed guides and documentation, visit the **[guides/](guides/)** folder:
+
+- **[Local Development Setup](guides/LOCAL_DEVELOPMENT.md)** - Complete development environment setup
+- **[User Roles & Authentication](guides/ROLE_SYSTEM.md)** - Role-based access control system  
+- **[Analytics Implementation](guides/ANALYTICS_GUIDE.md)** - Analytics tracking and reporting
+- **[Deployment Guide](guides/DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+- **[Migration Guide](guides/MIGRATION_SUMMARY.md)** - Recent changes and migration notes
+- **[Icon Components](guides/ICON_COMPONENTS_GUIDE.md)** - Using icon components
+- **[Security Guide](guides/SECURITY.md)** - Security best practices
+
+Browse all available documentation: **[guides/README.md](guides/README.md)**
+
+## �📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 

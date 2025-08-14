@@ -1,5 +1,7 @@
-// src/App.jsx - Updated to use consolidated useFeeds hook and Supabase auth
+// src/App.jsx - Updated to use consolidated useFeed  // Remove automatic auth modal behavior - only show auth for protected pagespabase Auth
 import React, { useState, useEffect, useCallback } from 'react'
+import { useAuth } from './hooks/useAuth'
+import { supabase } from './lib/supabase'
 
 // Import existing components
 import HeaderNavigation from './components/HeaderNavigation'
@@ -13,16 +15,13 @@ import NewsBytes from './components/NewsBytes'
 import SaveForLater from './components/SaveForLater'
 import PersonalInsights from './components/PersonalInsights'
 import ErrorBoundary from './components/ErrorBoundary'
-
-// Import new auth components
 import AuthModal from './components/auth/AuthModal'
-import UserProfile from './components/auth/UserProfile'
+import AuthDebugger from './components/AuthDebugger'
 
 // Import hooks - UPDATED to use consolidated useFeeds
 import { useHead } from './hooks/useHead'
 import { useFeeds } from './hooks/useFeeds'
 import { useAnalytics } from './hooks/useAnalytics'
-import { useAuth } from './contexts/AuthContext'
 
 // Simple cn utility function
 function cn(...classes) {
@@ -33,13 +32,12 @@ function cn(...classes) {
 import { 
   ArrowUp, 
   RefreshCw, 
-  X, 
-  Check
+  X
 } from 'lucide-react'
 
 function App() {
-  // Auth state
-  const { user, profile, isAuthenticated, loading: authLoading } = useAuth()
+  // Auth state from context
+  const { user, profile, isAuthenticated, loading: authLoading, isAdmin } = useAuth()
   
   // UI state
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -50,11 +48,12 @@ function App() {
   const [selectedTimeframe, setSelectedTimeframe] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState('login')
   
   // User preferences state (localStorage based)
   const [userPreferences, setUserPreferences] = useState(() => {
     try {
-      const saved = localStorage.getItem('mukoko_preferences')
+      const saved = localStorage.getItem('harare_metro_preferences')
       return saved ? JSON.parse(saved) : {}
     } catch {
       return {}
@@ -63,7 +62,7 @@ function App() {
   
   const [readingHistory, setReadingHistory] = useState(() => {
     try {
-      const saved = localStorage.getItem('mukoko_reading_history')
+      const saved = localStorage.getItem('harare_metro_reading_history')
       return saved ? JSON.parse(saved) : []
     } catch {
       return []
@@ -72,7 +71,7 @@ function App() {
   
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
-      const saved = localStorage.getItem('mukoko_recent_searches')
+      const saved = localStorage.getItem('harare_metro_recent_searches')
       return saved ? JSON.parse(saved) : []
     } catch {
       return []
@@ -94,77 +93,155 @@ function App() {
     // User data
     likes: likedArticles,
     bookmarks: bookmarkedArticles,
-    userProfile,
+    userProfile: _userProfile,
     
     // Actions
-    loadFeeds,
-    loadMoreFeeds,
-    refreshFeeds,
+    loadFeeds: _loadFeeds,
+    loadMoreFeeds: _loadMoreFeeds,
+    refreshFeeds: _refreshFeeds,
     forceRefresh,
     loadUserData,
     toggleLike,
     toggleBookmark,
     
     // Scroll
-    scrollDirection,
+    scrollDirection: _scrollDirection,
     hasReached25Percent,
-    scrollToTop
+    scrollToTop,
+    
+    // Analytics
+    trackEvent,
+    
+    // Utilities
+    isLiked: _isLiked,
+    isBookmarked: _isBookmarked,
+    clearError: _clearError,
+    
+    // Status
+    isInitialLoad,
+    isEmpty
   } = useFeeds({
     selectedCategory,
     searchQuery,
     selectedTimeframe,
     sortBy,
-    itemsPerPage: 100,
+    itemsPerPage: 25,
     enableInfiniteScroll: true,
-    autoRefresh: false
+    autoRefresh: false,
+    refreshInterval: 5 * 60 * 1000
   })
 
   const {
-    trackEvent,
-    trackPageView,
-    trackFeedLoad,
-    trackArticleClick,
-    trackUserInteraction,
     trackCategoryClick,
     trackSearch,
-    trackError
+    trackArticleClick,
+    trackPageView,
+    trackFeedLoad
   } = useAnalytics()
 
+  // Use head hook for SEO - MOVED TO AFTER ALL MAIN HOOKS
   useHead({
-    title: 'Mukoko - News Aggregator',
-    description: 'Stay informed with the latest news from Harare Metro and other trusted sources.',
-    keywords: 'news, harare, zimbabwe, metro, aggregator',
-    noIndex: false
+    title: `Harare Metro - Zimbabwe News${selectedCategory !== 'all' ? ` - ${selectedCategory}` : ''}${searchQuery ? ` - "${searchQuery}"` : ''}`,
+    description: "Stay informed with the latest news from Zimbabwe",
+    keywords: "Zimbabwe news, Harare Metro, politics, economy, sports"
   })
 
-  // Update theme effect
+  // Extract categories and sources from meta
+  const categories = meta?.categories || []
+  const _sources = meta?.sources || []
+
+  // Theme colors
+  const currentColors = {
+    bg: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50',
+    headerBg: theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/95',
+    text: theme === 'dark' ? 'text-white' : 'text-gray-900',
+    cardBg: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
+    textMuted: theme === 'dark' ? 'text-gray-400' : 'text-gray-500',
+    border: theme === 'dark' ? 'border-gray-700' : 'border-gray-200',
+    categoryButton: theme === 'dark' ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    categoryButtonActive: theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white',
+    accent: theme === 'dark' ? 'bg-blue-600' : 'bg-blue-500',
+    accentText: theme === 'dark' ? 'text-blue-400' : 'text-blue-600',
+    input: theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'
+  }
+
+  // Initialize theme
   useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'dark'
+    setTheme(savedTheme)
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark')
+  }, [])
+
+  // Update theme in localStorage and DOM
+  useEffect(() => {
+    localStorage.setItem('theme', theme)
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
   // Save user preferences to localStorage
   useEffect(() => {
-    localStorage.setItem('mukoko_preferences', JSON.stringify(userPreferences))
+    localStorage.setItem('harare_metro_preferences', JSON.stringify(userPreferences))
   }, [userPreferences])
 
   useEffect(() => {
-    localStorage.setItem('mukoko_reading_history', JSON.stringify(readingHistory.slice(0, 100)))
+    localStorage.setItem('harare_metro_reading_history', JSON.stringify(readingHistory.slice(0, 100)))
   }, [readingHistory])
 
   useEffect(() => {
-    localStorage.setItem('mukoko_recent_searches', JSON.stringify(recentSearches))
+    localStorage.setItem('harare_metro_recent_searches', JSON.stringify(recentSearches))
   }, [recentSearches])
+
+  // Check for password reset URL and handle tokens
+  useEffect(() => {
+    const handlePasswordResetUrl = async () => {
+      const currentPath = window.location.pathname
+      const hash = window.location.hash
+      
+      // Check if this is a password reset URL
+      if (currentPath === '/auth/reset-password' && hash.includes('access_token=')) {
+        // Extract tokens from URL hash
+        const params = new window.URLSearchParams(hash.substring(1)) // Remove the # symbol
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
+        
+        if (accessToken && refreshToken) {
+          try {
+            // Set the session with the tokens from the URL
+            const { data: _data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            })
+            
+            if (error) {
+              // Error setting session
+            } else {
+              // Successfully authenticated, show the auth modal for password reset
+              setShowAuthModal(true)
+              setAuthModalMode('reset-password')
+              
+              // Clean up the URL
+              window.history.replaceState({}, '', '/')
+            }
+          } catch {
+            // Error handling password reset tokens
+          }
+        }
+      }
+    }
+    
+    handlePasswordResetUrl()
+  }, [])
 
   // Initialize the app
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('🚀 Initializing Mukoko...')
+        // Initializing Harare Metro...
         if (loadUserData) {
           await loadUserData()
         }
-      } catch (error) {
-        console.warn('Failed to load user data, continuing with defaults:', error.message)
+      } catch {
+        // Failed to load user data, continuing with defaults
       }
     }
     
@@ -189,7 +266,7 @@ function App() {
         resultCount: feeds.length
       })
     }
-  }, [loading, feeds?.length, selectedCategory, searchQuery, sortBy, selectedTimeframe, trackFeedLoad])
+  }, [loading, feeds?.length, feeds, selectedCategory, searchQuery, sortBy, selectedTimeframe, trackFeedLoad])
 
   // UPDATED handlers to use new consolidated functions
   const handleLikeArticle = useCallback(async (article) => {
@@ -207,8 +284,8 @@ function App() {
           action: 'like'
         })
       }
-    } catch (error) {
-      console.log('Error liking article:', error)
+    } catch {
+      // Error liking article
     }
   }, [toggleLike, trackEvent])
 
@@ -226,8 +303,8 @@ function App() {
           action: 'bookmark'
         })
       }
-    } catch (error) {
-      console.log('Error bookmarking article:', error)
+    } catch {
+      // Error bookmarking article
     }
   }, [toggleBookmark, trackEvent])
 
@@ -240,304 +317,464 @@ function App() {
     
     setReadingHistory(prev => [historyEntry, ...prev.slice(0, 99)])
     
-    if (trackArticleClick) {
-      await trackArticleClick(article)
-    }
-  }, [trackArticleClick])
-
-  const handleSearch = useCallback(async (query) => {
-    setSearchQuery(query)
-    
-    if (query.trim()) {
-      setRecentSearches(prev => {
-        const newSearches = [query, ...prev.filter(s => s !== query)].slice(0, 10)
-        return newSearches
+    // Track analytics
+    if (trackEvent) {
+      await trackEvent('article_view', {
+        articleId: article.id || article.link,
+        articleTitle: article.title,
+        source: article.source,
+        category: article.category
       })
-      
-      if (trackSearch) {
-        await trackSearch(query, selectedCategory, feeds?.length || 0)
-      }
     }
-  }, [selectedCategory, feeds?.length, trackSearch])
+  }, [trackEvent])
 
-  const handleCategoryChange = useCallback(async (category) => {
+  const handleAddRecentSearch = useCallback(async (query) => {
+    setRecentSearches(prev => {
+      const newSearches = [query, ...prev.filter(s => s !== query)].slice(0, 10)
+      return newSearches
+    })
+    
+    // Track search analytics
+    if (trackEvent) {
+      await trackEvent('search', {
+        query,
+        resultsCount: feeds?.length || 0,
+        searchTime: Date.now()
+      })
+    }
+  }, [trackEvent, feeds?.length])
+
+  const _handleCategoryChange = useCallback(async (category) => {
     setSelectedCategory(category)
     
-    if (trackCategoryClick) {
-      await trackCategoryClick(category)
+    // Track category analytics
+    if (trackEvent) {
+      await trackEvent('category_click', { category })
     }
-  }, [trackCategoryClick])
+  }, [trackEvent])
 
-  const handleRefresh = useCallback(async () => {
-    try {
-      await refreshFeeds()
-      if (trackEvent) {
-        await trackEvent('refresh_triggered', { type: 'manual' })
+  const handleShare = useCallback(async (article) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article.title,
+          text: article.description,
+          url: article.link
+        })
+      } catch {
+        // Error sharing
       }
-    } catch (error) {
-      console.error('Refresh failed:', error)
-      if (trackError) {
-        await trackError('refresh_failed', error.message)
+    } else {
+      try {
+        await navigator.clipboard.writeText(article.link)
+      } catch {
+        // Error copying to clipboard
       }
     }
-  }, [refreshFeeds, trackEvent, trackError])
+  }, [])
 
+  // SIMPLIFIED refresh handlers (now handled by useFeeds)
   const handleForceRefresh = useCallback(async () => {
-    try {
+    if (forceRefresh) {
       await forceRefresh()
-      if (trackEvent) {
-        await trackEvent('refresh_triggered', { type: 'force' })
-      }
-    } catch (error) {
-      console.error('Force refresh failed:', error)
-      if (trackError) {
-        await trackError('force_refresh_failed', error.message)
-      }
     }
-  }, [forceRefresh, trackEvent, trackError])
+  }, [forceRefresh])
 
-  const handleViewChange = useCallback((view) => {
-    setCurrentView(view)
-    
-    if (trackPageView) {
-      trackPageView(view)
-    }
-  }, [trackPageView])
-
-  const handleAuthClick = useCallback(() => {
+  // Navigation handlers
+  const handleSearchClick = () => setCurrentView('search')
+  const handleBytesClick = () => setCurrentView('bytes')
+  const handleSavedClick = () => setCurrentView('saved')
+  
+  // Protected navigation handlers that require authentication
+  const handleProtectedNavigation = (view) => {
     if (isAuthenticated) {
-      setCurrentView('profile')
+      setCurrentView(view)
     } else {
       setShowAuthModal(true)
     }
-  }, [isAuthenticated])
+  }
 
-  // Update head meta tags
-  useEffect(() => {
-    updateHead({
-      title: 'Mukoko - Modern News Aggregation',
-      description: 'Stay informed with the latest news from multiple sources. Mukoko provides real-time news aggregation with advanced features.',
-      keywords: 'news, aggregation, mukoko, real-time, articles',
-      image: '/og-image.jpg'
-    })
-  }, [updateHead])
+  const handleInsightsClick = () => handleProtectedNavigation('insights')
+  const handleProfileClick = () => handleProtectedNavigation('profile')
+  const handleAuthClick = () => handleProtectedNavigation('profile')
+  
+  // Admin-only navigation (for future analytics pages)
+  const _handleAdminNavigation = (view) => {
+    if (isAuthenticated) {
+      // Check if user has admin role
+      if (isAdmin()) {
+        setCurrentView(view)
+      } else {
+        // User is authenticated but not admin
+        setCurrentView('profile') // Redirect to profile instead
+      }
+    } else {
+      setShowAuthModal(true)
+    }
+  }
 
-  // Loading state
+  // Track category changes
+  const handleCategoryChangeTracked = (newCategory) => {
+    setSelectedCategory(newCategory)
+    if (trackCategoryClick) {
+      trackCategoryClick(newCategory, 'category_filter')
+    }
+  }
+
+  // Track search
+  const _handleSearchTracked = (query) => {
+    setSearchQuery(query)
+    if (query.trim() && trackSearch) {
+      trackSearch(query, selectedCategory, feeds?.length || 0)
+    }
+  }
+
+  // Track article clicks
+  const _handleArticleClickTracked = (article) => {
+    if (trackArticleClick) {
+      trackArticleClick(article)
+    }
+    // Open article logic here
+  }
+
+  // Articles with images for bytes view
+  const articlesWithImages = allFeeds ? allFeeds.filter(article => article.optimizedImageUrl) : []
+
+  // Auth Loading State
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading Mukoko...</p>
+      <ErrorBoundary>
+        <div className={`min-h-screen ${currentColors.bg}`}>
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 dark:border-white mb-4"></div>
+            <p className={`text-lg ${currentColors.textMuted}`}>Loading Harare Metro...</p>
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
+    )
+  }
+
+  // LOADING STATE - Show loading while initializing
+  if (isInitialLoad) {
+    return (
+      <ErrorBoundary>
+        <div className={`min-h-screen ${currentColors.bg}`}>
+          <HeaderNavigation
+            theme={theme}
+            setTheme={setTheme}
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            onSearchClick={handleSearchClick}
+            onBytesClick={handleBytesClick}
+            onProfileClick={handleProfileClick}
+            onAuthClick={handleAuthClick}
+            user={user}
+            profile={profile}
+            isAuthenticated={isAuthenticated}
+          />
+          <div className="pt-12 lg:pt-16">
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 dark:border-white mb-4"></div>
+              <p className={`text-lg ${currentColors.textMuted}`}>Loading news...</p>
+            </div>
+          </div>
+          <MobileNavigation
+            currentView={currentView}
+            setCurrentView={setCurrentView}
+            onSearchClick={handleSearchClick}
+            onBytesClick={handleBytesClick}
+            onProfileClick={handleProfileClick}
+            onSavedClick={handleSavedClick}
+            onInsightsClick={handleInsightsClick}
+          />
+        </div>
+      </ErrorBoundary>
     )
   }
 
   return (
     <ErrorBoundary>
-      <div className={cn(
-        "min-h-screen bg-white dark:bg-black text-black dark:text-white",
-        "transition-colors duration-200"
-      )}>
-        
-        {/* Header Navigation */}
+      {/* Auth Debugger - Development only */}
+      <AuthDebugger />
+      
+      <div className={`min-h-screen ${currentColors.bg} transition-colors duration-300`}>
+        {/* Header */}
         <HeaderNavigation
           theme={theme}
           setTheme={setTheme}
-          onSearchClick={() => handleViewChange('search')}
-          onBytesClick={() => handleViewChange('bytes')}
-          onProfileClick={handleAuthClick}
           currentView={currentView}
-          setCurrentView={handleViewChange}
+          setCurrentView={setCurrentView}
           viewMode={viewMode}
           setViewMode={setViewMode}
-          isAuthenticated={isAuthenticated}
+          onSearchClick={handleSearchClick}
+          onBytesClick={handleBytesClick}
+          onProfileClick={handleProfileClick}
+          onAuthClick={handleAuthClick}
+          likedCount={likedArticles?.size || 0}
+          bookmarkedCount={bookmarkedArticles?.length || 0}
           user={user}
           profile={profile}
-        />
-
-        {/* Mobile Navigation */}
-        <MobileNavigation
-          currentView={currentView}
-          onViewChange={handleViewChange}
-          onSearchClick={() => handleViewChange('search')}
-          onProfileClick={handleAuthClick}
           isAuthenticated={isAuthenticated}
         />
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          
-          {/* Home View */}
-          {currentView === 'home' && (
-            <div className="space-y-6">
-              {/* Filter Controls */}
-              <FilterControls
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                selectedTimeframe={selectedTimeframe}
-                onTimeframeChange={setSelectedTimeframe}
-                sortBy={sortBy}
-                onSortChange={setSortBy}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                onRefresh={handleRefresh}
-                onForceRefresh={handleForceRefresh}
-                loading={loading}
-                totalCount={totalCount}
-                hasReached25Percent={hasReached25Percent}
-              />
-
-              {/* Category Filter */}
-              <CategoryFilter
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                categories={meta?.categories || []}
-              />
-
-              {/* Articles Grid */}
-              <div className="space-y-4">
-                {loading && (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600 dark:text-gray-400">Loading articles...</p>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                    <p className="text-red-800 dark:text-red-200">Error loading articles: {error}</p>
-                    <button
-                      onClick={handleRefresh}
-                      className="mt-2 text-sm text-red-600 dark:text-red-400 hover:underline"
-                    >
-                      Try again
-                    </button>
-                  </div>
-                )}
-
-                {!loading && !error && feeds && feeds.length > 0 && (
-                  <div className={cn(
-                    "grid gap-4",
-                    viewMode === 'grid' 
-                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-                      : "grid-cols-1"
-                  )}>
-                    {feeds.map((article, index) => (
-                      <ArticleCard
-                        key={article.id || `${article.link}-${index}`}
-                        article={article}
-                        viewMode={viewMode}
-                        isLiked={likedArticles.has(article.id || article.link)}
-                        isBookmarked={bookmarkedArticles.some(b => (b.article_id || b.id || b.link) === (article.id || article.link))}
-                        onLike={handleLikeArticle}
-                        onBookmark={handleBookmarkArticle}
-                        onView={handleArticleView}
-                        showSource={true}
-                        showCategory={true}
-                        showTimestamp={true}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {!loading && !error && feeds && feeds.length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      No articles found for your current filters.
-                    </p>
-                    <button
-                      onClick={handleRefresh}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      Refresh feeds
-                    </button>
-                  </div>
-                )}
-
-                {/* Load More Button */}
-                {hasMore && !loadingMore && (
-                  <div className="text-center pt-4">
-                    <button
-                      onClick={loadMoreFeeds}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-                    >
-                      Load More Articles
-                    </button>
-                  </div>
-                )}
-
-                {loadingMore && (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    <p className="text-gray-600 dark:text-gray-400">Loading more articles...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
+        <div className="pt-2 pb-20 lg:pb-6">
           {/* Search View */}
           {currentView === 'search' && (
             <SearchPage
-              searchQuery={searchQuery}
-              onSearch={handleSearch}
+              currentColors={currentColors}
+              allFeeds={allFeeds || []}
+              onClose={() => setCurrentView('home')}
+              onSelectArticle={handleArticleView}
+              lastUpdated={meta?.lastRefresh}
               recentSearches={recentSearches}
-              onClearSearches={() => setRecentSearches([])}
+              onAddRecentSearch={handleAddRecentSearch}
             />
           )}
 
           {/* Profile View */}
           {currentView === 'profile' && (
-            <UserProfile />
+            <ProfilePage 
+              currentColors={currentColors}
+              userPreferences={userPreferences}
+              onUpdatePreferences={setUserPreferences}
+              user={user}
+              profile={profile}
+              isAuthenticated={isAuthenticated}
+            />
           )}
 
           {/* News Bytes View */}
           {currentView === 'bytes' && (
-            <NewsBytes
-              feeds={allFeeds}
-              onArticleClick={handleArticleView}
+            <NewsBytes 
+              currentColors={currentColors}
+              articles={articlesWithImages}
+              viewMode={viewMode}
+              onLikeArticle={handleLikeArticle}
+              onBookmarkArticle={handleBookmarkArticle}
+              onShare={handleShare}
+              likedArticles={likedArticles}
+              bookmarkedArticles={bookmarkedArticles}
+              savedArticles={bookmarkedArticles}
+              onToggleSave={handleBookmarkArticle}
             />
           )}
 
-          {/* Save For Later View */}
+          {/* Saved Articles View */}
           {currentView === 'saved' && (
             <SaveForLater
-              bookmarks={bookmarkedArticles}
-              onRemoveBookmark={handleBookmarkArticle}
+              savedArticles={bookmarkedArticles || []}
+              onToggleSave={handleBookmarkArticle}
+              onShare={handleShare}
               onArticleClick={handleArticleView}
+              currentColors={currentColors}
+              className="max-w-7xl mx-auto px-4 lg:px-6 py-6"
             />
           )}
 
           {/* Personal Insights View */}
           {currentView === 'insights' && (
             <PersonalInsights
+              currentColors={currentColors}
+              allFeeds={allFeeds || []}
+              lastUpdated={meta?.lastRefresh}
               readingHistory={readingHistory}
-              likedArticles={Array.from(likedArticles)}
-              bookmarkedArticles={bookmarkedArticles}
-              onArticleClick={handleArticleView}
+              className="max-w-7xl mx-auto px-4 lg:px-6 py-6"
             />
           )}
-        </main>
+
+          {/* Home View */}
+          {currentView === 'home' && (
+            <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+              {/* Error State */}
+              {error && (
+                <div className="mb-3">
+                  <div className="bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 border rounded-xl p-3">
+                    <div className="flex items-center">
+                      <X className="h-5 w-5 text-red-400 mr-3" />
+                      <div>
+                        <h3 className="text-sm font-medium text-red-800 dark:text-red-100">
+                          Error Loading News
+                        </h3>
+                        <p className="mt-1 text-sm text-red-600 dark:text-red-200">
+                          {error.message}
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleForceRefresh}
+                        className="ml-auto text-red-600 dark:text-red-300"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Manual Refreshing Indicator */}
+              {loading && (
+                <div className="mb-3">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 border rounded-xl p-3">
+                    <div className="flex items-center">
+                      <RefreshCw className="h-5 w-5 text-blue-400 mr-3 animate-spin" />
+                      <p className="text-sm text-blue-800 dark:text-blue-100">
+                        Refreshing news...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Categories */}
+              <div className="mb-3">
+                <CategoryFilter
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={handleCategoryChangeTracked}
+                  feeds={allFeeds || []}
+                  categories={categories}
+                />
+              </div>
+
+              {/* Filter Controls */}
+              <div className="mb-3">
+                <FilterControls
+                  selectedTimeframe={selectedTimeframe}
+                  setSelectedTimeframe={setSelectedTimeframe}
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
+                  feeds={allFeeds || []}
+                  currentColors={currentColors}
+                />
+              </div>
+
+              {/* Articles display */}
+              {feeds && feeds.length > 0 ? (
+                viewMode === 'grid' ? (
+                  // Masonry Grid for card view
+                  <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+                    {feeds.map((article, index) => (
+                      <div key={`${article.link || article.id}-${index}`} className="break-inside-avoid mb-4">
+                        <ArticleCard
+                          article={article}
+                          currentColors={currentColors}
+                          onShare={handleShare}
+                          savedArticles={bookmarkedArticles || []}
+                          onToggleSave={handleBookmarkArticle}
+                          viewMode={viewMode}
+                          onArticleClick={handleArticleView}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Compact List for list view
+                  <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {feeds.map((article, index) => (
+                      <ArticleCard
+                        key={`${article.link || article.id}-${index}`}
+                        article={article}
+                        currentColors={currentColors}
+                        onShare={handleShare}
+                        savedArticles={bookmarkedArticles || []}
+                        onToggleSave={handleBookmarkArticle}
+                        viewMode={viewMode}
+                        onArticleClick={handleArticleView}
+                      />
+                    ))}
+                  </div>
+                )
+              ) : null}
+
+              {/* Loading More Indicator */}
+              {loadingMore && (
+                <div className="flex justify-center py-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white"></div>
+                    <span className={`text-sm ${currentColors.textMuted}`}>
+                      Loading more articles...
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {isEmpty && !loading && (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📰</div>
+                  <h3 className={`text-lg font-medium ${currentColors.text} mb-2`}>
+                    No articles found
+                  </h3>
+                  <p className={`${currentColors.textMuted} mb-4`}>
+                    {searchQuery 
+                      ? `No articles match "${searchQuery}"`
+                      : selectedCategory !== 'all' 
+                        ? `No articles in ${selectedCategory} category`
+                        : 'No articles available'
+                    }
+                  </p>
+                  <button
+                    onClick={handleForceRefresh}
+                    className={`px-4 py-2 ${currentColors.accent} text-white rounded-lg hover:opacity-90 transition-opacity`}
+                  >
+                    Refresh Articles
+                  </button>
+                </div>
+              )}
+
+              {/* End of Results */}
+              {!hasMore && feeds && feeds.length > 0 && !isEmpty && (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">🎉</div>
+                  <p className={`${currentColors.textMuted} mb-2`}>
+                    You&apos;ve reached the end!
+                  </p>
+                  <p className={`text-sm ${currentColors.textMuted}`}>
+                    {totalCount} total articles loaded
+                  </p>
+                </div>
+              )}
+            </main>
+          )}
+        </div>
+
+        {/* Mobile Navigation */}
+        <MobileNavigation
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          onSearchClick={handleSearchClick}
+          onBytesClick={handleBytesClick}
+          onProfileClick={handleProfileClick}
+          onSavedClick={handleSavedClick}
+          onInsightsClick={handleInsightsClick}
+          likedCount={likedArticles?.size || 0}
+          bookmarkedCount={bookmarkedArticles?.length || 0}
+        />
 
         {/* Scroll to Top Button */}
-        {scrollDirection === 'down' && (
+        {hasReached25Percent && (
           <button
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 z-50"
+            className={cn(
+              "fixed bottom-24 lg:bottom-6 right-4 z-40 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110",
+              "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+            )}
             aria-label="Scroll to top"
           >
             <ArrowUp className="h-5 w-5" />
           </button>
         )}
-
-        {/* Auth Modal */}
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-        />
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authModalMode}
+      />
     </ErrorBoundary>
   )
 }

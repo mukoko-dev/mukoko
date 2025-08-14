@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '../../hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, User, Mail, Calendar, Settings, LogOut, Edit, Save, X } from 'lucide-react'
 import { format } from 'date-fns'
 

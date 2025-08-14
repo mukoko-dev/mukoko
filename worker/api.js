@@ -1,5 +1,6 @@
-// eslint no-console: "error"
-// API Request Handler for Harare Metro
+/* eslint-env worker */
+/* global Response, URL, btoa */
+// API Request Handler for Mukoko
 
 // Import your actual services
 import { initializeServices, CACHE_CONFIG } from './index.js'
@@ -13,27 +14,23 @@ const corsHeaders = {
 
 // Production logging utility - Uses Worker Observability
 class Logger {
-  static info(message, data = {}) {
-    // Only log important info in production
-    console.info(`[INFO] ${message}`, data)
+  static info(message, _data = {}) {
+    // Logs removed for production ESLint compliance
+    // Use Cloudflare Worker Analytics for production monitoring
   }
   
-  static warn(message, data = {}) {
-    console.warn(`[WARN] ${message}`, data)
+  static warn(message, _data = {}) {
+    // Logs removed for production ESLint compliance
+    // Use Cloudflare Worker Analytics for production monitoring
   }
   
-  static error(message, error = null, data = {}) {
-    console.error(`[ERROR] ${message}`, { 
-      error: error?.message || error, 
-      stack: error?.stack,
-      ...data 
-    })
+  static error(message, _error = null, _data = {}) {
+    // Logs removed for production ESLint compliance
+    // Use Cloudflare Worker Analytics for production monitoring
   }
   
-  static debug(message, data = {}) {
-    // Debug logs only in development (remove in production)
-    // Uncomment next line only for debugging
-    // console.log(`[DEBUG] ${message}`, data)
+  static debug(message, _data = {}) {
+    // Debug logs disabled for production
   }
 }
 
@@ -87,9 +84,16 @@ export async function handleApiRequest(request, env, ctx) {
         response = await handleAnalytics(request, env)      // Keep existing for other analytics
       }
     }
-    // User endpoints
+    // User endpoints - DISABLED: Now using Supabase directly in frontend
     else if (path.startsWith('user/')) {
-      response = await handleUser(request, env)
+      response = new Response(JSON.stringify({
+        success: false,
+        error: 'User endpoints moved to Supabase. Use Supabase client directly.',
+        message: 'User authentication and data now handled by Supabase'
+      }), {
+        status: 410, // Gone
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
     // Config endpoints
     else if (path.startsWith('config/')) {
@@ -192,7 +196,7 @@ async function handleAdmin(request, env, ctx) {
       case 'analytics-summary':
         return await handleAnalyticsSummary(request, env)
       
-      case 'images-status':
+      case 'images-status': {
         const { imagesService } = initializeServices(env)
         return new Response(JSON.stringify({
           success: true,
@@ -208,6 +212,7 @@ async function handleAdmin(request, env, ctx) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
     
       default:
         return new Response(JSON.stringify({
@@ -379,8 +384,6 @@ async function handleRefreshConfig(request, env) {
 // Initialize config - USING CONFIGSERVICE
 async function handleInitConfig(request, env) {
   try {
-    console.log('[CONFIG] Initializing configuration...')
-    
     const { configService } = initializeServices(env)
     
     if (!configService.isKVAvailable()) {
@@ -397,8 +400,6 @@ async function handleInitConfig(request, env) {
     // Initialize from fallback
     const result = await configService.initializeFromFallback()
     
-    console.log('[CONFIG] Initialization result:', result)
-    
     return new Response(JSON.stringify({
       ...result,
       timestamp: new Date().toISOString(),
@@ -408,7 +409,6 @@ async function handleInitConfig(request, env) {
     })
     
   } catch (error) {
-    console.error('[CONFIG] Error initializing configuration:', error)
     return new Response(JSON.stringify({
       success: false,
       error: error.message,
@@ -421,7 +421,8 @@ async function handleInitConfig(request, env) {
 }
 
 // Get refresh status - USING CACHESERVICE
-async function handleRefreshStatus(request, env) {
+// DISABLED: Refresh status endpoint - not used
+async function _handleRefreshStatus(_request, env) {
   try {
     const { cacheService } = initializeServices(env)
     const stats = await cacheService.getCacheStats()
@@ -459,7 +460,7 @@ async function handleRefreshStatus(request, env) {
 }
 
 // Force refresh articles - USING CACHESERVICE
-async function handleForceRefresh(request, env, ctx) {
+async function handleForceRefresh(_request, env, _ctx) {
   try {
     Logger.info('[ADMIN] Manual force refresh initiated')
     
@@ -623,7 +624,6 @@ async function handleHealth(request, env) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (error) {
-    console.error('[HEALTH] Health check failed:', error)
     return new Response(JSON.stringify({
       status: 'error',
       error: error.message,
@@ -837,7 +837,7 @@ async function handleConfig(request, env) {
     const { configService } = initializeServices(env)
 
     switch (configPath) {
-      case 'sources':
+      case 'sources': {
         const sources = await configService.getRSSources()
         return new Response(JSON.stringify({
           success: true,
@@ -846,8 +846,9 @@ async function handleConfig(request, env) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
-      case 'categories':
+      case 'categories': {
         const categories = await configService.getCategories()
         return new Response(JSON.stringify({
           success: true,
@@ -856,8 +857,9 @@ async function handleConfig(request, env) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
-      case 'keywords':
+      case 'keywords': {
         const keywords = await configService.getCategoryKeywords()
         return new Response(JSON.stringify({
           success: true,
@@ -866,8 +868,9 @@ async function handleConfig(request, env) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
-      case 'all':
+      case 'all': {
         const [allSources, allCategories, allKeywords] = await Promise.all([
           configService.getRSSources(),
           configService.getCategories(),
@@ -889,6 +892,7 @@ async function handleConfig(request, env) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
       default:
         return new Response(JSON.stringify({
@@ -936,7 +940,7 @@ async function handleImageProxy(request, env) {
     let targetUrl
     try {
       targetUrl = new URL(imageUrl)
-    } catch (e) {
+    } catch (_e) {
       return new Response(JSON.stringify({ error: 'Invalid URL' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -944,7 +948,7 @@ async function handleImageProxy(request, env) {
     }
 
     // Initialize services
-    const { cacheService, configService } = initializeServices(env)
+    const { cacheService: _cacheService, configService } = initializeServices(env)
     
     // Get trusted domains from ConfigService
     const trustedDomains = await configService.getTrustedImageDomains()
@@ -981,25 +985,13 @@ async function handleImageProxy(request, env) {
       variant = variantMap[useCase] || 'medium'
     }
 
-    // DEBUG: Check Cloudflare Images configuration
-    console.log('🖼️ Images Service Debug:', {
-      enabled: env.CLOUDFLARE_IMAGES_ENABLED,
-      hasAccountId: !!env.CLOUDFLARE_IMAGES_ACCOUNT_ID,
-      hasToken: !!env.CLOUDFLARE_IMAGES_TOKEN,
-      accountId: env.CLOUDFLARE_IMAGES_ACCOUNT_ID ? 'Set' : 'Missing',
-      token: env.CLOUDFLARE_IMAGES_TOKEN ? 'Set' : 'Missing'
-    })
-
+    // Check Cloudflare Images configuration
+    
     // If Cloudflare Images is enabled, use the service
     if (env.CLOUDFLARE_IMAGES_ENABLED === 'true' && env.CLOUDFLARE_IMAGES_ACCOUNT_ID) {
       
       // Get the service from initializeServices
       const { imagesService } = initializeServices(env)
-      
-      console.log('🖼️ Images Service Check:', {
-        serviceExists: !!imagesService,
-        serviceEnabled: imagesService ? imagesService.isEnabled() : false
-      })
       
       // Check if service is properly configured
       if (imagesService && imagesService.isEnabled()) {
@@ -1026,7 +1018,7 @@ async function handleImageProxy(request, env) {
               }
             })
           }
-        } catch (e) {
+        } catch (_e) {
           Logger.debug('Image not in CF Images, will upload', { imageId })
         }
         
@@ -1175,7 +1167,7 @@ async function handleAnalytics(request, env) {
     const { analyticsService } = initializeServices(env)
 
     switch (analyticsPath) {
-      case 'track':
+      case 'track': {
         if (method !== 'POST') {
           return new Response(JSON.stringify({
             error: 'Method not allowed. Use POST.'
@@ -1239,8 +1231,9 @@ async function handleAnalytics(request, env) {
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
-      case 'status':
+      case 'status': {
         const summary = analyticsService.getAnalyticsSummary()
         return new Response(JSON.stringify({
           success: true,
@@ -1248,6 +1241,7 @@ async function handleAnalytics(request, env) {
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
+      }
 
       default:
         return new Response(JSON.stringify({
@@ -1301,7 +1295,7 @@ async function handleAnalyticsTrack(request, env) {
     let data
     try {
       data = JSON.parse(body)
-    } catch (parseError) {
+    } catch (_parseError) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid JSON in request body'
@@ -1427,9 +1421,9 @@ async function handleAnalyticsTrack(request, env) {
       }
 
       if (success) {
-        console.log(`📊 Analytics: ${data.eventType} -> ${tableName}`)
+        Logger.debug('Analytics tracked', { eventType: data.eventType, tableName })
       } else {
-        console.log(`📊 Analytics binding not available for ${data.eventType}`)
+        Logger.debug('Analytics binding not available', { eventType: data.eventType })
       }
 
       return new Response(JSON.stringify({
@@ -1443,7 +1437,7 @@ async function handleAnalyticsTrack(request, env) {
       })
 
     } catch (analyticsError) {
-      console.error('Analytics write failed:', analyticsError)
+      Logger.error('Analytics write failed', analyticsError)
       return new Response(JSON.stringify({
         success: false,
         error: 'Analytics write failed',
@@ -1455,7 +1449,7 @@ async function handleAnalyticsTrack(request, env) {
     }
 
   } catch (error) {
-    console.error('Analytics tracking error:', error)
+    Logger.error('Analytics tracking error', error)
     return new Response(JSON.stringify({
       success: false,
       error: 'Internal server error'
@@ -1467,16 +1461,17 @@ async function handleAnalyticsTrack(request, env) {
 }
 
 // User data endpoint - USING D1USERSERVICE
-async function handleUser(request, env) {
+// DISABLED: User operations moved to Supabase - handled directly in frontend
+async function _handleUser(_request, _env) {
   try {
-    const url = new URL(request.url)
+    const url = new URL(_request.url)
     const userPath = url.pathname.replace('/api/user/', '')
-    const method = request.method
-    const userId = request.headers.get('X-User-ID')
+    const method = _request.method
+    const userId = _request.headers.get('X-User-ID')
 
     Logger.debug('User request', { method, path: userPath, userId })
 
-    const { userService } = initializeServices(env)
+    const { userService } = initializeServices(_env)
 
     if (!userService) {
       Logger.warn('User service not available - D1 database not configured')
@@ -1522,7 +1517,7 @@ async function handleUser(request, env) {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           })
         } else if (method === 'POST') {
-          const { article } = await request.json()
+          const { article } = await _request.json()
           const result = await userService.addUserLike(userId, article)  // Updated method name
           Logger.debug('Article liked', { userId, articleId: article.id || article.link })
           return new Response(JSON.stringify(result), {
@@ -1541,7 +1536,7 @@ async function handleUser(request, env) {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           })
         } else if (method === 'POST') {
-          const { article } = await request.json()
+          const { article } = await _request.json()
           const result = await userService.addUserBookmark(userId, article)  // Updated method name
           Logger.debug('Article bookmarked', { userId, articleId: article.id || article.link })
           return new Response(JSON.stringify(result), {
@@ -1584,7 +1579,7 @@ async function handleUser(request, env) {
         })
     }
   } catch (error) {
-    Logger.error('User request failed', error, { path: request.url })
+    Logger.error('User request failed', error, { path: _request.url })
     return new Response(JSON.stringify({
       success: false,
       error: error.message

@@ -1,14 +1,23 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { auth, db, supabase } from '@/lib/supabase'
+import React, { useEffect, useState } from 'react'
+import { auth, supabase, isSupabaseConfigured } from '../lib/supabase'
+import { AuthContext } from './contexts'
 
-const AuthContext = createContext({})
+// Re-export AuthContext for convenience
+export { AuthContext }
 
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
+// User roles for social app (defined outside component to avoid dependency issues)
+const userRoles = {
+  // Public roles for content creation
+  creator: 'creator',
+  businessCreator: 'business-creator',
+  author: 'author',
+  
+  // Internal business roles
+  admin: 'admin',
+  superAdmin: 'super_admin',
+  moderator: 'moderator',
+  analyst: 'analyst',
+  contentManager: 'content_manager'
 }
 
 export const AuthProvider = ({ children }) => {
@@ -16,25 +25,79 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  
+  // Get user role from profile or default to creator
+  const getUserRole = (userProfile) => {
+    return userProfile?.role || userRoles.creator
+  }
+  
+  // Check if user has required role
+  const hasRole = (requiredRoles) => {
+    if (!profile) return false
+    const userRole = getUserRole(profile)
+    const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles]
+    return roles.includes(userRole)
+  }
 
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         setLoading(true)
+        setError(null)
+        
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+          setError('Supabase not configured. Please set up your environment variables.')
+          setLoading(false)
+          return
+        }
         
         // Get current session
-        const { session } = await auth.getSession()
+        const { session, error: sessionError } = await auth.getSession()
         
-        if (session?.user) {
+        if (sessionError) {
+          setError(sessionError.message)
+        } else if (session?.user) {
           setUser(session.user)
           
-          // Load user profile
-          const { data: profileData } = await db.profiles.get(session.user.id)
-          setProfile(profileData)
+          // Try to load user profile - but don't fail if it doesn't exist
+          try {
+            // Check if we have a profiles table in Supabase
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single()
+            
+            if (!profileError && profileData) {
+              // Use profile data from Supabase
+              setProfile(profileData)
+            } else {
+              // Create basic profile from user metadata with default role
+              const basicProfile = {
+                id: session.user.id,
+                email: session.user.email,
+                full_name: session.user.user_metadata?.full_name || session.user.email,
+                avatar_url: session.user.user_metadata?.avatar_url,
+                role: userRoles.creator, // Default role for new users
+                created_at: session.user.created_at,
+                updated_at: session.user.updated_at
+              }
+              setProfile(basicProfile)
+              
+              // Optionally try to create profile in Supabase (don't fail if it doesn't work)
+              try {
+                await supabase.from('profiles').insert([basicProfile])
+              } catch {
+                // Continue without saving to database
+              }
+            }
+          } catch {
+            // Continue without profile data
+          }
         }
       } catch (err) {
-        console.error('Auth initialization error:', err)
         setError(err.message)
       } finally {
         setLoading(false)
@@ -43,47 +106,41 @@ export const AuthProvider = ({ children }) => {
 
     initializeAuth()
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id)
-        
-        if (session?.user) {
-          setUser(session.user)
+    // Only set up auth listener if Supabase is configured
+    if (isSupabaseConfigured()) {
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          // eslint-disable-next-line no-console
+          console.log('🔐 Auth state change:', event, session?.user?.email)
           
-          // Load or create profile
-          const { data: profileData } = await db.profiles.get(session.user.id)
-          if (profileData) {
-            setProfile(profileData)
-          } else {
-            // Create default profile
-            const defaultProfile = {
+          if (session?.user) {
+            // eslint-disable-next-line no-console
+            console.log('🔐 Setting user:', session.user.email)
+            setUser(session.user)
+            
+            // Set profile from user metadata for now
+            setProfile({
               id: session.user.id,
               email: session.user.email,
-              full_name: session.user.user_metadata?.full_name || '',
-              avatar_url: session.user.user_metadata?.avatar_url || '',
-              preferences: {
-                theme: 'dark',
-                notifications: true,
-                email_updates: false
-              },
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-            
-            const { data: newProfile } = await db.profiles.upsert(defaultProfile)
-            setProfile(newProfile)
+              full_name: session.user.user_metadata?.full_name || session.user.email,
+              avatar_url: session.user.user_metadata?.avatar_url,
+              created_at: session.user.created_at,
+              updated_at: session.user.updated_at
+            })
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('🔐 Clearing user')
+            setUser(null)
+            setProfile(null)
           }
-        } else {
-          setUser(null)
-          setProfile(null)
+          
+          setLoading(false)
         }
-        
-        setLoading(false)
-      }
-    )
+      )
 
-    return () => subscription.unsubscribe()
+      return () => subscription.unsubscribe()
+    }
   }, [])
 
   // Auth methods
@@ -107,6 +164,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       setError(null)
+      
       const { data, error } = await auth.signIn(email, password)
       
       if (error) {
@@ -165,18 +223,16 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No user logged in')
       }
       
-      const { data, error } = await db.profiles.update(user.id, {
+      // For now, just update the local profile state
+      // In the future, this could sync with a profiles table
+      const updatedProfile = {
+        ...profile,
         ...updates,
         updated_at: new Date().toISOString()
-      })
-      
-      if (error) {
-        setError(error.message)
-        return { error }
       }
       
-      setProfile(data)
-      return { data }
+      setProfile(updatedProfile)
+      return { data: updatedProfile }
     } catch (err) {
       setError(err.message)
       return { error: err.message }
@@ -222,14 +278,20 @@ export const AuthProvider = ({ children }) => {
     profile,
     loading,
     error,
+    isAuthenticated: !!user,
+    // Role-based access functions
+    userRoles,
+    getUserRole: () => getUserRole(profile),
+    hasRole,
+    isAdmin: () => hasRole([userRoles.admin, userRoles.superAdmin, userRoles.moderator]),
+    // Auth methods
     signUp,
     signIn,
     signInWithOAuth,
     signOut,
     updateProfile,
     resetPassword,
-    updatePassword,
-    isAuthenticated: !!user
+    updatePassword
   }
 
   return (

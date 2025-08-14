@@ -1,83 +1,166 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Get environment variables - these should be set in your .env.local file
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Supabase environment variables not found. Using fallback authentication.')
-}
-
+// Create Supabase client
 export const supabase = createClient(
-  supabaseUrl || 'https://your-project.supabase.co',
-  supabaseAnonKey || 'your-anon-key'
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  }
 )
 
-// Auth helpers
+// Check if Supabase is properly configured
+export const isSupabaseConfigured = () => {
+  const configured = !!(
+    supabaseUrl && 
+    supabaseAnonKey && 
+    supabaseUrl !== 'https://placeholder.supabase.co' && 
+    supabaseUrl !== 'https://your-project.supabase.co' && 
+    supabaseAnonKey !== 'placeholder-key' &&
+    supabaseAnonKey !== 'your_supabase_anon_key'
+  )
+  
+  return configured
+}
+
+// Auth helpers - simplified and more reliable
 export const auth = {
   // Sign up with email
   signUp: async (email, password, metadata = {}) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
-      }
-    })
-    return { data, error }
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      })
+      return { data, error }
+    } catch (err) {
+      return { data: null, error: { message: err.message } }
+    }
   },
 
   // Sign in with email
   signIn: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    return { data, error }
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      return { data, error }
+    } catch (err) {
+      return { data: null, error: { message: err.message } }
+    }
   },
 
-  // Sign in with OAuth
+  // Sign in with OAuth (Google, GitHub, etc.)
   signInWithOAuth: async (provider) => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
-    })
-    return { data, error }
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      return { data, error }
+    } catch (err) {
+      return { data: null, error: { message: err.message } }
+    }
   },
 
   // Sign out
   signOut: async () => {
-    const { error } = await supabase.auth.signOut()
-    return { error }
+    if (!isSupabaseConfigured()) {
+      return { error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { error } = await supabase.auth.signOut()
+      return { error }
+    } catch (err) {
+      return { error: { message: err.message } }
+    }
   },
 
   // Get current user
   getCurrentUser: async () => {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    return { user, error }
+    if (!isSupabaseConfigured()) {
+      return { user: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      return { user, error }
+    } catch (err) {
+      return { user: null, error: { message: err.message } }
+    }
   },
 
   // Get session
   getSession: async () => {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    return { session, error }
+    if (!isSupabaseConfigured()) {
+      return { session: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      return { session, error }
+    } catch (err) {
+      return { session: null, error: { message: err.message } }
+    }
   },
 
   // Reset password
   resetPassword: async (email) => {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`
-    })
-    return { data, error }
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      })
+      return { data, error }
+    } catch (err) {
+      return { data: null, error: { message: err.message } }
+    }
   },
 
   // Update password
   updatePassword: async (password) => {
-    const { data, error } = await supabase.auth.updateUser({
-      password
-    })
-    return { data, error }
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Supabase not configured. Please check your environment variables.' } }
+    }
+    
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password
+      })
+      return { data, error }
+    } catch (err) {
+      return { data: null, error: { message: err.message } }
+    }
   }
 }
 
@@ -86,6 +169,9 @@ export const db = {
   // User profiles
   profiles: {
     get: async (userId) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -95,6 +181,9 @@ export const db = {
     },
 
     upsert: async (profile) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('profiles')
         .upsert(profile)
@@ -104,6 +193,9 @@ export const db = {
     },
 
     update: async (userId, updates) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
@@ -117,6 +209,9 @@ export const db = {
   // User preferences
   preferences: {
     get: async (userId) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('user_preferences')
         .select('*')
@@ -126,6 +221,9 @@ export const db = {
     },
 
     upsert: async (preferences) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('user_preferences')
         .upsert(preferences)
@@ -138,6 +236,9 @@ export const db = {
   // Bookmarks
   bookmarks: {
     get: async (userId) => {
+      if (!supabase) {
+        return { data: [], error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('bookmarks')
         .select('*')
@@ -147,6 +248,9 @@ export const db = {
     },
 
     add: async (bookmark) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('bookmarks')
         .insert(bookmark)
@@ -156,6 +260,9 @@ export const db = {
     },
 
     remove: async (userId, articleId) => {
+      if (!supabase) {
+        return { error: { message: 'Supabase not configured' } }
+      }
       const { error } = await supabase
         .from('bookmarks')
         .delete()
@@ -168,6 +275,9 @@ export const db = {
   // Likes
   likes: {
     get: async (userId) => {
+      if (!supabase) {
+        return { data: [], error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('likes')
         .select('article_id')
@@ -179,6 +289,9 @@ export const db = {
     },
 
     add: async (like) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('likes')
         .insert(like)
@@ -188,6 +301,9 @@ export const db = {
     },
 
     remove: async (userId, articleId) => {
+      if (!supabase) {
+        return { error: { message: 'Supabase not configured' } }
+      }
       const { error } = await supabase
         .from('likes')
         .delete()
@@ -200,6 +316,9 @@ export const db = {
   // Reading history
   readingHistory: {
     get: async (userId, limit = 100) => {
+      if (!supabase) {
+        return { data: [], error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('reading_history')
         .select('*')
@@ -210,6 +329,9 @@ export const db = {
     },
 
     add: async (historyEntry) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('reading_history')
         .insert(historyEntry)
@@ -222,6 +344,9 @@ export const db = {
   // Analytics
   analytics: {
     track: async (event) => {
+      if (!supabase) {
+        return { data: null, error: { message: 'Supabase not configured' } }
+      }
       const { data, error } = await supabase
         .from('analytics_events')
         .insert(event)
@@ -229,6 +354,9 @@ export const db = {
     },
 
     get: async (userId, eventType = null, limit = 100) => {
+      if (!supabase) {
+        return { data: [], error: { message: 'Supabase not configured' } }
+      }
       let query = supabase
         .from('analytics_events')
         .select('*')
@@ -250,6 +378,10 @@ export const db = {
 export const realtime = {
   // Subscribe to user data changes
   subscribeToUserData: (userId, callback) => {
+    if (!supabase) {
+      // Supabase not configured, realtime subscription disabled
+      return { unsubscribe: () => {} }
+    }
     return supabase
       .channel(`user-${userId}`)
       .on('postgres_changes', 
@@ -266,6 +398,10 @@ export const realtime = {
 
   // Subscribe to bookmarks changes
   subscribeToBookmarks: (userId, callback) => {
+    if (!supabase) {
+      // Supabase not configured, realtime subscription disabled
+      return { unsubscribe: () => {} }
+    }
     return supabase
       .channel(`bookmarks-${userId}`)
       .on('postgres_changes', 

@@ -1,6 +1,8 @@
+/* eslint-env worker */
+/* global Response, Request, URL, __STATIC_CONTENT_MANIFEST */
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
 import ConfigService from './services/ConfigService.js'
-import { D1UserService } from './services/D1UserService.js'
+// import { D1UserService } from './services/D1UserService.js'  // DISABLED: Using Supabase now
 import { AnalyticsEngineService } from './services/AnalyticsEngineService.js'
 import RSSFeedService from './services/RSSFeedService.js'
 import { CacheService } from './services/CacheService.js'
@@ -24,46 +26,38 @@ const CACHE_CONFIG = {
 
 // Initialize services with CORRECT bindings
 function initializeServices(env) {
-  try {
-    // FIXED: Use correct binding names
-    const configService = new ConfigService(env.CONFIG_STORAGE)
-    
-    // FIXED: CacheService expects (newsStorageKV, contentCacheKV) with correct binding names
-    const cacheService = new CacheService(
-      env.NEWS_STORAGE,      // newsStorageKV (for articles)
-      env.CONTENT_CACHE      // contentCacheKV (for search/general cache) - FIXED name
-    )
-    
-    // FIXED: Use USER_STORAGE instead of USER_DB
-    const userService = env.USER_STORAGE ? new D1UserService(env.USER_STORAGE) : null
-    
-    // FIXED: Analytics service with correct 3 datasets
-    const analyticsService = new AnalyticsEngineService({
-      categoryClicks: env.CATEGORY_CLICKS || null,
-      newsInteractions: env.NEWS_INTERACTIONS || null,
-      searchQueries: env.SEARCH_QUERIES || null
-    })
-    
-    const imagesService = new CloudflareImagesService(env)
-    const rssService = new RSSFeedService(configService)
+  // FIXED: Use correct binding names
+  const configService = new ConfigService(env.CONFIG_STORAGE)
+  
+  // FIXED: CacheService expects (newsStorageKV, contentCacheKV) with correct binding names
+  const cacheService = new CacheService(
+    env.NEWS_STORAGE,      // newsStorageKV (for articles)
+    env.CONTENT_CACHE      // contentCacheKV (for search/general cache) - FIXED name
+  )
+  
+  // DISABLED: User service now handled by Supabase directly in frontend
+  // const userService = env.USER_DB ? new D1UserService(env.USER_DB) : null
+  const userService = null // User operations moved to Supabase
+  
+  // FIXED: Analytics service with correct 3 datasets
+  const analyticsService = new AnalyticsEngineService({
+    categoryClicks: env.CATEGORY_CLICKS || null,
+    newsInteractions: env.NEWS_INTERACTIONS || null,
+    searchQueries: env.SEARCH_QUERIES || null
+  })
+  
+  const imagesService = new CloudflareImagesService(env)
+  const rssService = new RSSFeedService(configService)
 
-    console.log('✅ Services initialized successfully with correct bindings')
-    console.log(`[BINDINGS] NEWS_STORAGE: ${!!env.NEWS_STORAGE}`)
-    console.log(`[BINDINGS] CONTENT_CACHE: ${!!env.CONTENT_CACHE}`)
-    console.log(`[BINDINGS] USER_STORAGE: ${!!env.USER_STORAGE}`)
-    console.log(`[BINDINGS] CONFIG_STORAGE: ${!!env.CONFIG_STORAGE}`)
-
-    return {
-      configService,
-      cacheService,
-      userService,
-      analyticsService,
-      imagesService,
-      rssService
-    }
-  } catch (error) {
-    console.error('❌ Failed to initialize services:', error.message)
-    throw error
+  // Services initialized successfully
+  
+  return {
+    configService,
+    cacheService,
+    userService,
+    analyticsService,
+    imagesService,
+    rssService
   }
 }
 
@@ -72,25 +66,25 @@ async function runScheduledRefresh(env) {
   const startTime = Date.now()
   
   try {
-    console.info('[CRON] Starting autonomous scheduled refresh')
+    // Starting autonomous scheduled refresh
     
     const { cacheService, rssService } = initializeServices(env)
     
     // Check if refresh is needed (autonomous decision)
     const needsRefresh = await cacheService.shouldRunScheduledRefresh(CACHE_CONFIG.SCHEDULED_REFRESH_INTERVAL)
     if (!needsRefresh) {
-      console.info('[CRON] Scheduled refresh not needed yet')
+      // Scheduled refresh not needed yet
       return { success: true, reason: 'Not time for refresh', skipped: true }
     }
 
     // Try to acquire lock (autonomous)
     const lockAcquired = await cacheService.acquireRefreshLock()
     if (!lockAcquired) {
-      console.warn('[CRON] Could not acquire refresh lock - another process running')
+      // Could not acquire refresh lock - another process running
       return { success: true, reason: 'Another refresh in progress', skipped: true }
     }
 
-    console.info('[CRON] Starting RSS fetch from all sources')
+    // Starting RSS fetch from all sources
     
     // Fetch fresh articles autonomously
     const freshArticles = await rssService.fetchAllFeedsBackground(
@@ -104,7 +98,7 @@ async function runScheduledRefresh(env) {
       await cacheService.setLastScheduledRun()
       
       const duration = Date.now() - startTime
-      console.info(`[CRON] Autonomous refresh completed successfully in ${duration}ms, cached ${freshArticles.length} articles`)
+      // Autonomous refresh completed successfully
       
       return { 
         success: true, 
@@ -114,7 +108,7 @@ async function runScheduledRefresh(env) {
         autonomous: true
       }
     } else {
-      console.warn('[CRON] No articles fetched during refresh')
+      // No articles fetched during refresh
       return { 
         success: false, 
         reason: 'No articles fetched',
@@ -124,11 +118,7 @@ async function runScheduledRefresh(env) {
     
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error('[CRON] Autonomous refresh failed', { 
-      error: error.message, 
-      duration: `${duration}ms`,
-      stack: error.stack?.substring(0, 500)
-    })
+    // Autonomous refresh failed
     return { 
       success: false, 
       reason: error.message,
@@ -140,17 +130,17 @@ async function runScheduledRefresh(env) {
     try {
       const { cacheService } = initializeServices(env)
       await cacheService.releaseRefreshLock()
-      console.info('[CRON] Refresh lock released')
-    } catch (lockError) {
-      console.error('[CRON] Failed to release lock:', lockError.message)
+      // Refresh lock released
+    } catch {
+      // Failed to release lock
     }
   }
 }
 
 // Initial data loading function - AUTONOMOUS
-async function ensureInitialData(env) {
+async function _ensureInitialData(env) {
   try {
-    console.info('[INIT] Checking if initial data load is needed')
+    // Checking if initial data load is needed
     
     const { cacheService, rssService } = initializeServices(env)
     
@@ -158,16 +148,16 @@ async function ensureInitialData(env) {
     const existingArticles = await cacheService.getCachedArticles()
     
     if (existingArticles && existingArticles.length > 0) {
-      console.info(`[INIT] Found ${existingArticles.length} cached articles, no initial load needed`)
+      // Found cached articles, no initial load needed
       return { success: true, reason: 'Data already available', articlesCount: existingArticles.length }
     }
     
-    console.info('[INIT] No cached data found, performing initial load')
+    // No cached data found, performing initial load
     
     // Try to acquire lock for initial load
     const lockAcquired = await cacheService.acquireRefreshLock()
     if (!lockAcquired) {
-      console.info('[INIT] Another process is loading data, waiting...')
+      // Another process is loading data, waiting...
       return { success: true, reason: 'Another process loading', skipped: true }
     }
     
@@ -182,14 +172,14 @@ async function ensureInitialData(env) {
         await cacheService.setCachedArticles(articles)
         await cacheService.setLastScheduledRun()
         
-        console.info(`[INIT] Initial load completed: ${articles.length} articles`)
+        // Initial load completed
         return { 
           success: true, 
           articlesCount: articles.length,
           initialLoad: true 
         }
       } else {
-        console.warn('[INIT] No articles loaded during initial fetch')
+        // No articles loaded during initial fetch
         return { success: false, reason: 'No articles fetched' }
       }
       
@@ -198,13 +188,13 @@ async function ensureInitialData(env) {
     }
     
   } catch (error) {
-    console.error('[INIT] Initial data load failed:', error.message)
+    // Initial data load failed
     return { success: false, reason: error.message }
   }
 }
 
 // MISSING: Validate environment function with CORRECT binding names
-function validateEnvironment(env) {
+function _validateEnvironment(env) {
   const issues = []
   const warnings = []
   
@@ -239,106 +229,224 @@ function getBasicHTML() {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harare Metro - Zimbabwe News</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🇿🇼</text></svg>">
+    <title>Mukoko - Modern News Aggregator</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000000;
             min-height: 100vh;
-            color: #333;
+            color: #ffffff;
+            font-weight: 400;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+        
         .container { 
-            max-width: 800px; 
+            max-width: 900px; 
             margin: 0 auto; 
-            padding: 40px 20px; 
+            padding: 60px 24px; 
             text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+        
+        .logo-container {
+            margin-bottom: 48px;
+        }
+        
         .logo {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 24px;
+            border: 2px solid #ffffff;
+            margin-bottom: 24px;
         }
-        .logo h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2563eb;
+        
+        .logo-inner {
+            border: 1px solid #ffffff;
+            padding: 20px 32px;
         }
-        .logo p {
-            color: #666;
+        
+        .logo-mk {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-text {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 0.9rem;
+            color: #a3a3a3;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .tagline {
+            color: #a3a3a3;
             font-size: 1.1rem;
+            font-weight: 300;
+            margin-bottom: 48px;
         }
+        
         .loading {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-            backdrop-filter: blur(10px);
+            background: #0f0f0f;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 40px 32px;
+            margin-bottom: 48px;
         }
+        
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e5e7eb;
-            border-top: 4px solid #2563eb;
+            width: 32px;
+            height: 32px;
+            border: 2px solid #404040;
+            border-top: 2px solid #ffffff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 24px;
         }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .loading h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+        
+        .loading p {
+            color: #a3a3a3;
+            font-weight: 300;
+        }
+        
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
         }
+        
         .feature {
-            background: rgba(255,255,255,0.9);
-            padding: 20px;
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
+            background: #0f0f0f;
+            border: 1px solid #262626;
+            padding: 32px 24px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
+        
+        .feature:hover {
+            border-color: #404040;
+            background: #1a1a1a;
+        }
+        
         .feature h3 {
-            color: #2563eb;
-            margin-bottom: 10px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 500;
+            font-size: 1.1rem;
         }
+        
+        .feature p {
+            color: #a3a3a3;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+        
         @media (max-width: 768px) {
-            .container { padding: 20px 15px; }
-            .logo { padding: 30px 20px; }
-            .logo h1 { font-size: 2rem; }
+            .container { 
+                padding: 40px 20px; 
+            }
+            .logo-mk { 
+                font-size: 2.5rem; 
+            }
+            .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        @media (prefers-color-scheme: light) {
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+            .logo, .logo-inner {
+                border-color: #000000;
+            }
+            .logo-mk {
+                color: #000000;
+            }
+            .tagline, .loading p, .feature p {
+                color: #666666;
+            }
+            .loading, .feature {
+                background: #fafafa;
+                border-color: #e5e5e5;
+            }
+            .feature:hover {
+                border-color: #d4d4d4;
+                background: #f5f5f5;
+            }
+            .loading h3, .feature h3 {
+                color: #000000;
+            }
+            .spinner {
+                border-color: #e5e5e5;
+                border-top-color: #000000;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <h1>🇿🇼 Harare Metro</h1>
-            <p>Zimbabwe's Premier News Aggregator</p>
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-inner">
+                    <div class="logo-mk">MK</div>
+                    <div class="logo-text">MUKOKO</div>
+                </div>
+            </div>
+            <p class="tagline">Modern news aggregation platform</p>
         </div>
         
         <div class="loading">
             <div class="spinner"></div>
             <h3>Loading Latest News...</h3>
-            <p>Aggregating news from trusted Zimbabwean sources</p>
+            <p>Aggregating news from trusted sources worldwide</p>
         </div>
 
         <div class="features">
             <div class="feature">
-                <h3>📰 Local Sources</h3>
-                <p>News from Herald, NewsDay, ZimLive, and more</p>
+                <h3>🌍 Global Sources</h3>
+                <p>Curated news from trusted publishers worldwide</p>
             </div>
             <div class="feature">
                 <h3>🔍 Smart Search</h3>
-                <p>Find exactly what you're looking for</p>
+                <p>AI-powered search to find exactly what matters</p>
             </div>
             <div class="feature">
-                <h3>📱 Mobile Ready</h3>
-                <p>Perfect experience on any device</p>
+                <h3>📱 Mobile First</h3>
+                <p>Seamless experience across all your devices</p>
             </div>
         </div>
     </div>
@@ -369,9 +477,6 @@ export default {
   async fetch(request, env, ctx) {
     try {
       const url = new URL(request.url)
-      
-      // Pass CONFIG_STORAGE to ConfigService, not the main KV storage
-      const configService = new ConfigService(env.CONFIG_STORAGE) // ✅ Correct
       
       // Handle CORS preflight requests
       if (request.method === 'OPTIONS') {
@@ -421,7 +526,7 @@ export default {
               })
             }
             
-            console.warn(`Static content not available for: ${url.pathname}`)
+            // Static content not available for: ${url.pathname}
             
             // For missing favicon, return a simple one
             if (url.pathname === '/favicon.ico' || url.pathname === '/vite.svg') {
@@ -470,7 +575,7 @@ export default {
           
           return newResponse
           
-        } catch (e) {
+        } catch {
           // Handle source maps silently
           if (url.pathname.endsWith('.map')) {
             return new Response('Source map not found', { 
@@ -484,7 +589,7 @@ export default {
               !url.pathname.includes('vite.svg') && 
               !url.pathname.includes('manifest.json') &&
               !url.pathname.endsWith('.map')) {
-            console.warn(`Asset not found: ${url.pathname}`)
+            // Asset not found: ${url.pathname}
           }
           
           // For missing favicon/vite.svg, return a simple SVG
@@ -515,7 +620,7 @@ export default {
       try {
         // Check if we have static content
         if (!env.__STATIC_CONTENT) {
-          console.info('Static content not available, serving enhanced fallback HTML')
+          // Static content not available, serving enhanced fallback HTML
           return new Response(getBasicHTML(), {
             headers: { 
               'Content-Type': 'text/html;charset=UTF-8',
@@ -538,8 +643,8 @@ export default {
         newResponse.headers.set('Content-Type', 'text/html;charset=UTF-8')
         return newResponse
         
-      } catch (e) {
-        console.info('index.html not found, serving enhanced fallback HTML')
+      } catch {
+        // index.html not found, serving enhanced fallback HTML
         return new Response(getBasicHTML(), {
           headers: { 
             'Content-Type': 'text/html;charset=UTF-8',
@@ -548,32 +653,28 @@ export default {
         })
       }
 
-    } catch (error) {
-      console.error('Worker error:', { 
-        error: error.message, 
-        url: request.url,
-        stack: error.stack 
-      })
+    } catch {
+      // Worker error occurred
       return new Response('Internal Server Error', { status: 500 })
     }
   },
 
   // Scheduled event handler for Cloudflare Cron Triggers
-  async scheduled(controller, env, ctx) {
-    console.info('[CRON] Cron trigger executed')
+  async scheduled(controller, env, _ctx) {
+    // Cron trigger executed
     
     try {
       const result = await runScheduledRefresh(env)
       
       if (result.success) {
-        console.info(`[CRON] Scheduled refresh successful: ${result.articlesCount} articles in ${result.duration}ms`)
+        // Scheduled refresh successful: articles in duration
       } else {
-        console.warn(`[CRON] Scheduled refresh skipped: ${result.reason}`)
+        // Scheduled refresh skipped: reason
       }
       
       return result
     } catch (error) {
-      console.error('[CRON] Scheduled event handler failed:', error)
+      // Scheduled event handler failed
       return { success: false, error: error.message }
     }
   }

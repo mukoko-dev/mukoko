@@ -15,17 +15,17 @@ export default defineConfig({
     port: 5173,
     host: true,
     proxy: {
-      // Proxy API calls to local worker
+      // Proxy API calls to worker
       '/api': {
-        target: 'http://localhost:8787',
+        target: 'https://app.mukoko.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
       // Proxy worker assets
       '/worker': {
-        target: 'http://localhost:8787',
+        target: 'https://app.mukoko.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       }
     }
   },
