@@ -130,7 +130,12 @@ function App() {
     trackError
   } = useAnalytics()
 
-  const { updateHead } = useHead()
+  useHead({
+    title: 'Mukoko - News Aggregator',
+    description: 'Stay informed with the latest news from Harare Metro and other trusted sources.',
+    keywords: 'news, harare, zimbabwe, metro, aggregator',
+    noIndex: false
+  })
 
   // Update theme effect
   useEffect(() => {

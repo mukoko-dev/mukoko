@@ -13,7 +13,7 @@ export const useHead = ({
   image,
   canonical,
   noIndex = false
-}) => {
+} = {}) => {
   useEffect(() => {
     if (title) {
       updateTitle(title);

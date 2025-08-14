@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Mail, Lock, User, Eye, EyeOff, Github, Google } from 'lucide-react'
+import { Loader2, Mail, Lock, User, Eye, EyeOff, Github, Chrome } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const AuthModal = ({ isOpen, onClose }) => {
@@ -212,7 +212,7 @@ const AuthModal = ({ isOpen, onClose }) => {
                   onClick={() => handleOAuthSignIn('google')}
                   disabled={isSubmitting}
                 >
-                  <Google className="mr-2 h-4 w-4" />
+                  <Chrome className="mr-2 h-4 w-4" />
                   Google
                 </Button>
                 <Button
