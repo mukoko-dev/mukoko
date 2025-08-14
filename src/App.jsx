@@ -37,7 +37,7 @@ import {
 
 function App() {
   // Auth state from context
-  const { user, profile, isAuthenticated, loading: authLoading, isAdmin } = useAuth()
+  const { user, profile, isAuthenticated, loading: authLoading, isAdmin, signOut } = useAuth()
   
   // UI state
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -383,6 +383,73 @@ function App() {
   // Navigation handlers
   const handleSearchClick = () => setCurrentView('search')
   const handleBytesClick = () => setCurrentView('bytes')
+
+  // Auth handlers
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut()
+      
+      // Force clear any lingering session data
+      try {
+        // Clear localStorage items that might contain session data
+        const keysToRemove = []
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (key && (key.includes('supabase') || key.includes('sb-'))) {
+            keysToRemove.push(key)
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key))
+        
+        // Clear any sessionStorage as well
+        sessionStorage.clear()
+      } catch {
+        // Continue even if localStorage operations fail
+      }
+      
+      setCurrentView('home') // Redirect to home after logout
+      
+      // Optional: reload page to ensure clean state
+      window.location.reload()
+    } catch {
+      // Error during logout - user will remain in current state
+    }
+  }, [signOut, setCurrentView])
+
+  // Debug function to force clear all auth data - available in browser console as window.clearAuth
+  const forceAuthClear = useCallback(async () => {
+    try {
+      // Sign out from Supabase
+      await supabase.auth.signOut()
+      
+      // Clear all localStorage
+      const keysToRemove = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && (key.includes('supabase') || key.includes('sb-'))) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key))
+      
+      // Clear sessionStorage
+      sessionStorage.clear()
+      
+      // Reload the page
+      window.location.reload()
+    } catch {
+      // Error clearing auth data - continue silently
+    }
+  }, [])
+
+  // Make forceAuthClear available globally for debugging
+  useEffect(() => {
+    window.clearAuth = forceAuthClear
+    return () => {
+      delete window.clearAuth
+    }
+  }, [forceAuthClear])
+  
   const handleSavedClick = () => setCurrentView('saved')
   
   // Protected navigation handlers that require authentication
@@ -470,6 +537,7 @@ function App() {
             onBytesClick={handleBytesClick}
             onProfileClick={handleProfileClick}
             onAuthClick={handleAuthClick}
+            onLogout={handleLogout}
             user={user}
             profile={profile}
             isAuthenticated={isAuthenticated}
@@ -512,6 +580,7 @@ function App() {
           onBytesClick={handleBytesClick}
           onProfileClick={handleProfileClick}
           onAuthClick={handleAuthClick}
+          onLogout={handleLogout}
           likedCount={likedArticles?.size || 0}
           bookmarkedCount={bookmarkedArticles?.length || 0}
           user={user}

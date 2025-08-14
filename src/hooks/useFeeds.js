@@ -93,9 +93,7 @@ export function useFeeds({
       try {
         data = JSON.parse(responseText)
       } catch (parseError) {
-        // eslint-disable-next-line no-console
         console.error('JSON Parse Error:', parseError)
-        // eslint-disable-next-line no-console
         console.error('Response text:', responseText)
         throw new Error(`Invalid JSON response: ${parseError.message}`)
       }
@@ -106,7 +104,6 @@ export function useFeeds({
 
       return data
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('API Request failed:', {
         endpoint,
         error: error.message,

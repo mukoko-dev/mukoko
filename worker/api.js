@@ -940,7 +940,7 @@ async function handleImageProxy(request, env) {
     let targetUrl
     try {
       targetUrl = new URL(imageUrl)
-    } catch (_e) {
+    } catch {
       return new Response(JSON.stringify({ error: 'Invalid URL' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -1018,7 +1018,7 @@ async function handleImageProxy(request, env) {
               }
             })
           }
-        } catch (_e) {
+        } catch {
           Logger.debug('Image not in CF Images, will upload', { imageId })
         }
         
@@ -1295,7 +1295,7 @@ async function handleAnalyticsTrack(request, env) {
     let data
     try {
       data = JSON.parse(body)
-    } catch (_parseError) {
+    } catch {
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid JSON in request body'

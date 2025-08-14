@@ -5,17 +5,20 @@ This folder contains all the documentation and guides for the Mukoko social news
 ## 📚 Available Guides
 
 ### Development & Setup
+
 - **[Local Development Guide](LOCAL_DEVELOPMENT.md)** - Setting up the development environment
 - **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Production deployment instructions
 - **[Migration Summary](MIGRATION_SUMMARY.md)** - Overview of recent changes and migrations
 
 ### Features & Components
+
 - **[Role System](ROLE_SYSTEM.md)** - User roles and authentication system
 - **[Icon Components Guide](ICON_COMPONENTS_GUIDE.md)** - Using icon components in the app
 - **[Analytics Guide](ANALYTICS_GUIDE.md)** - Analytics implementation and usage
 - **[Analytics Datasets](analytics_datasets.md)** - Dataset structure and configuration
 
 ### Security
+
 - **[Security Guide](SECURITY.md)** - Security best practices and policies
 
 ## 🚀 Quick Start
@@ -33,4 +36,6 @@ For the main project overview, installation instructions, and basic usage, see t
 
 ---
 
-*Documentation organized on August 15, 2025*
+---
+
+Documentation organized on August 15, 2025

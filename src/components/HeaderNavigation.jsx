@@ -2,29 +2,29 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { IconButton } from '@/components/ui/icon-button'
-import { IconGroup, IconGroupToolbar } from '@/components/ui/icon-group'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { 
   MagnifyingGlassIcon,
-  Bars3Icon,
   SunIcon,
   MoonIcon,
-  HomeIcon,
-  VideoCameraIcon,
   UserCircleIcon,
   Squares2X2Icon,
-  ListBulletIcon
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline'
 import {
-  SunIcon as SunSolidIcon,
-  MoonIcon as MoonSolidIcon,
-  HomeIcon as HomeSolidIcon,
-  VideoCameraIcon as VideoCameraSolidIcon,
-  UserCircleIcon as UserCircleSolidIcon,
+  SunIcon as _SunSolidIcon,
+  MoonIcon as _MoonSolidIcon,
+  UserCircleIcon as _UserCircleSolidIcon,
   MagnifyingGlassIcon as MagnifyingGlassSolidIcon,
   Squares2X2Icon as Squares2X2SolidIcon,
-  ListBulletIcon as ListBulletSolidIcon
 } from '@heroicons/react/24/solid'
 import Logo from './Logo'
 
@@ -32,13 +32,14 @@ const HeaderNavigation = ({
   theme, 
   setTheme, 
   onSearchClick, 
-  onBytesClick,
+  onBytesClick: _onBytesClick,
   onProfileClick,
+  onLogout,
   currentView,
   setCurrentView,
-  viewMode,
-  setViewMode,
-  title = "Mukoko",
+  viewMode: _viewMode,
+  setViewMode: _setViewMode,
+  title: _title = "Mukoko",
   isAuthenticated = false,
   user = null,
   profile = null
@@ -141,22 +142,36 @@ const HeaderNavigation = ({
 
             {/* User Profile / Auth */}
             {isAuthenticated ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleNavClick('profile')}
-                className="flex items-center space-x-2"
-              >
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
-                  <AvatarFallback className="text-xs">
-                    {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="hidden sm:inline">
-                  {profile?.full_name || user?.email?.split('@')[0] || 'User'}
-                </span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={profile?.avatar_url} alt={profile?.full_name} />
+                      <AvatarFallback className="text-xs">
+                        {profile?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden sm:inline">
+                      {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleNavClick('profile')}>
+                    <UserCircleIcon className="h-4 w-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={onLogout}>
+                    <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button
                 variant="outline"

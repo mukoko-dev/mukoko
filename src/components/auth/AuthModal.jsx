@@ -228,6 +228,11 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
     setUsernameError('')
   }
 
+  // Don't render anything if modal is not open
+  if (!isOpen) {
+    return null
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-full h-screen w-screen p-0 m-0 rounded-none border-0">
