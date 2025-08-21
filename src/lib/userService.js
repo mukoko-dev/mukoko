@@ -10,9 +10,9 @@ class UserService {
   async getUserProfile(userId) {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('auth_id', userId)
         .single()
       
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
@@ -28,9 +28,19 @@ class UserService {
   // Update user profile
   async updateUserProfile(userId, profileData) {
     try {
+      // Map frontend fields to database fields
+      const dbProfileData = {
+        display_name: profileData.full_name || profileData.display_name,
+        username: profileData.username,
+        avatar_url: profileData.avatar_url,
+        bio: profileData.bio,
+        updated_at: new Date().toISOString()
+      }
+      
       const { data, error } = await supabase
-        .from('profiles')
-        .upsert({ id: userId, ...profileData })
+        .from('user_profiles')
+        .update(dbProfileData)
+        .eq('auth_id', userId)
         .select()
         .single()
       

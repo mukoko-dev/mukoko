@@ -8,6 +8,10 @@ import RSSFeedService from './services/RSSFeedService.js'
 import { CacheService } from './services/CacheService.js'
 import { handleApiRequest } from './api.js'
 import { CloudflareImagesService } from './services/CloudflareImagesService.js'
+import { routeInternalAPI } from './enhanced-api.js'
+// Durable Objects
+export { ChatRoom } from '../src/durable-objects/ChatRoom.js'
+export { UserSession } from '../src/durable-objects/UserSession.js'
 
 // Cache configuration
 const CACHE_CONFIG = {
@@ -487,6 +491,11 @@ export default {
             'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-User-ID',
           }
         })
+      }
+      
+      // Handle internal API requests (for Durable Objects and real-time features)
+      if (url.pathname.startsWith('/api/internal/')) {
+        return await routeInternalAPI(request, env)
       }
       
       // Handle API requests (delegates to api.js)

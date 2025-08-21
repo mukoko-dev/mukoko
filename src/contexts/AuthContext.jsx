@@ -63,32 +63,58 @@ export const AuthProvider = ({ children }) => {
           
           // Try to load user profile - but don't fail if it doesn't exist
           try {
-            // Check if we have a profiles table in Supabase
+            // Check if we have a user_profiles table in Supabase (enhanced schema)
             const { data: profileData, error: profileError } = await supabase
-              .from('profiles')
+              .from('user_profiles')
               .select('*')
-              .eq('id', session.user.id)
+              .eq('auth_id', session.user.id)
               .single()
             
             if (!profileError && profileData) {
-              // Use profile data from Supabase
-              setProfile(profileData)
+              // Use profile data from Supabase - map fields for compatibility
+              setProfile({
+                id: profileData.auth_id, // Use auth_id as id for compatibility
+                email: profileData.email,
+                full_name: profileData.display_name || profileData.username,
+                display_name: profileData.display_name,
+                username: profileData.username,
+                avatar_url: profileData.avatar_url,
+                role: profileData.role,
+                status: profileData.status,
+                created_at: profileData.created_at,
+                updated_at: profileData.updated_at
+              })
             } else {
               // Create basic profile from user metadata with default role
               const basicProfile = {
-                id: session.user.id,
+                auth_id: session.user.id,
                 email: session.user.email,
-                full_name: session.user.user_metadata?.full_name || session.user.email,
+                username: session.user.email.split('@')[0] || 'user', // Generate username from email
+                display_name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
                 avatar_url: session.user.user_metadata?.avatar_url,
                 role: userRoles.creator, // Default role for new users
+                status: 'active',
+                email_verified: session.user.email_confirmed || false,
+                onboarding_completed: false
+              }
+              
+              // Set profile for frontend compatibility
+              setProfile({
+                id: session.user.id,
+                email: basicProfile.email,
+                full_name: basicProfile.display_name,
+                display_name: basicProfile.display_name,
+                username: basicProfile.username,
+                avatar_url: basicProfile.avatar_url,
+                role: basicProfile.role,
+                status: basicProfile.status,
                 created_at: session.user.created_at,
                 updated_at: session.user.updated_at
-              }
-              setProfile(basicProfile)
+              })
               
               // Optionally try to create profile in Supabase (don't fail if it doesn't work)
               try {
-                await supabase.from('profiles').insert([basicProfile])
+                await supabase.from('user_profiles').insert([basicProfile])
               } catch {
                 // Continue without saving to database
               }
@@ -119,15 +145,52 @@ export const AuthProvider = ({ children }) => {
             console.log('🔐 Setting user:', session.user.email)
             setUser(session.user)
             
-            // Set profile from user metadata for now
-            setProfile({
-              id: session.user.id,
-              email: session.user.email,
-              full_name: session.user.user_metadata?.full_name || session.user.email,
-              avatar_url: session.user.user_metadata?.avatar_url,
-              created_at: session.user.created_at,
-              updated_at: session.user.updated_at
-            })
+            // Try to get full profile from enhanced database
+            try {
+              const { data: profileData, error: profileError } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('auth_id', session.user.id)
+                .single()
+              
+              if (!profileError && profileData) {
+                // Map enhanced profile data for frontend compatibility
+                setProfile({
+                  id: profileData.auth_id, // Use auth_id as id for compatibility
+                  email: profileData.email,
+                  full_name: profileData.display_name || profileData.username,
+                  display_name: profileData.display_name,
+                  username: profileData.username,
+                  avatar_url: profileData.avatar_url,
+                  role: profileData.role,
+                  status: profileData.status,
+                  created_at: profileData.created_at,
+                  updated_at: profileData.updated_at
+                })
+              } else {
+                // Fallback to basic profile from session metadata
+                setProfile({
+                  id: session.user.id,
+                  email: session.user.email,
+                  full_name: session.user.user_metadata?.full_name || session.user.email,
+                  avatar_url: session.user.user_metadata?.avatar_url,
+                  role: userRoles.creator,
+                  created_at: session.user.created_at,
+                  updated_at: session.user.updated_at
+                })
+              }
+            } catch {
+              // Fallback to basic profile from session metadata
+              setProfile({
+                id: session.user.id,
+                email: session.user.email,
+                full_name: session.user.user_metadata?.full_name || session.user.email,
+                avatar_url: session.user.user_metadata?.avatar_url,
+                role: userRoles.creator,
+                created_at: session.user.created_at,
+                updated_at: session.user.updated_at
+              })
+            }
           } else {
             // eslint-disable-next-line no-console
             console.log('🔐 Clearing user')

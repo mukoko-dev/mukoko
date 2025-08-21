@@ -173,9 +173,9 @@ export const db = {
         return { data: null, error: { message: 'Supabase not configured' } }
       }
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('auth_id', userId)
         .single()
       return { data, error }
     },
@@ -184,9 +184,24 @@ export const db = {
       if (!supabase) {
         return { data: null, error: { message: 'Supabase not configured' } }
       }
+      
+      // Map profile fields for the new schema
+      const dbProfile = {
+        auth_id: profile.id || profile.auth_id,
+        email: profile.email,
+        username: profile.username || profile.email?.split('@')[0] || 'user',
+        display_name: profile.full_name || profile.display_name,
+        avatar_url: profile.avatar_url,
+        bio: profile.bio,
+        role: profile.role || 'creator',
+        status: profile.status || 'active',
+        email_verified: profile.email_verified || false,
+        onboarding_completed: profile.onboarding_completed || false
+      }
+      
       const { data, error } = await supabase
-        .from('profiles')
-        .upsert(profile)
+        .from('user_profiles')
+        .upsert(dbProfile)
         .select()
         .single()
       return { data, error }
@@ -196,10 +211,27 @@ export const db = {
       if (!supabase) {
         return { data: null, error: { message: 'Supabase not configured' } }
       }
+      
+      // Map updates for the new schema
+      const dbUpdates = {
+        display_name: updates.full_name || updates.display_name,
+        username: updates.username,
+        avatar_url: updates.avatar_url,
+        bio: updates.bio,
+        updated_at: new Date().toISOString()
+      }
+      
+      // Remove undefined values
+      Object.keys(dbUpdates).forEach(key => {
+        if (dbUpdates[key] === undefined) {
+          delete dbUpdates[key]
+        }
+      })
+      
       const { data, error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', userId)
+        .from('user_profiles')
+        .update(dbUpdates)
+        .eq('auth_id', userId)
         .select()
         .single()
       return { data, error }

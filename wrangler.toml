@@ -22,6 +22,14 @@ ADMIN_KEY = "mukoko-admin-2025-secure-key"
 # Supabase Configuration
 VITE_SUPABASE_URL = "https://huilmzajhiqcuzonbaps.supabase.co"
 VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1aWxtemFqaGlxY3V6b25iYXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNzAyMjIsImV4cCI6MjA3MDc0NjIyMn0.G5C9Swbb1tXEjyhkI98PlQxZ_2OUXI1vD0Eh8Q81KZU"
+# MongoDB Configuration (for high-frequency operations)
+MONGODB_URI = "mongodb+srv://mukoko:SecurePass2024@mukoko-cluster.mongodb.net/"
+MONGODB_DB_NAME = "mukoko_interactions"
+# Enhanced features
+ENABLE_REAL_TIME_CHAT = "true"
+ENABLE_PUSH_NOTIFICATIONS = "true" 
+ENABLE_ANALYTICS_TRACKING = "true"
+ENABLE_CONTENT_RECOMMENDATIONS = "true"
 # Role-based access configuration
 ROLES_ENABLED = "true"
 DEFAULT_ROLE = "creator"
@@ -68,6 +76,19 @@ dataset = "news_interactions"
 binding = "SEARCH_QUERIES"
 dataset = "search_queries"
 
+# Durable Objects for real-time features
+[[durable_objects.bindings]]
+name = "CHAT_ROOMS"
+class_name = "ChatRoom"
+
+[[durable_objects.bindings]]
+name = "USER_SESSIONS"
+class_name = "UserSession"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ChatRoom", "UserSession"]
+
 # Cron Triggers for Background Refresh
 [triggers]
 crons = ["0 * * * *"]
@@ -110,6 +131,13 @@ ROLES_ENABLED = "true"
 DEFAULT_ROLE = "creator"
 ADMIN_ROLES = "admin,super_admin,moderator"
 CREATOR_ROLES = "creator,business-creator,author"
+# Enhanced MongoDB Configuration
+MONGODB_URI = "mongodb://localhost:27017"
+MONGODB_DB_NAME = "mukoko_preview"
+ENABLE_REAL_TIME_CHAT = "false"
+ENABLE_PUSH_NOTIFICATIONS = "false"
+ENABLE_ANALYTICS_TRACKING = "false"
+ENABLE_CONTENT_RECOMMENDATIONS = "false"
 
 # Preview KV Namespaces (use preview_id for local development)
 [[env.preview.kv_namespaces]]
@@ -138,5 +166,16 @@ binding = "USER_DB"
 database_name = "mukoko_users"
 database_id = "b6204614-2cf1-47ed-b9e4-1fbbeb09fe01"
 
-# Preview Analytics Engine - NO DATASETS FOR LOCAL DEV
-# Analytics datasets are disabled in preview environment
+# Preview Durable Objects for real-time features
+[[env.preview.durable_objects.bindings]]
+name = "CHAT_ROOMS"
+class_name = "ChatRoom"
+
+[[env.preview.durable_objects.bindings]]
+name = "USER_SESSIONS"
+class_name = "UserSession"
+
+# Preview Analytics Engine - Disabled for local development
+# [[env.preview.analytics_engine_datasets]]
+# binding = "CATEGORY_CLICKS"
+# dataset = "category_clicks"
