@@ -1,0 +1,8 @@
+[project]
+name = "nuchi-honey"
+version = "0.1.0"
+description = "Nuchi Honey — Privacy-first personalization engine for Mukoko"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

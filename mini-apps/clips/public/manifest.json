@@ -1,0 +1,12 @@
+{
+  "id": "clips",
+  "name": "Clips",
+  "version": "0.0.1",
+  "description": "Context-rich news from trusted African sources",
+  "icon": "",
+  "domain": "clips.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "content",
+  "color": "#0047AB"
+}

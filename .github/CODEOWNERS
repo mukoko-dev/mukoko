@@ -1,0 +1,7 @@
+* @nyuchitech/core
+/app/ @nyuchitech/mobile
+/packages/design-system/ @nyuchitech/design
+/services/ @nyuchitech/backend
+/honey/ @nyuchitech/ai
+/mini-apps/ @nyuchitech/frontend
+/web/ @nyuchitech/frontend

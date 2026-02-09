@@ -1,0 +1,12 @@
+{
+  "id": "events",
+  "name": "Events",
+  "version": "0.0.1",
+  "description": "Cultural gatherings, meetups, and community events",
+  "icon": "",
+  "domain": "events.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "social",
+  "color": "#004D40"
+}

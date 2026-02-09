@@ -1,0 +1,12 @@
+{
+  "name": "mukoko-miniapp-registry",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "r2_buckets": [
+    { "binding": "MINIAPP_ASSETS", "bucket_name": "mukoko-miniapp-assets" }
+  ],
+  "kv_namespaces": [
+    { "binding": "CONFIG_STORAGE", "id": "TODO_KV_ID" }
+  ]
+}

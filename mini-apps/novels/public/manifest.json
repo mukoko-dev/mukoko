@@ -1,0 +1,12 @@
+{
+  "id": "novels",
+  "name": "Novels",
+  "version": "0.0.1",
+  "description": "African author platform for web novels",
+  "icon": "",
+  "domain": "novels.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "content",
+  "color": "#4B0082"
+}

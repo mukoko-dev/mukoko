@@ -1,0 +1,12 @@
+{
+  "id": "template",
+  "name": "Template",
+  "version": "0.0.1",
+  "description": "Mini-app template",
+  "icon": "",
+  "domain": "",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "utility",
+  "color": "#4B0082"
+}

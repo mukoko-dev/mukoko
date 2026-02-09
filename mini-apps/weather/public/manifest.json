@@ -1,0 +1,12 @@
+{
+  "id": "weather",
+  "name": "Weather",
+  "version": "0.0.1",
+  "description": "Local weather forecasts for Zimbabwe",
+  "icon": "",
+  "domain": "weather.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "utility",
+  "color": "#0047AB"
+}

@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+.astro/
+.turbo/
+.vercel/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.dev.vars
+
+# Flutter
+app/.dart_tool/
+app/.packages
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+*.g.dart
+
+# Python (honey)
+honey/__pycache__/
+honey/.venv/
+honey/*.pyc
+honey/models/*.tflite
+honey/models/*.bin
+
+# Cloudflare
+.wrangler/
+.mf/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+
+# Logs
+*.log

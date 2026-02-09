@@ -1,0 +1,12 @@
+{
+  "name": "mukoko-id-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    { "binding": "USER_STORAGE", "id": "TODO_KV_ID" }
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "mukoko_users", "database_id": "TODO_D1_ID" }
+  ]
+}

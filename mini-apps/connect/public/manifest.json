@@ -1,0 +1,12 @@
+{
+  "id": "connect",
+  "name": "Connect",
+  "version": "0.0.1",
+  "description": "Interest-based Circles and communities",
+  "icon": "",
+  "domain": "connect.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "social",
+  "color": "#8B4513"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "@mukoko/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["base.json", "preact.json", "worker.json", "node.json"]
+}

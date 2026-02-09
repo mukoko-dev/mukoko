@@ -1,0 +1,9 @@
+{
+  "name": "mukoko-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    { "binding": "CACHE_STORAGE", "id": "TODO_KV_ID" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "pulse",
+  "name": "Pulse",
+  "version": "0.0.1",
+  "description": "Trending short-form content celebrating African creativity",
+  "icon": "",
+  "domain": "pulse.mukoko.com",
+  "entrypoint": "/",
+  "permissions": ["auth"],
+  "category": "content",
+  "color": "#5D4037"
+}
