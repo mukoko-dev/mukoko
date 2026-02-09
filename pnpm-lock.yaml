@@ -514,9 +514,6 @@ importers:
         specifier: ^10.25.0
         version: 10.28.3
     devDependencies:
-      '@mukoko/tsconfig':
-        specifier: workspace:*
-        version: link:../packages/tsconfig
       '@preact/preset-vite':
         specifier: ^2.9.0
         version: 2.10.3(@babel/core@7.29.0)(preact@10.28.3)(rollup@4.57.1)(vite@6.4.1)
