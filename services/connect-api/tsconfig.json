@@ -1,4 +1,0 @@
-{
-  "extends": "@mukoko/tsconfig/worker.json",
-  "include": ["src"]
-}

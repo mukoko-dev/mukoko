@@ -1,16 +1,18 @@
-# Creating a Mini-App
+# Creating a Super App Mini-App Frontend
 
-Mini-apps in Mukoko are lightweight Preact + Vite applications that run inside the Mukoko ecosystem. They are hosted via Workers for Platforms and rendered in WebViews on mobile.
+The `mini-apps/` directory contains **super app frontends** — lightweight Preact UIs that run inside the Flutter shell's WebView. Each super app frontend consumes an API owned by a standalone repository.
+
+This guide covers creating the super app frontend. The standalone PWA and backend live in their own repo.
 
 ## Quick Start
 
-1. Copy the mini-app template:
+1. Copy the template:
 
 ```bash
 cp -r mini-apps/_template mini-apps/your-app-name
 ```
 
-2. Update `package.json` with your app name:
+2. Update `package.json`:
 
 ```json
 {
@@ -19,7 +21,7 @@ cp -r mini-apps/_template mini-apps/your-app-name
 }
 ```
 
-3. Install dependencies and start development:
+3. Install and run:
 
 ```bash
 pnpm install
@@ -28,24 +30,46 @@ pnpm turbo run dev --filter=@mukoko/mini-app-your-app-name
 
 ## Structure
 
-Each mini-app follows this structure:
-
 ```
 mini-apps/your-app-name/
   src/
     index.tsx        # Entry point
     app.tsx          # Root component
-    components/      # UI components
+    components/      # UI components (use @mukoko/ui)
   public/
   package.json
   vite.config.ts
   tsconfig.json
 ```
 
-## MukokoBridge
+## Key Dependencies
 
-Mini-apps communicate with the native shell via the MukokoBridge JavaScript interface. This bridge provides access to wallet, auth, and device APIs.
+Every super app frontend must use:
+
+- **`@mukoko/ui`** — Shared Preact components (buttons, cards, inputs) using the Nyuchi design system
+- **`@mukoko/bridge`** — Typed SDK for communicating with the Flutter shell (auth, wallet, navigation, device APIs)
+- **`@mukoko/api`** — API client for calling backend services through the gateway
+
+## How It Differs from the Standalone PWA
+
+| Aspect | Standalone PWA (own repo) | Super App Frontend (this monorepo) |
+|--------|---------------------------|-------------------------------------|
+| Runs in | Browser at `*.mukoko.com` | Flutter WebView inside the super app |
+| Auth | Stytch SDK directly | `MukokoBridge.auth.getToken()` via Flutter |
+| Navigation | Own router | `MukokoBridge.nav` for shell integration |
+| Payments | Own payment flow | `MukokoBridge.wallet` for native payment sheet |
+| Storage | localStorage | `MukokoBridge.storage` (no localStorage) |
+| Components | Own UI library | `@mukoko/ui` for consistency across mini-apps |
+| API calls | Direct to backend | Through `@mukoko/api` via the gateway |
+
+## Rules
+
+- Do NOT duplicate backend logic — the standalone repo owns the API
+- Do NOT use `localStorage` — use `MukokoBridge.storage` instead
+- Do NOT use `window.MukokoBridge` directly — use `@mukoko/bridge` typed SDK
+- Do NOT use React — use Preact (3KB vs 40KB)
+- Target < 150KB gzipped output
 
 ## Deployment
 
-Mini-apps are deployed to Workers for Platforms automatically when merged to `main`. Each mini-app gets its own subdomain under `apps.mukoko.com`.
+Super app frontends are built and bundled as part of the monorepo CI. They are served to the Flutter shell via Workers for Platforms.

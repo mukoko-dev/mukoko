@@ -1,6 +1,8 @@
 # Creating a Cloudflare Worker Service
 
-Services in Mukoko are Cloudflare Workers that power the backend API layer. New services use Hono as the routing framework.
+Services in this monorepo are **super app infrastructure** — shared services like the API gateway, wallet, Shamwari AI, and mini-app registry. App-specific backends (Clips, Events, Connect, etc.) live in their own standalone repos.
+
+New services use Hono as the routing framework.
 
 ## Quick Start
 
