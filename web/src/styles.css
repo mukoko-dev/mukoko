@@ -60,48 +60,42 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
 }
 
 body {
   font-family: var(--font-body);
   color: var(--color-text);
-  background-color: var(--color-bg);
   line-height: 1.6;
 }
 
-/* Five African Minerals strip — 4px left edge on desktop */
-@media (min-width: 480px) {
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    z-index: 100;
-    background: linear-gradient(
-      to bottom,
-      var(--color-tanzanite) 0% 20%,
-      var(--color-cobalt) 20% 40%,
-      var(--color-gold) 40% 60%,
-      var(--color-malachite) 60% 80%,
-      var(--color-terracotta) 80% 100%
-    );
-  }
+/* Five African Minerals strip — 4px left edge, all screen sizes */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  z-index: 100;
+  background: linear-gradient(
+    to bottom,
+    var(--color-tanzanite) 0% 20%,
+    var(--color-cobalt) 20% 40%,
+    var(--color-gold) 40% 60%,
+    var(--color-malachite) 60% 80%,
+    var(--color-terracotta) 80% 100%
+  );
 }
 
 .section {
   padding: 5rem 1.5rem;
+  width: 100%;
+}
+
+.section__inner {
   max-width: 1120px;
-  margin: 0 auto;
-}
-
-.section--alt {
-  background-color: var(--color-bg-alt);
-}
-
-.section--full {
-  max-width: none;
+  margin-inline: auto;
 }
 
 h1, h2, h3 {
@@ -267,6 +261,9 @@ a:hover {
 /* ─── Hero ─── */
 
 .hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
   padding: 4rem 1.5rem 5rem;
   max-width: 1120px;
   margin: 0 auto;
@@ -323,7 +320,6 @@ a:hover {
   gap: 0.5rem;
   margin-top: 2rem;
   max-width: 440px;
-  margin-inline: auto;
 }
 
 .waitlist-form--compact {
