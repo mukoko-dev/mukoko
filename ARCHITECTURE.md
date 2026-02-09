@@ -669,7 +669,7 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 - Button radius: 12px
 - Card radius: 16px
 - Touch targets: 44x44px minimum
-- Zimbabwe flag strip: 4px vertical left edge (hidden < 480px)
+- Five African Minerals strip: 4px vertical left edge (Tanzanite → Cobalt → Gold → Malachite → Terracotta, hidden < 480px)
 - Wordmarks: always lowercase (`mukoko`, `nyuchi`, `shamwari`, `bundu`)
 - Contrast ratios: WCAG AAA (7:1+) — non-negotiable
 - Mode adaptation: all colors adapt between light and dark automatically

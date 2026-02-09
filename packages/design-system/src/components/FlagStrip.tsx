@@ -5,8 +5,8 @@ export interface FlagStripProps {
 }
 
 /**
- * Zimbabwe flag strip -- a 4px vertical bar on the left edge
- * using the Zimbabwe flag colors: green, gold, red, black, with a white chevron accent.
+ * Five African Minerals strip — a 4px vertical bar on the left edge
+ * using the mineral palette: Tanzanite, Cobalt, Gold, Malachite, Terracotta.
  * Hidden below 480px viewport width.
  */
 export function FlagStrip({ className }: FlagStripProps) {
@@ -26,15 +26,13 @@ export function FlagStrip({ className }: FlagStripProps) {
     backgroundColor: color,
   });
 
-  // Zimbabwe flag colors in order (top to bottom)
+  // Five African Minerals (top to bottom)
   const colors = [
-    "#006400", // Green
-    "#FFD200", // Gold
-    "#EF3340", // Red
-    "#000000", // Black
-    "#EF3340", // Red
-    "#FFD200", // Gold
-    "#006400", // Green
+    "#4B0082", // Tanzanite
+    "#0047AB", // Cobalt
+    "#5D4037", // Gold
+    "#004D40", // Malachite
+    "#8B4513", // Terracotta
   ];
 
   return (
