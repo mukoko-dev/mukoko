@@ -1,0 +1,16 @@
+{
+  "name": "mukoko",
+  "short_name": "mukoko",
+  "description": "A digital twin social ecosystem for Africa",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4B0082",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,515 @@
+/* mukoko.com — Nyuchi Brand v6 */
+
+:root {
+  --color-primary: #4B0082;
+  --color-secondary: #0047AB;
+  --color-accent: #5D4037;
+  --color-shamwari: #004D40;
+  --color-community: #8B4513;
+  --color-tanzanite: #4B0082;
+  --color-cobalt: #0047AB;
+  --color-gold: #5D4037;
+  --color-malachite: #004D40;
+  --color-terracotta: #8B4513;
+
+  --font-display: "Noto Serif", serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --radius-button: 12px;
+  --radius-card: 16px;
+
+  --color-bg: #ffffff;
+  --color-bg-alt: #f8f7fa;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #B388FF;
+    --color-secondary: #00B0FF;
+    --color-accent: #FFD740;
+    --color-shamwari: #64FFDA;
+    --color-community: #D4A574;
+    --color-tanzanite: #B388FF;
+    --color-cobalt: #00B0FF;
+    --color-gold: #FFD740;
+    --color-malachite: #64FFDA;
+    --color-terracotta: #D4A574;
+
+    --color-bg: #0f0e17;
+    --color-bg-alt: #1a1a2e;
+    --color-text: #fffffe;
+    --color-text-muted: #a7a9be;
+    --color-border: #2e2e4a;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  line-height: 1.6;
+}
+
+/* Zimbabwe flag strip — 4px left edge on desktop */
+@media (min-width: 480px) {
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    z-index: 100;
+    background: linear-gradient(
+      to bottom,
+      #006400 0% 14.28%,
+      #FFD200 14.28% 28.57%,
+      #D40000 28.57% 42.85%,
+      #000000 42.85% 57.14%,
+      #D40000 57.14% 71.42%,
+      #FFD200 71.42% 85.71%,
+      #006400 85.71% 100%
+    );
+  }
+}
+
+.section {
+  padding: 5rem 1.5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.section--alt {
+  background-color: var(--color-bg-alt);
+}
+
+.section--full {
+  max-width: none;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Utility */
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-muted); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* ─── Section titles ─── */
+
+.section__title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.section__subtitle {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* ─── Hero ─── */
+
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+}
+
+.hero__content {
+  text-align: center;
+  max-width: 640px;
+}
+
+.hero__wordmark {
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.hero__tagline {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--color-text);
+  margin-top: 0.5rem;
+}
+
+.hero__tagline-en {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.hero__description {
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  margin-top: 1.5rem;
+  line-height: 1.7;
+}
+
+.hero__note {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+/* ─── Waitlist Form ─── */
+
+.waitlist-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.waitlist-form--compact {
+  margin-top: 0;
+}
+
+.waitlist-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.waitlist-input:focus {
+  border-color: var(--color-primary);
+}
+
+.waitlist-input:disabled {
+  opacity: 0.6;
+}
+
+.waitlist-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-button);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.waitlist-button:hover {
+  opacity: 0.9;
+}
+
+.waitlist-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.waitlist-success {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-button);
+  text-align: center;
+  color: var(--color-shamwari);
+  font-weight: 600;
+}
+
+.waitlist-success--compact {
+  margin-top: 0;
+}
+
+.waitlist-error {
+  color: #d40000;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .waitlist-form {
+    flex-direction: column;
+  }
+}
+
+/* ─── App Showcase Grid ─── */
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.app-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--card-bg, var(--color-bg));
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.app-card:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.app-card__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.app-card__name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--card-accent, var(--color-primary));
+}
+
+.app-card__description {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ─── Privacy / Memory File ─── */
+
+.privacy {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.privacy__duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.privacy__card {
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+}
+
+.privacy__card h3 {
+  font-size: 1.05rem;
+  color: var(--color-shamwari);
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .privacy__duo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── How It Works ─── */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.step {
+  text-align: center;
+  position: relative;
+}
+
+.step__number {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
+}
+
+.step__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.step__description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ─── Ubuntu ─── */
+
+.ubuntu {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.ubuntu__headline {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-community);
+}
+
+.ubuntu__translation {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+}
+
+.ubuntu__cta {
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+/* ─── Footer ─── */
+
+.footer {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  padding: 3rem 1.5rem 2rem;
+}
+
+.footer__inner {
+  max-width: 1120px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.footer__wordmark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.footer__links {
+  display: flex;
+  gap: 3rem;
+  justify-content: flex-end;
+}
+
+.footer__column h4 {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.footer__column ul {
+  list-style: none;
+}
+
+.footer__column li {
+  margin-bottom: 0.5rem;
+}
+
+.footer__column a {
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.footer__column a:hover {
+  color: var(--color-primary);
+}
+
+.footer__bottom {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+
+.footer__motto {
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .hero__wordmark {
+    font-size: 3rem;
+  }
+
+  .section__title {
+    font-size: 1.6rem;
+  }
+
+  .footer__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .footer__links {
+    justify-content: flex-start;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__wordmark {
+    font-size: 2.5rem;
+  }
+
+  .ubuntu__headline {
+    font-size: 1.6rem;
+  }
+
+  .section {
+    padding: 3rem 1rem;
+  }
+}

@@ -29,7 +29,7 @@ This architecture is adapted for African market realities: mixed device quality,
 - **Target Markets:** Zimbabwe (primary), SADC region, global African diaspora
 - **Platforms:** Android (API 24+), iOS (15+), HarmonyOS (Huawei AppGallery)
 - **Framework:** Flutter native shell + WebView mini-apps (WeChat model)
-- **Backend:** Cloudflare Workers (existing), Supabase, D1, KV, Durable Objects
+- **Backend:** Cloudflare Workers (existing), MongoDB Atlas, D1, KV, Durable Objects
 - **AI:** Shamwari AI companion + Nuchi Honey personalization engine (honey.nyuchi.com)
 - **Payments:** EcoCash, InnBucks, bank integrations + MUKOKO token economy
 - **Identity:** Mukoko ID with Digital Twin NFT on Base blockchain
@@ -140,7 +140,7 @@ Mukoko consists of six interconnected apps, all sharing one Digital Twin, one Yo
 |-----|--------|---------|----------------|
 | Mukoko ID | `id.mukoko.com` | Unified identity, Digital Twin, single sign-on | mukoko-id-api (existing) |
 | Clips | `clips.mukoko.com` | Context-rich news from trusted African + global sources | Harare Metro / Mukoko News |
-| Pulse | `pulse.mukoko.com` | Trending short-form content celebrating African creativity | New build |
+| Pulse | *(super app only)* | Personalized aggregated feed — pulls from all apps, powered by Memory File | Monorepo-native |
 | Connect | `connect.mukoko.com` | Interest-based Circles (communities), social forum | New build |
 | Novels | `novels.mukoko.com` | African author platform, web novels, long-form stories | New build |
 | Events | `events.mukoko.com` | Cultural gatherings, meetups, ticket purchasing | Nhimbe (existing) |
@@ -153,16 +153,17 @@ Clips is the evolution of Harare Metro and Mukoko News. It provides context-rich
 - RSS aggregation from 17+ Zimbabwean sources (Herald, NewsDay, Chronicle, ZBC, Techzim, The Standard, ZimLive, Business Weekly, etc.)
 - AI-powered categorization into 10+ content categories
 - Your Honey personalizes the feed based on Digital Twin interests
-- Threaded comments, bookmarks, reading history (existing Supabase tables)
+- Threaded comments, bookmarks, reading history (MongoDB Atlas)
 
-### 4.2 Pulse — Trending Moments
+### 4.2 Pulse — Your Personalized Feed
 
-TikTok-style viral content celebrating African creativity. Your Honey surfaces creators in categories the user loves and discovers new creators similar to those already enjoyed. African creativity deserves celebration.
+Pulse is the super app's aggregated feed — a monorepo-native feature that pulls content from ALL ecosystem apps into a single, personalized stream. It exists only within the super app, powered by the **Memory File**.
 
-- Short-form video/image content
-- Creator profiles with follower system
-- Trending algorithm weighted by Your Honey interests
+- Aggregates content from Clips, Connect, Novels, Events, and creator content
+- Personalized by the **Memory File** (co-created by Nyuchi Honey on-device + Mukoko ID cloud)
+- Combines TikTok-style vertical scrolling with Instagram-style discovery
 - MUKOKO token rewards for quality content creation
+- **Not to be confused with Bytes** — Bytes is the TikTok-style scrolling feature in the `mukoko-news` standalone app only
 
 ### 4.3 Connect — Interest Communities
 
@@ -259,9 +260,32 @@ Each user's Digital Twin is minted as an NFT on the Base blockchain. This is not
 - **Permanent:** cannot be taken away by corporations
 - **Deletable:** users can burn their NFT and delete everything (full data sovereignty)
 
-### 6.3 Existing Infrastructure
+### 6.3 The Memory File
 
-Mukoko ID already has production and staging Cloudflare Workers deployed (`mukoko-id-api`, `mukoko-id-api-staging`). The Flutter shell integrates with this existing infrastructure via Supabase authentication, adding biometric unlock, secure token storage, and the Digital Twin minting flow.
+The **Memory File** is the central personalization artifact for each user. It is co-created by two systems:
+
+```
+Nyuchi Honey (on-device)          Mukoko ID (cloud)
+┌─────────────────────┐          ┌─────────────────────┐
+│ Learns preferences   │ ──sync──▶│ Stores Memory File   │
+│ privately on phone   │ summaries│ in user's account    │
+│ Raw data stays local │          │ Editable by user     │
+└─────────────────────┘          └──────────┬──────────┘
+                                            │ reads
+                              ┌─────────────┼──────────────┐
+                              ▼             ▼              ▼
+                          Shamwari AI    Pulse feed    All app
+                          (companion)   (aggregated)   personalization
+```
+
+- **Honey** processes interactions on-device, syncs only summarized data (never raw events) to Mukoko ID
+- **Mukoko ID** stores the Memory File securely in the cloud
+- **The user can edit or delete** their Memory File at any time — full data sovereignty
+- **Shamwari AI**, Pulse, and all app personalization read the Memory File
+
+### 6.4 Existing Infrastructure
+
+Mukoko ID already has production and staging Cloudflare Workers deployed (`mukoko-id-api`, `mukoko-id-api-staging`). The Flutter shell integrates with this existing infrastructure via Stytch authentication, adding biometric unlock, secure token storage, and the Digital Twin minting flow.
 
 ---
 
@@ -303,7 +327,8 @@ Mukoko ID already has production and staging Cloudflare Workers deployed (`mukok
 │  └──┬───┴──────┴─────┴──────┴──────┴───────┘         │
 │     │                                                  │
 │  ┌──┴─────┬──────┬────┬──────┬───────────┐           │
-│  │Supabase│  D1  │ KV │  R2  │ Durable Obj│          │
+│  │MongoDB │  D1  │ KV │  R2  │ Durable Obj│          │
+│  │ Atlas  │      │    │      │            │          │
 │  └────────┴──────┴────┴──────┴───────────┘           │
 └────────────────────────────────────────────────────────┘
                         │
@@ -333,7 +358,7 @@ The Flutter shell handles everything requiring native device access or persisten
 | Package | Purpose | Notes |
 |---------|---------|-------|
 | `flutter_inappwebview` | Mini-app WebView runtime | JS bridge, caching, offline |
-| `supabase_flutter` | Authentication | Mukoko ID integration |
+| `stytch_flutter` | Authentication | Mukoko ID (Stytch sessions, OAuth, MFA) |
 | `sqflite` | Local database | Offline cache + sync queue |
 | `flutter_secure_storage` | Secure tokens | Keychain/Keystore |
 | `tflite_flutter` | On-device ML | Your Honey AI model |
@@ -436,22 +461,24 @@ The backend leverages existing Cloudflare Workers infrastructure already deploye
 
 | Service | Usage | Key Resources |
 |---------|-------|---------------|
-| **Supabase** | Primary database, auth, realtime subscriptions | `user_profiles`, `articles`, `user_bookmarks`, `user_reactions`, `reading_history`, `user_comments`, `news_sources`, `content_categories`, `trending_topics`, `user_notifications`, `chat_messages`, `chat_rooms` (15+ tables) |
-| **Cloudflare D1** | User database (edge-local) | `mukoko_users` (ID: `b6204614-2cf1-47ed-b9e4-1fbbeb09fe01`) |
+| **MongoDB Atlas** | Primary database — all application data | `users`, `articles`, `events`, `novels`, `circles`, `pulse_posts`, `transactions`, `notifications` |
+| **Stytch** | Authentication — sessions, OAuth, MFA, SSO | Mukoko ID SSO across all Nyuchi products |
+| **Cloudflare D1** | Edge-local reads for fast auth verification | `mukoko_users` |
 | **Cloudflare KV** | Config, cache, sessions, news storage | 4 namespaces: `CONFIG_STORAGE`, `CACHE_STORAGE`, `USER_STORAGE`, `NEWS_STORAGE` |
 | **Durable Objects** | Real-time chat, user presence | `ChatRoom`, `UserSession` |
 | **Analytics Engine** | Interaction tracking | 3 datasets: `category_clicks`, `news_interactions`, `search_queries` |
 | **R2 Storage** | Media, mini-app bundles, brand assets | Brand assets bucket |
-| **MongoDB** | High-frequency operations | `mukoko_interactions` database (messages, comments, presence) |
 | **Nuchi Honey** | Personalization AI (isolated) | `honey.nyuchi.com` (Docker/FastAPI) |
 
-### 8.3 Supabase Configuration
+### 8.3 Auth — Stytch
 
-- **Project URL:** `https://huilmzajhiqcuzonbaps.supabase.co`
-- **Auth:** OAuth support (Google, GitHub) + email/password
-- **Super Admin:** `bryan@nyuchi.com` (super_admin role)
-- **RLS:** Row-level security on all tables
-- **Realtime:** Subscriptions enabled for chat and notifications
+Stytch is the auth provider for the entire ecosystem. NOT Supabase.
+
+- **Sessions:** Stytch session tokens (not Supabase JWT)
+- **Methods:** Email magic links, OAuth (Google, GitHub, Apple), SMS OTP, biometric
+- **SSO:** Mukoko ID provides SSO to all Nyuchi products (Learning, Travel, Bundu Family)
+- **Worker middleware:** Every worker verifies Stytch session token on protected routes
+- **Super Admin:** `bryan@nyuchi.com`
 
 ### 8.4 New Services Required
 
@@ -576,28 +603,23 @@ mukoko/
 │   │   └── bridge/                # MukokoBridge JS implementation
 │   └── pubspec.yaml
 │
-├── mini-apps/                     # WebView-based ecosystem apps
-│   ├── clips/                     # Clips (news) — from Harare Metro
-│   ├── pulse/                     # Pulse (trending content)
-│   ├── connect/                   # Connect (Circles / communities)
-│   ├── novels/                    # Novels (African author platform)
-│   ├── events/                    # Events (from Nhimbe)
-│   ├── weather/                   # Weather (utility mini-app)
+├── mini-apps/                     # Super app frontends (WebView in Flutter shell)
+│   ├── clips/                     # Clips — news feed (backend in mukoko-news repo)
+│   ├── pulse/                     # Pulse — personalized aggregated feed (monorepo-native)
+│   ├── connect/                   # Connect — Circles (backend in mukoko-connect repo)
+│   ├── novels/                    # Novels — author platform (backend in mukoko-novels repo)
+│   ├── events/                    # Events — gatherings (backend in nhimbe repo)
+│   ├── weather/                   # Weather — utility (backend in mukoko-weather repo)
 │   └── _template/                 # Starter template for new mini-apps
 │
-├── services/                      # Cloudflare Workers (backend)
-│   ├── gateway/                   # API gateway
-│   ├── id-api/                    # Mukoko ID (existing)
-│   ├── clips-api/                 # News/Clips (existing mukoko-news-backend)
-│   ├── events-api/                # Events (existing mukoko-nhimbe-api)
-│   ├── pulse-api/                 # Pulse service (new)
-│   ├── connect-api/               # Connect/Circles service (new)
-│   ├── novels-api/                # Novels service (new)
-│   ├── weather-api/               # Weather service (new)
-│   ├── wallet-api/                # Payment + token service (new)
-│   ├── shamwari-api/              # AI companion service (new)
-│   ├── miniapp-registry/          # Mini-app manifest + asset serving (new)
-│   └── digital-twin/              # NFT minting + reputation (new)
+├── services/                      # Cloudflare Workers — super app infrastructure only
+│   ├── gateway/                   # API gateway + Stytch session verification
+│   ├── id-api/                    # Mukoko ID (Stytch auth + Memory File storage)
+│   ├── wallet-api/                # Payments + MUKOKO tokens
+│   ├── shamwari-api/              # AI companion (reads Memory File)
+│   ├── miniapp-registry/          # Mini-app manifest + R2 assets
+│   ├── digital-twin/              # NFT minting + reputation
+│   └── _template/                 # Starter template for new services
 │
 ├── honey/                         # Nuchi Honey (isolated)
 │   ├── Dockerfile
@@ -611,7 +633,10 @@ mukoko/
 │   ├── api-client/                # @mukoko/api (shared API client)
 │   └── types/                     # @mukoko/types (shared TypeScript)
 │
-├── web/                           # Landing page + legal (mukoko.com)
+├── web/                           # Marketing landing page (mukoko.com → Vercel)
+│   ├── src/                       # Preact + Vite, Formspree waitlist
+│   ├── vercel.json                # Vercel deployment config
+│   └── index.html                 # Entry with OG tags
 ├── docs/                          # Architecture, API docs, guides
 ├── .github/                       # CI/CD workflows
 └── turbo.json                     # Monorepo orchestration
@@ -683,7 +708,7 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 ### Phase 1: Foundation (Weeks 1–8)
 
 - Flutter project: clean architecture, Riverpod state management, platform configs
-- Mukoko ID integration: Supabase auth, biometric unlock, secure storage
+- Mukoko ID integration: Stytch auth, biometric unlock, secure storage
 - WebView runtime: MukokoBridge injection, lifecycle management, caching
 - Navigation shell: bottom tabs, mini-app launcher, discovery surface
 - Nyuchi Design System for Flutter: shared theme, Tanzanite primary
@@ -738,7 +763,7 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 - **Nuchi Honey service:** Isolated infrastructure, Cloudflare Tunnel, secret-based auth
 - **Mini-app permissions:** Apps declare required capabilities in manifest, user approves
 - **PCI DSS:** No card data stored on device, tokenization only
-- **Supabase RLS:** Row-level security on all database tables
+- **MongoDB Atlas:** Role-based access control on all collections
 - **Secrets management:** All API keys and tokens in environment variables, never in source code
 - **Admin access:** `bryan@nyuchi.com` is super_admin with full RBAC system
 

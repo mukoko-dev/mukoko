@@ -1,0 +1,8 @@
+{
+  "buildCommand": "cd .. && pnpm turbo run build --filter=@mukoko/web",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
