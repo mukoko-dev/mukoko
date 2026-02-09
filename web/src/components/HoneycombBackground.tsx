@@ -57,8 +57,8 @@ function usePrefersReducedMotion(): boolean {
 }
 
 export function HoneycombBackground({
-  intensity = 0.18,
-  speed = 0.3,
+  intensity = 0.5,
+  speed = 0.6,
 }: HoneycombBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -107,91 +107,70 @@ export function HoneycombBackground({
 
       varying vec2 vUv;
 
-      // Hex grid math — returns (cell center, distance to nearest edge)
-      // Uses two offset rows to tile hexagons
       vec4 hexCoord(vec2 uv) {
-        vec2 r = vec2(1.0, 1.7320508); // 1, sqrt(3)
+        vec2 r = vec2(1.0, 1.7320508);
         vec2 h = r * 0.5;
-
         vec2 a = mod(uv, r) - h;
         vec2 b = mod(uv - h, r) - h;
-
-        // Pick whichever hex center is closer
         vec2 gv = dot(a, a) < dot(b, b) ? a : b;
-
-        // Hex edge distance (6-fold symmetry)
-        vec2 absGv = abs(gv);
-        float edgeDist = max(
-          dot(absGv, normalize(vec2(1.0, 1.7320508))),
-          absGv.x
-        );
-
-        // Cell ID for per-cell variation
         vec2 id = uv - gv;
-
         return vec4(gv, id);
       }
 
-      float hexEdge(vec2 gv, float width) {
-        vec2 absGv = abs(gv);
-        float d = max(
-          dot(absGv, normalize(vec2(1.0, 1.7320508))),
-          absGv.x
-        );
-        float halfSize = 0.5;
-        return smoothstep(halfSize, halfSize - width, d);
+      float hexEdge(vec2 gv, float w) {
+        vec2 ag = abs(gv);
+        float d = max(dot(ag, normalize(vec2(1.0, 1.7320508))), ag.x);
+        return smoothstep(0.5, 0.5 - w, d);
       }
 
       void main() {
         vec2 uv = vUv;
-        float aspectRatio = uResolution.x / uResolution.y;
-        uv.x *= aspectRatio;
+        float aspect = uResolution.x / uResolution.y;
+        uv.x *= aspect;
 
-        float t = uTime * 0.15;
+        float t = uTime;
 
-        // Scale the hex grid
-        float scale = 8.0;
-        vec2 hexUv = uv * scale;
+        // Hex grid — larger cells so the pattern reads clearly
+        float scale = 6.0;
+        vec4 hc = hexCoord(uv * scale);
+        vec2 gv = hc.xy;
+        vec2 id = hc.zw;
 
-        vec4 hc = hexCoord(hexUv);
-        vec2 gv = hc.xy; // Local coords within cell
-        vec2 id = hc.zw; // Cell ID
-
-        // Hex cell fill (interior)
-        float fill = hexEdge(gv, 0.06);
-
-        // Hex edge line (border of each cell)
-        float innerFill = hexEdge(gv, 0.12);
+        // Thicker, more visible edges
+        float fill = hexEdge(gv, 0.08);
+        float innerFill = hexEdge(gv, 0.18);
         float edge = innerFill - fill;
 
-        // Pulsation: ripple outward from center of viewport
-        float distFromCenter = length(id / scale - vec2(aspectRatio * 0.5, 0.5));
-        float pulse = sin(distFromCenter * 3.0 - t * 2.0) * 0.5 + 0.5;
+        // Ripple pulse from center — faster, more dramatic
+        float distFromCenter = length(id / scale - vec2(aspect * 0.5, 0.5));
+        float pulse = sin(distFromCenter * 4.0 - t * 3.0) * 0.5 + 0.5;
+        pulse = pulse * pulse; // sharpen the wave crest
 
-        // Secondary slower pulse wave
-        float pulse2 = sin(distFromCenter * 1.5 + t * 1.2) * 0.5 + 0.5;
+        // Secondary wave for layered breathing
+        float pulse2 = sin(distFromCenter * 2.0 + t * 1.8) * 0.5 + 0.5;
 
-        // Per-cell variation based on ID
+        // Per-cell random phase so cells don't all pulse identically
         float cellHash = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453);
-        float cellPulse = sin(t * 1.5 + cellHash * 6.2831) * 0.5 + 0.5;
+        float cellPulse = sin(t * 2.0 + cellHash * 6.2831) * 0.5 + 0.5;
 
-        // Combine pulses for organic feel
-        float combinedPulse = mix(pulse, cellPulse, 0.3) * mix(1.0, pulse2, 0.2);
+        // Blend: mostly ripple, some per-cell variation
+        float combined = mix(pulse, cellPulse, 0.25);
+        combined = combined * (0.6 + pulse2 * 0.4);
 
-        // Edge glow — Tanzanite on edges, pulsating
-        float edgeGlow = edge * combinedPulse * 0.8;
+        // Strong edge glow — this is the main visible element
+        float edgeGlow = edge * (0.3 + combined * 0.7);
 
-        // Cell fill — very subtle Cobalt wash, breathing
-        float cellFill = fill * combinedPulse * 0.15;
+        // Cell interior fill — noticeable breathing
+        float cellFill = fill * combined * 0.35;
 
-        // Compose final color
+        // Compose
         vec3 color = uBgColor;
         color = mix(color, uSecondaryColor, cellFill * uIntensity);
         color = mix(color, uPrimaryColor, edgeGlow * uIntensity);
 
-        // Subtle radial vignette — brighter near center
-        float vignette = 1.0 - smoothstep(0.3, 1.2, distFromCenter);
-        color = mix(uBgColor, color, 0.5 + vignette * 0.5);
+        // Gentle vignette — don't kill the edges
+        float vignette = 1.0 - smoothstep(0.5, 1.8, distFromCenter);
+        color = mix(uBgColor, color, 0.7 + vignette * 0.3);
 
         gl_FragColor = vec4(color, 1.0);
       }

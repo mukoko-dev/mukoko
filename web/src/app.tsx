@@ -10,7 +10,7 @@ import { Footer } from "./sections/Footer";
 export function App() {
   return (
     <>
-      <HoneycombBackground intensity={0.18} speed={0.3} />
+      <HoneycombBackground intensity={0.5} speed={0.6} />
       <Header />
       <main>
         <Hero />
