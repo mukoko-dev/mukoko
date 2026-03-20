@@ -84,18 +84,25 @@ export class MukokoClient {
         }
 
         // Parse the error body (may not always be JSON)
-        let errorBody: { error?: { code?: string; message?: string; details?: unknown } } | null = null;
+        let errorMessage = `Request failed with status ${response.status}`;
+        let errorCode = "UNKNOWN_ERROR";
+        let errorDetails: unknown;
         try {
-          errorBody = (await response.json()) as typeof errorBody;
+          const body = (await response.json()) as { error?: { code?: string; message?: string; details?: unknown } };
+          if (body.error) {
+            errorMessage = body.error.message ?? errorMessage;
+            errorCode = body.error.code ?? errorCode;
+            errorDetails = body.error.details;
+          }
         } catch {
-          // Response body was not valid JSON; leave errorBody null
+          // Response body was not valid JSON
         }
 
         const apiError = new ApiClientError(
-          errorBody?.error?.message ?? `Request failed with status ${response.status}`,
+          errorMessage,
           response.status,
-          errorBody?.error?.code ?? "UNKNOWN_ERROR",
-          errorBody?.error?.details,
+          errorCode,
+          errorDetails,
         );
 
         // Only retry on server errors (5xx)
