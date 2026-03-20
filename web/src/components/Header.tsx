@@ -1,10 +1,12 @@
 import { useState, useEffect } from "preact/hooks";
+import { navigate } from "../router";
 
 const navLinks = [
   { href: "#apps", label: "Apps" },
   { href: "#privacy", label: "Privacy" },
   { href: "#how-it-works", label: "How It Works" },
   { href: "#ubuntu", label: "Ubuntu" },
+  { href: "/manifesto", label: "Manifesto", internal: true },
 ];
 
 export function Header() {
@@ -32,11 +34,21 @@ export function Header() {
 
         {/* Center: Nav links (hidden on mobile) */}
         <nav class="header__nav">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} class="header__link">
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) =>
+            link.internal ? (
+              <button
+                key={link.href}
+                class="header__link header__link--btn"
+                onClick={() => navigate(link.href)}
+              >
+                {link.label}
+              </button>
+            ) : (
+              <a key={link.href} href={link.href} class="header__link">
+                {link.label}
+              </a>
+            )
+          )}
         </nav>
 
         {/* Right: Action pill */}
