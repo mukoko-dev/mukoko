@@ -23,14 +23,14 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section class="section section--alt" id="how-it-works">
-      <h2 class="section__title text-center">How it works</h2>
-      <div class="steps mt-4">
+    <section className="section section--alt" id="how-it-works">
+      <h2 className="section__title text-center">How it works</h2>
+      <div className="steps mt-4">
         {steps.map((step) => (
-          <div class="step" key={step.number}>
-            <span class="step__number">{step.number}</span>
-            <h3 class="step__title">{step.title}</h3>
-            <p class="step__description text-muted">{step.description}</p>
+          <div className="step" key={step.number}>
+            <span className="step__number">{step.number}</span>
+            <h3 className="step__title">{step.title}</h3>
+            <p className="step__description text-muted">{step.description}</p>
           </div>
         ))}
       </div>

@@ -45,21 +45,21 @@ const apps = [
 
 export function AppShowcase() {
   return (
-    <section class="section section--alt" id="apps">
-      <h2 class="section__title text-center">Six apps. One ecosystem.</h2>
-      <p class="section__subtitle text-center text-muted mt-1">
+    <section className="section section--alt" id="apps">
+      <h2 className="section__title text-center">Six apps. One ecosystem.</h2>
+      <p className="section__subtitle text-center text-muted mt-1">
         Each app stands on its own. Together, they become something greater.
       </p>
-      <div class="app-grid mt-4">
+      <div className="app-grid mt-4">
         {apps.map((app) => (
           <div
-            class="app-card"
+            className="app-card"
             key={app.name}
-            style={{ "--card-accent": app.color, "--card-bg": app.colorBg } as Record<string, string>}
+            style={{ "--card-accent": app.color, "--card-bg": app.colorBg } as React.CSSProperties}
           >
-            <span class="app-card__icon">{app.icon}</span>
-            <h3 class="app-card__name">{app.name}</h3>
-            <p class="app-card__description text-muted">{app.description}</p>
+            <span className="app-card__icon">{app.icon}</span>
+            <h3 className="app-card__name">{app.name}</h3>
+            <p className="app-card__description text-muted">{app.description}</p>
           </div>
         ))}
       </div>

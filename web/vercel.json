@@ -1,10 +1,7 @@
 {
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "framework": null,
+  "framework": "nextjs",
   "rewrites": [
     { "source": "/studio", "destination": "https://mukoko.sanity.studio" },
-    { "source": "/studio/(.*)", "destination": "https://mukoko.sanity.studio/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/studio/(.*)", "destination": "https://mukoko.sanity.studio/$1" }
   ]
 }

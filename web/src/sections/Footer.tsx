@@ -1,4 +1,4 @@
-import { navigate } from "../router";
+import Link from "next/link";
 
 const year = new Date().getFullYear();
 
@@ -46,37 +46,37 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer class="footer">
-      <div class="footer__inner">
-        <div class="footer__grid">
+    <footer className="footer">
+      <div className="footer__inner">
+        <div className="footer__grid">
           {/* Brand column */}
-          <div class="footer__brand">
-            <button
-              class="footer__logo-btn"
-              onClick={() => navigate("/")}
+          <div className="footer__brand">
+            <Link
+              href="/"
+              className="footer__logo-btn"
             >
-              <span class="footer__wordmark">mukoko</span>
-            </button>
-            <p class="footer__tagline">
+              <span className="footer__wordmark">mukoko</span>
+            </Link>
+            <p className="footer__tagline">
               A Digital Twin Social Ecosystem for Africa. Built by Nyuchi Africa.
             </p>
-            <p class="footer__nyuchi text-muted">A Nyuchi Africa product</p>
+            <p className="footer__nyuchi text-muted">A Nyuchi Africa product</p>
           </div>
 
           {/* Link columns */}
           {columns.map((col) => (
-            <div class="footer__col" key={col.heading}>
-              <p class="footer__col-heading">{col.heading}</p>
-              <ul class="footer__col-links">
+            <div className="footer__col" key={col.heading}>
+              <p className="footer__col-heading">{col.heading}</p>
+              <ul className="footer__col-links">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     {link.internal ? (
-                      <button
-                        class="footer__col-link-btn"
-                        onClick={() => navigate(link.href)}
+                      <Link
+                        href={link.href}
+                        className="footer__col-link-btn"
                       >
                         {link.label}
-                      </button>
+                      </Link>
                     ) : (
                       <a href={link.href}>{link.label}</a>
                     )}
@@ -87,11 +87,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div class="footer__bottom">
-          <p class="text-muted">
+        <div className="footer__bottom">
+          <p className="text-muted">
             &copy; {year} Nyuchi Africa. All rights reserved.
           </p>
-          <p class="footer__motto text-muted">
+          <p className="footer__motto text-muted">
             Ndiri nekuti tiri — I am because we are.
           </p>
         </div>

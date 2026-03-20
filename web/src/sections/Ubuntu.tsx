@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { WaitlistForm } from "../components/WaitlistForm";
-import { navigate } from "../router";
 
 const questions = [
   {
@@ -26,35 +26,35 @@ const questions = [
 
 export function Ubuntu() {
   return (
-    <section class="section" id="ubuntu">
-      <div class="ubuntu text-center">
-        <h2 class="ubuntu__headline">Munhu munhu muvanhu</h2>
-        <p class="ubuntu__translation mt-1">A person is a person through other persons</p>
-        <p class="mt-3">
+    <section className="section" id="ubuntu">
+      <div className="ubuntu text-center">
+        <h2 className="ubuntu__headline">Munhu munhu muvanhu</h2>
+        <p className="ubuntu__translation mt-1">A person is a person through other persons</p>
+        <p className="mt-3">
           mukoko is built on Ubuntu — the understanding that we exist through our
           relationships with each other. Before every feature ships, it passes
           five questions we call the <strong>Ubuntu Test</strong>.
         </p>
 
-        <div class="ubuntu-questions">
+        <div className="ubuntu-questions">
           {questions.map((item, i) => (
-            <div class="ubuntu-question" key={i}>
-              <span class="ubuntu-question__num">0{i + 1}</span>
+            <div className="ubuntu-question" key={i}>
+              <span className="ubuntu-question__num">0{i + 1}</span>
               <div>
-                <p class="ubuntu-question__text">{item.q}</p>
-                <p class="ubuntu-question__sub">{item.sub}</p>
+                <p className="ubuntu-question__text">{item.q}</p>
+                <p className="ubuntu-question__sub">{item.sub}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <button class="ubuntu__manifesto-link" onClick={() => navigate("/manifesto")}>
+        <Link href="/manifesto" className="ubuntu__manifesto-link">
           Read the full manifesto →
-        </button>
+        </Link>
 
-        <div class="mt-4">
-          <h3 class="section__subtitle">Be part of the hive</h3>
-          <div class="ubuntu__cta mt-2">
+        <div className="mt-4">
+          <h3 className="section__subtitle">Be part of the hive</h3>
+          <div className="ubuntu__cta mt-2">
             <WaitlistForm variant="compact" />
           </div>
         </div>

@@ -1,5 +1,7 @@
-import { useState, useEffect } from "preact/hooks";
-import { navigate } from "../router";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const navLinks = [
   { href: "#apps", label: "Apps" },
@@ -22,29 +24,29 @@ export function Header() {
   }, []);
 
   return (
-    <header class={`header ${isScrolled ? "header--scrolled" : ""}`}>
-      <div class="header__inner">
+    <header className={`header ${isScrolled ? "header--scrolled" : ""}`}>
+      <div className="header__inner">
         {/* Left: Logo */}
-        <a href="/" class="header__logo">
-          <div class="header__icon">m</div>
-          <span class={`header__wordmark ${isScrolled ? "header__wordmark--hidden" : ""}`}>
+        <Link href="/" className="header__logo">
+          <div className="header__icon">m</div>
+          <span className={`header__wordmark ${isScrolled ? "header__wordmark--hidden" : ""}`}>
             mukoko
           </span>
-        </a>
+        </Link>
 
         {/* Center: Nav links (hidden on mobile) */}
-        <nav class="header__nav">
+        <nav className="header__nav">
           {navLinks.map((link) =>
             link.internal ? (
-              <button
+              <Link
                 key={link.href}
-                class="header__link header__link--btn"
-                onClick={() => navigate(link.href)}
+                href={link.href}
+                className="header__link header__link--btn"
               >
                 {link.label}
-              </button>
+              </Link>
             ) : (
-              <a key={link.href} href={link.href} class="header__link">
+              <a key={link.href} href={link.href} className="header__link">
                 {link.label}
               </a>
             )
@@ -52,10 +54,10 @@ export function Header() {
         </nav>
 
         {/* Right: Action pill */}
-        <div class="header__actions">
-          <a href="#waitlist" class="header__pill-btn">
+        <div className="header__actions">
+          <a href="#waitlist" className="header__pill-btn">
             Join waitlist
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </a>
