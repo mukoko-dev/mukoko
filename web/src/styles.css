@@ -1,50 +1,92 @@
-/* mukoko.com — Nyuchi Brand v6 */
+/* mukoko.com — Aligned with Mukoko Registry Design Tokens */
 
 :root {
-  --color-primary: #4B0082;
-  --color-secondary: #0047AB;
-  --color-accent: #5D4037;
-  --color-shamwari: #004D40;
-  --color-community: #8B4513;
-  --color-tanzanite: #4B0082;
+  /* Five African Minerals — single set per registry */
   --color-cobalt: #0047AB;
-  --color-gold: #5D4037;
-  --color-malachite: #004D40;
-  --color-terracotta: #8B4513;
+  --color-tanzanite: #B388FF;
+  --color-malachite: #64FFDA;
+  --color-gold: #FFD740;
+  --color-terracotta: #D4A574;
 
+  /* Mineral containers (8% tint for card backgrounds) */
+  --color-cobalt-container: color-mix(in srgb, var(--color-cobalt) 8%, transparent);
+  --color-tanzanite-container: color-mix(in srgb, var(--color-tanzanite) 8%, transparent);
+  --color-malachite-container: color-mix(in srgb, var(--color-malachite) 8%, transparent);
+  --color-gold-container: color-mix(in srgb, var(--color-gold) 8%, transparent);
+  --color-terracotta-container: color-mix(in srgb, var(--color-terracotta) 8%, transparent);
+
+  /* Semantic: brand accent = cobalt (registry: "Primary blue, links, CTAs") */
+  --color-primary: #0047AB;
+  --color-primary-fg: #ffffff;
+
+  /* Semantic: surfaces */
+  --color-bg: #FAF9F5;
+  --color-bg-alt: #F3F2EE;
+  --color-card: #FFFFFF;
+  --color-surface-inverse: #0A0A0A;
+
+  /* Semantic: text */
+  --color-foreground: #141413;
+  --color-text: #141413;
+  --color-text-muted: #5C5B58;
+
+  /* Semantic: border */
+  --color-border: rgba(10, 10, 10, 0.08);
+
+  /* Semantic: status */
+  --color-success: #004D40;
+  --color-warning: #7A5C00;
+  --color-info: #0047AB;
+  --color-destructive: #B3261E;
+
+  /* Legacy aliases */
+  --color-secondary: #0047AB;
+  --color-accent: #FFD740;
+  --color-shamwari: #004D40;
+  --color-community: #D4A574;
+
+  /* Typography — per registry */
   --font-display: "Noto Serif", serif;
-  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Noto Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Radii */
   --radius-button: 12px;
   --radius-card: 16px;
   --radius-pill: 9999px;
-  --color-primary-fg: #ffffff;
-
-  --color-bg: #ffffff;
-  --color-bg-alt: #f8f7fa;
-  --color-text: #1a1a2e;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-primary: #B388FF;
+    --color-cobalt: #0047AB;
+    --color-tanzanite: #B388FF;
+    --color-malachite: #64FFDA;
+    --color-gold: #FFD740;
+    --color-terracotta: #D4A574;
+
+    --color-primary: #00B0FF;
+    --color-primary-fg: #0A0A0A;
+
+    --color-bg: #0A0A0A;
+    --color-bg-alt: #1E1E1E;
+    --color-card: #141414;
+    --color-surface-inverse: #F5F5F4;
+
+    --color-foreground: #F5F5F4;
+    --color-text: #F5F5F4;
+    --color-text-muted: #9A9A95;
+
+    --color-border: rgba(255, 255, 255, 0.08);
+
+    --color-success: #64FFDA;
+    --color-warning: #FFD866;
+    --color-info: #00B0FF;
+    --color-destructive: #F2B8B5;
+
     --color-secondary: #00B0FF;
     --color-accent: #FFD740;
     --color-shamwari: #64FFDA;
     --color-community: #D4A574;
-    --color-tanzanite: #B388FF;
-    --color-cobalt: #00B0FF;
-    --color-gold: #FFD740;
-    --color-malachite: #64FFDA;
-    --color-terracotta: #D4A574;
-
-    --color-bg: #0f0e17;
-    --color-bg-alt: #1a1a2e;
-    --color-text: #fffffe;
-    --color-text-muted: #a7a9be;
-    --color-border: #2e2e4a;
-    --color-primary-fg: #0f0e17;
   }
 }
 
@@ -393,7 +435,7 @@ a:hover {
 }
 
 .waitlist-error {
-  color: #d40000;
+  color: var(--color-destructive);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
@@ -813,28 +855,9 @@ a:hover {
 
 /* ─── Manifesto Page ─── */
 
-:root {
-  --m-ink: #0D0D0D;
-  --m-ink-mid: #2A2A2A;
-  --m-ink-soft: #5A5A5A;
-  --m-paper: #FAFAF7;
-  --m-paper-warm: #F5F2EC;
-  --m-mono: 'JetBrains Mono', monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --m-ink: #F0F0EE;
-    --m-ink-mid: #CCCCCA;
-    --m-ink-soft: #999997;
-    --m-paper: #0f0e17;
-    --m-paper-warm: #1a1929;
-  }
-}
-
 .manifesto-page {
-  background: var(--m-paper);
-  color: var(--m-ink);
+  background: var(--color-bg);
+  color: var(--color-text);
   min-height: 100vh;
 }
 
@@ -847,16 +870,10 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  background: color-mix(in srgb, var(--m-paper) 85%, transparent);
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-@media (prefers-color-scheme: dark) {
-  .manifesto-header {
-    border-bottom-color: rgba(255, 255, 255, 0.07);
-  }
+  border-bottom: 1px solid var(--color-border);
 }
 
 .manifesto-back {
@@ -880,22 +897,22 @@ a:hover {
 }
 
 .manifesto-header-meta {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   opacity: 0.55;
 }
 
 /* Cover */
 .manifesto-cover {
   min-height: 100vh;
-  background-color: #0D0D0D;
+  background-color: var(--color-surface-inverse);
   background-image:
-    radial-gradient(ellipse 80% 60% at 15% 40%, rgba(75,0,130,0.40) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(0,71,171,0.28) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 55% 15%, rgba(0,77,64,0.22) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 60% at 15% 40%, color-mix(in srgb, var(--color-tanzanite) 40%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, color-mix(in srgb, var(--color-cobalt) 28%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 55% 15%, color-mix(in srgb, var(--color-malachite) 22%, transparent) 0%, transparent 50%);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -912,7 +929,7 @@ a:hover {
 }
 
 .manifesto-cover__eyebrow {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.18em;
@@ -942,7 +959,7 @@ a:hover {
 
 .manifesto-cover__title-em {
   font-style: italic;
-  background: linear-gradient(130deg, #B388FF 0%, #64FFDA 100%);
+  background: linear-gradient(130deg, var(--color-tanzanite) 0%, var(--color-malachite) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -975,7 +992,7 @@ a:hover {
 }
 
 .manifesto-cover__meta-item {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1009,13 +1026,7 @@ a:hover {
 /* Opening */
 .manifesto-opening {
   padding: 7rem 0 4.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-  .manifesto-opening {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
+  border-bottom: 1px solid var(--color-border);
 }
 
 .manifesto-opening__ubuntu {
@@ -1030,11 +1041,11 @@ a:hover {
 }
 
 .manifesto-opening__translation {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   margin-bottom: 2.5rem;
   opacity: 0.6;
 }
@@ -1044,25 +1055,19 @@ a:hover {
   font-size: 1.15rem;
   font-weight: 400;
   line-height: 1.85;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
   margin-bottom: 1.4rem;
 }
 
 .manifesto-opening__declaration strong {
   font-weight: 700;
-  color: var(--m-ink);
+  color: var(--color-foreground);
 }
 
 /* Section */
 .manifesto-section {
   padding: 5rem 0 3.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-  .manifesto-section {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-  }
+  border-bottom: 1px solid var(--color-border);
 }
 
 .manifesto-section:last-child {
@@ -1070,7 +1075,7 @@ a:hover {
 }
 
 .manifesto-section__number {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   font-weight: 400;
   letter-spacing: 0.2em;
@@ -1086,7 +1091,7 @@ a:hover {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  color: var(--m-ink);
+  color: var(--color-foreground);
   margin-bottom: 2rem;
 }
 
@@ -1101,13 +1106,13 @@ a:hover {
   font-size: 1.12rem;
   font-weight: 400;
   line-height: 1.9;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
   margin-bottom: 1.6rem;
 }
 
 .manifesto-body-large strong {
   font-weight: 700;
-  color: var(--m-ink);
+  color: var(--color-foreground);
 }
 
 .manifesto-body {
@@ -1115,12 +1120,12 @@ a:hover {
   font-size: 0.97rem;
   font-weight: 400;
   line-height: 1.85;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   margin-bottom: 1.2rem;
 }
 
 .manifesto-body strong {
-  color: var(--m-ink);
+  color: var(--color-foreground);
   font-weight: 600;
 }
 
@@ -1160,22 +1165,22 @@ a:hover {
 }
 
 .manifesto-pull-quote cite {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   font-style: normal;
   opacity: 0.6;
 }
 
 /* App map */
 .manifesto-app-map {
-  background: #0D0D0D;
+  background: var(--color-surface-inverse);
   border-radius: var(--radius-card);
   padding: 2rem;
   margin: 2rem 0;
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.78rem;
   color: rgba(255,255,255,0.35);
   line-height: 2;
@@ -1192,12 +1197,12 @@ a:hover {
 }
 
 .manifesto-app-map .am-anchor {
-  color: #FFD740;
+  color: var(--color-gold);
   font-weight: 700;
 }
 
 .manifesto-app-map .am-infra {
-  color: #64FFDA;
+  color: var(--color-malachite);
 }
 
 /* Pillar grid */
@@ -1263,7 +1268,7 @@ a:hover {
   font-family: var(--font-body);
   font-size: 0.87rem;
   line-height: 1.7;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
 }
 
 /* Ubuntu questions */
@@ -1279,13 +1284,7 @@ a:hover {
   gap: 1.2rem;
   align-items: flex-start;
   padding: 1.2rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-@media (prefers-color-scheme: dark) {
-  .manifesto-ubuntu-q {
-    border-bottom-color: rgba(255, 255, 255, 0.07);
-  }
+  border-bottom: 1px solid var(--color-border);
 }
 
 .manifesto-ubuntu-q:last-child {
@@ -1293,7 +1292,7 @@ a:hover {
 }
 
 .manifesto-ubuntu-q__num {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--color-tanzanite);
   opacity: 0.45;
@@ -1305,7 +1304,7 @@ a:hover {
   font-family: var(--font-display);
   font-size: 1.05rem;
   line-height: 1.6;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
 }
 
 .manifesto-ubuntu-q__text strong {
@@ -1317,7 +1316,7 @@ a:hover {
 .manifesto-ubuntu-q__sub {
   font-family: var(--font-body);
   font-size: 0.82rem;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   margin-top: 0.2rem;
 }
 
@@ -1335,19 +1334,14 @@ a:hover {
   gap: 1.2rem;
   align-items: flex-start;
   padding: 1.2rem 1.4rem;
-  background: var(--m-paper-warm);
+  background: var(--color-bg-alt);
   border-radius: var(--radius-button);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  .manifesto-pledge-list li {
-    border-color: rgba(255, 255, 255, 0.05);
-  }
-}
 
 .manifesto-pledge-num {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--color-tanzanite);
   opacity: 0.45;
@@ -1359,12 +1353,12 @@ a:hover {
   font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.7;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
 }
 
 .manifesto-pledge-text strong {
   font-weight: 700;
-  color: var(--m-ink);
+  color: var(--color-foreground);
 }
 
 /* Never list */
@@ -1379,7 +1373,7 @@ a:hover {
   font-family: var(--font-body);
   font-size: 0.93rem;
   line-height: 1.6;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
   display: flex;
   align-items: baseline;
   gap: 1rem;
@@ -1387,7 +1381,7 @@ a:hover {
 
 .manifesto-never-item::before {
   content: '✕';
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-tanzanite);
   opacity: 0.5;
@@ -1400,11 +1394,11 @@ a:hover {
   align-items: center;
   gap: 1.2rem;
   margin: 2.5rem 0;
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   opacity: 0.35;
 }
 
@@ -1428,7 +1422,7 @@ a:hover {
   padding: 1.6rem 1.75rem;
   border-radius: var(--radius-button);
   border-left: 4px solid transparent;
-  background: var(--m-paper-warm);
+  background: var(--color-bg-alt);
 }
 
 .manifesto-vision-block:nth-child(1) { border-left-color: var(--color-tanzanite); }
@@ -1437,11 +1431,11 @@ a:hover {
 .manifesto-vision-block:nth-child(4) { border-left-color: var(--color-accent); }
 
 .manifesto-vision-block__label {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   opacity: 0.55;
   margin-bottom: 0.5rem;
 }
@@ -1450,11 +1444,11 @@ a:hover {
   font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.75;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
 }
 
 .manifesto-vision-block__text strong {
-  color: var(--m-ink);
+  color: var(--color-foreground);
   font-weight: 600;
 }
 
@@ -1470,7 +1464,7 @@ a:hover {
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-style: italic;
-  color: var(--m-ink-mid);
+  color: var(--color-text);
   line-height: 1.5;
   padding-left: 1.4rem;
   border-left: 2px solid color-mix(in srgb, var(--color-tanzanite) 20%, transparent);
@@ -1479,7 +1473,7 @@ a:hover {
 .manifesto-stack-line--strong {
   font-weight: 700;
   font-style: normal;
-  color: var(--m-ink);
+  color: var(--color-foreground);
   border-left-color: var(--color-tanzanite);
   font-size: 1rem;
 }
@@ -1495,7 +1489,7 @@ a:hover {
   font-size: clamp(1.7rem, 5vw, 3rem);
   font-weight: 700;
   font-style: italic;
-  color: var(--m-ink);
+  color: var(--color-foreground);
   margin-bottom: 0.7rem;
   line-height: 1.2;
 }
@@ -1504,7 +1498,7 @@ a:hover {
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 300;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   margin-bottom: 0.75rem;
 }
 
@@ -1518,11 +1512,11 @@ a:hover {
 }
 
 .manifesto-closing__byline {
-  font-family: var(--m-mono);
+  font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--m-ink-soft);
+  color: var(--color-text-muted);
   opacity: 0.4;
   line-height: 2.2;
 }

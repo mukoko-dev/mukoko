@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import * as THREE from "three";
 
-const COLORS = {
-  light: {
-    primary: "#4B0082",   // Tanzanite
-    secondary: "#0047AB", // Cobalt
-    background: "#ffffff",
-  },
-  dark: {
-    primary: "#B388FF",   // Tanzanite
-    secondary: "#00B0FF", // Cobalt
-    background: "#0f0e17",
-  },
-};
+function getColors(): { primary: string; secondary: string; background: string } {
+  const style = getComputedStyle(document.documentElement);
+  return {
+    primary: style.getPropertyValue("--color-tanzanite").trim() || "#B388FF",
+    secondary: style.getPropertyValue("--color-cobalt").trim() || "#0047AB",
+    background: style.getPropertyValue("--color-bg").trim() || "#FAF9F5",
+  };
+}
 
 interface HoneycombBackgroundProps {
   intensity?: number;
@@ -83,7 +79,7 @@ export function HoneycombBackground({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const colors = COLORS[theme];
+    const colors = getColors();
     const primaryColor = new THREE.Color(colors.primary);
     const secondaryColor = new THREE.Color(colors.secondary);
     const bgColor = new THREE.Color(colors.background);
@@ -226,7 +222,7 @@ export function HoneycombBackground({
 
   // Static fallback for reduced motion
   if (prefersReducedMotion) {
-    const colors = COLORS[theme];
+    const colors = getColors();
     return (
       <div
         class="honeycomb-bg"
