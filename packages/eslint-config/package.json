@@ -6,14 +6,16 @@
   "exports": {
     "./base": "./base.js",
     "./worker": "./worker.js",
-    "./preact": "./preact.js"
+    "./preact": "./preact.js",
+    "./nextjs": "./nextjs.js"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint-config-prettier": "^10.0.0"
+    "@next/eslint-plugin-next": "^15.0.0",
+    "typescript-eslint": "^8.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0"
   },
   "peerDependencies": {
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0 || ^10.0.0"
   }
 }

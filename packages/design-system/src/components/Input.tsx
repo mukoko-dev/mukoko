@@ -1,4 +1,4 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
 
 export interface InputProps {
   label?: string;
@@ -48,9 +48,7 @@ export function Input({
     fontSize: "16px",
     fontFamily: "inherit",
     borderRadius: "var(--radius-button, 12px)",
-    border: error
-      ? "2px solid #DC2626"
-      : "1px solid var(--card-border, rgba(0, 0, 0, 0.2))",
+    border: error ? "2px solid #DC2626" : "1px solid var(--card-border, rgba(0, 0, 0, 0.2))",
     backgroundColor: disabled ? "rgba(0, 0, 0, 0.04)" : "transparent",
     color: "inherit",
     outline: "none",

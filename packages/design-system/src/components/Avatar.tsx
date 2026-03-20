@@ -1,4 +1,4 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
 
 export type AvatarSize = "sm" | "md" | "lg";
 
@@ -17,9 +17,11 @@ const sizeMap: Record<AvatarSize, { dimension: string; fontSize: string }> = {
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  const first = parts[0];
+  if (!first) return "?";
+  if (parts.length === 1) return first.charAt(0).toUpperCase();
+  const last = parts[parts.length - 1];
+  return (first.charAt(0) + (last?.charAt(0) ?? "")).toUpperCase();
 }
 
 /**
@@ -41,12 +43,7 @@ const fallbackColors = [
   "var(--color-terracotta, #8B4513)",
 ];
 
-export function Avatar({
-  src,
-  name,
-  size = "md",
-  className,
-}: AvatarProps) {
+export function Avatar({ src, name, size = "md", className }: AvatarProps) {
   const { dimension, fontSize } = sizeMap[size];
   const initials = getInitials(name);
   const bgColor = fallbackColors[hashName(name) % fallbackColors.length];
@@ -69,12 +66,7 @@ export function Avatar({
 
   if (src) {
     return (
-      <div
-        style={baseStyle}
-        class={className}
-        role="img"
-        aria-label={name}
-      >
+      <div style={baseStyle} class={className} role="img" aria-label={name}>
         <img
           src={src}
           alt={name}

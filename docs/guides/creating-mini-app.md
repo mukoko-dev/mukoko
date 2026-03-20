@@ -52,15 +52,15 @@ Every super app frontend must use:
 
 ## How It Differs from the Standalone PWA
 
-| Aspect | Standalone PWA (own repo) | Super App Frontend (this monorepo) |
-|--------|---------------------------|-------------------------------------|
-| Runs in | Browser at `*.mukoko.com` | Flutter WebView inside the super app |
-| Auth | Stytch SDK directly | `MukokoBridge.auth.getToken()` via Flutter |
-| Navigation | Own router | `MukokoBridge.nav` for shell integration |
-| Payments | Own payment flow | `MukokoBridge.wallet` for native payment sheet |
-| Storage | localStorage | `MukokoBridge.storage` (no localStorage) |
-| Components | Own UI library | `@mukoko/ui` for consistency across mini-apps |
-| API calls | Direct to backend | Through `@mukoko/api` via the gateway |
+| Aspect     | Standalone PWA (own repo) | Super App Frontend (this monorepo)             |
+| ---------- | ------------------------- | ---------------------------------------------- |
+| Runs in    | Browser at `*.mukoko.com` | Flutter WebView inside the super app           |
+| Auth       | Stytch SDK directly       | `MukokoBridge.auth.getToken()` via Flutter     |
+| Navigation | Own router                | `MukokoBridge.nav` for shell integration       |
+| Payments   | Own payment flow          | `MukokoBridge.wallet` for native payment sheet |
+| Storage    | localStorage              | `MukokoBridge.storage` (no localStorage)       |
+| Components | Own UI library            | `@mukoko/ui` for consistency across mini-apps  |
+| API calls  | Direct to backend         | Through `@mukoko/api` via the gateway          |
 
 ## Rules
 

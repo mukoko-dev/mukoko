@@ -1,0 +1,1537 @@
+@import "tailwindcss";
+
+
+/* mukoko.com — Aligned with Mukoko Registry Design Tokens */
+
+:root {
+  /* Five African Minerals — single set per registry */
+  --color-cobalt: #0047AB;
+  --color-tanzanite: #B388FF;
+  --color-malachite: #64FFDA;
+  --color-gold: #FFD740;
+  --color-terracotta: #D4A574;
+
+  /* Mineral containers (8% tint for card backgrounds) */
+  --color-cobalt-container: color-mix(in srgb, var(--color-cobalt) 8%, transparent);
+  --color-tanzanite-container: color-mix(in srgb, var(--color-tanzanite) 8%, transparent);
+  --color-malachite-container: color-mix(in srgb, var(--color-malachite) 8%, transparent);
+  --color-gold-container: color-mix(in srgb, var(--color-gold) 8%, transparent);
+  --color-terracotta-container: color-mix(in srgb, var(--color-terracotta) 8%, transparent);
+
+  /* Semantic: brand accent = cobalt (registry: "Primary blue, links, CTAs") */
+  --color-primary: #0047AB;
+  --color-primary-fg: #ffffff;
+
+  /* Semantic: surfaces */
+  --color-bg: #FAF9F5;
+  --color-bg-alt: #F3F2EE;
+  --color-card: #FFFFFF;
+  --color-surface-inverse: #0A0A0A;
+
+  /* Semantic: text */
+  --color-foreground: #141413;
+  --color-text: #141413;
+  --color-text-muted: #5C5B58;
+
+  /* Semantic: border */
+  --color-border: rgba(10, 10, 10, 0.08);
+
+  /* Semantic: status */
+  --color-success: #004D40;
+  --color-warning: #7A5C00;
+  --color-info: #0047AB;
+  --color-destructive: #B3261E;
+
+  /* Legacy aliases */
+  --color-secondary: #0047AB;
+  --color-accent: #FFD740;
+  --color-shamwari: #004D40;
+  --color-community: #D4A574;
+
+  /* Typography — per registry */
+  --font-display: "Noto Serif", serif;
+  --font-body: "Noto Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Radii */
+  --radius-button: 12px;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-cobalt: #0047AB;
+    --color-tanzanite: #B388FF;
+    --color-malachite: #64FFDA;
+    --color-gold: #FFD740;
+    --color-terracotta: #D4A574;
+
+    --color-primary: #00B0FF;
+    --color-primary-fg: #0A0A0A;
+
+    --color-bg: #0A0A0A;
+    --color-bg-alt: #1E1E1E;
+    --color-card: #141414;
+    --color-surface-inverse: #F5F5F4;
+
+    --color-foreground: #F5F5F4;
+    --color-text: #F5F5F4;
+    --color-text-muted: #9A9A95;
+
+    --color-border: rgba(255, 255, 255, 0.08);
+
+    --color-success: #64FFDA;
+    --color-warning: #FFD866;
+    --color-info: #00B0FF;
+    --color-destructive: #F2B8B5;
+
+    --color-secondary: #00B0FF;
+    --color-accent: #FFD740;
+    --color-shamwari: #64FFDA;
+    --color-community: #D4A574;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Five African Minerals strip — 4px left edge, all screen sizes */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  z-index: 100;
+  background: linear-gradient(
+    to bottom,
+    var(--color-tanzanite) 0% 20%,
+    var(--color-cobalt) 20% 40%,
+    var(--color-gold) 40% 60%,
+    var(--color-malachite) 60% 80%,
+    var(--color-terracotta) 80% 100%
+  );
+}
+
+.section {
+  padding: 5rem 1.5rem;
+  width: 100%;
+}
+
+.section__inner {
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Honeycomb Background ─── */
+
+.honeycomb-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Utility */
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-muted); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+/* ─── Section titles ─── */
+
+.section__title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.section__subtitle {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* ─── Header ─── */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: all 0.3s ease;
+}
+
+.header--scrolled {
+  background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.header__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.header__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.header__wordmark {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+  transition: opacity 0.3s ease;
+}
+
+.header__wordmark--hidden {
+  opacity: 0;
+}
+
+.header__nav {
+  display: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.header__link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.header__link:hover {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.header__link--btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  padding: 0;
+}
+
+.header__actions {
+  flex-shrink: 0;
+}
+
+.header__pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.header__pill-btn:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .header__nav {
+    display: flex;
+  }
+}
+
+/* ─── Hero ─── */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 4rem 1.5rem 5rem;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.hero__content {
+  max-width: 640px;
+}
+
+.hero__quote {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.hero__heading {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.hero__accent {
+  color: var(--color-primary);
+}
+
+.hero__subheading {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.hero__description {
+  font-size: 1.125rem;
+  color: var(--color-text-muted);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.hero__note {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+/* ─── Waitlist Form ─── */
+
+.waitlist-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  max-width: 440px;
+}
+
+.waitlist-form--compact {
+  margin-top: 0;
+}
+
+.waitlist-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.waitlist-input:focus {
+  border-color: var(--color-primary);
+}
+
+.waitlist-input:disabled {
+  opacity: 0.6;
+}
+
+.waitlist-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.waitlist-button:hover {
+  opacity: 0.9;
+}
+
+.waitlist-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.waitlist-success {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-button);
+  text-align: center;
+  color: var(--color-shamwari);
+  font-weight: 600;
+}
+
+.waitlist-success--compact {
+  margin-top: 0;
+}
+
+.waitlist-error {
+  color: var(--color-destructive);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .waitlist-form {
+    flex-direction: column;
+  }
+}
+
+/* ─── App Showcase Grid ─── */
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.app-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--card-bg, var(--color-bg));
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.app-card:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.app-card__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.app-card__name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--card-accent, var(--color-primary));
+}
+
+.app-card__description {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ─── Privacy / Memory File ─── */
+
+.privacy {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.privacy__duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.privacy__card {
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+}
+
+.privacy__card h3 {
+  font-size: 1.05rem;
+  color: var(--color-shamwari);
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .privacy__duo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── How It Works ─── */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.step {
+  text-align: center;
+  position: relative;
+}
+
+.step__number {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
+}
+
+.step__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.step__description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ─── Ubuntu ─── */
+
+.ubuntu {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.ubuntu__headline {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-community);
+}
+
+.ubuntu__translation {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+}
+
+.ubuntu__cta {
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+/* ─── Footer ─── */
+
+.footer {
+  background: var(--color-bg-alt);
+  border-top: 1px solid var(--color-border);
+  padding: 4rem 1.5rem 2rem;
+}
+
+.footer__inner {
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer__logo-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.footer__wordmark {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.footer__tagline {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 220px;
+}
+
+.footer__nyuchi {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.footer__col-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.footer__col-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer__col-links a,
+.footer__col-link-btn {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+}
+
+.footer__col-links a:hover,
+.footer__col-link-btn:hover {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.footer__motto {
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .footer__grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer__brand {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer__tagline {
+    max-width: 360px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer__brand {
+    grid-column: 1 / -1;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding: 6rem 1.5rem 7rem;
+  }
+
+  .hero__heading {
+    font-size: 3.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section__title {
+    font-size: 1.6rem;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__wordmark {
+    font-size: 2.5rem;
+  }
+
+  .ubuntu__headline {
+    font-size: 1.6rem;
+  }
+
+  .section {
+    padding: 3rem 1rem;
+  }
+}
+
+/* ─── Ubuntu Questions (landing) ─── */
+
+.ubuntu-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.ubuntu-question {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ubuntu-question:last-child {
+  border-bottom: none;
+}
+
+.ubuntu-question__num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--color-primary);
+  opacity: 0.45;
+  min-width: 1.8rem;
+  padding-top: 0.2rem;
+}
+
+.ubuntu-question__text {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.ubuntu-question__sub {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+.ubuntu__manifesto-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 2rem;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+.ubuntu__manifesto-link:hover {
+  opacity: 0.75;
+  text-decoration: none;
+}
+
+/* ─── Platform substrate cards ─── */
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 2.5rem;
+  max-width: 1120px;
+  margin-inline: auto;
+}
+
+.platform-card {
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+}
+
+.platform-card__icon {
+  font-size: 1.4rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.platform-card__name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.3rem;
+}
+
+.platform-card__description {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* ─── Manifesto Page ─── */
+
+.manifesto-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* Manifesto header */
+.manifesto-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.manifesto-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.manifesto-back:hover {
+  opacity: 0.7;
+}
+
+.manifesto-header-meta {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.55;
+}
+
+/* Cover */
+.manifesto-cover {
+  min-height: 100vh;
+  background-color: var(--color-surface-inverse);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 40%, color-mix(in srgb, var(--color-tanzanite) 40%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, color-mix(in srgb, var(--color-cobalt) 28%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 55% 15%, color-mix(in srgb, var(--color-malachite) 22%, transparent) 0%, transparent 50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6rem 3rem 7rem 4.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto-cover__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.manifesto-cover__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 2.5rem;
+}
+
+.manifesto-cover__wordmark {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1.2rem;
+}
+
+.manifesto-cover__title {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 9vw, 6.5rem);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.manifesto-cover__title-em {
+  font-style: italic;
+  background: linear-gradient(130deg, var(--color-tanzanite) 0%, var(--color-malachite) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.manifesto-cover__tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  color: rgba(255,255,255,0.4);
+  margin: 1.6rem 0 2.8rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.manifesto-cover__statement {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  max-width: 480px;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+}
+
+.manifesto-cover__meta {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.manifesto-cover__meta-item {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  line-height: 2;
+}
+
+.manifesto-cover__meta-item strong {
+  display: block;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+
+/* Content area */
+.manifesto-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 2rem 0 4.5rem;
+}
+
+@media (max-width: 768px) {
+  .manifesto-content {
+    padding: 0 1.5rem;
+  }
+
+  .manifesto-cover {
+    padding: 5rem 1.5rem 6rem;
+  }
+}
+
+/* Opening */
+.manifesto-opening {
+  padding: 7rem 0 4.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.manifesto-opening__ubuntu {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--color-tanzanite);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.manifesto-opening__translation {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 2.5rem;
+  opacity: 0.6;
+}
+
+.manifesto-opening__declaration {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.85;
+  color: var(--color-text);
+  margin-bottom: 1.4rem;
+}
+
+.manifesto-opening__declaration strong {
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+/* Section */
+.manifesto-section {
+  padding: 5rem 0 3.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.manifesto-section:last-child {
+  border-bottom: none;
+}
+
+.manifesto-section__number {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-tanzanite);
+  opacity: 0.45;
+  margin-bottom: 1rem;
+}
+
+.manifesto-section__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+  margin-bottom: 2rem;
+}
+
+.manifesto-section__title em {
+  font-style: italic;
+  color: var(--color-tanzanite);
+}
+
+/* Body text */
+.manifesto-body-large {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 400;
+  line-height: 1.9;
+  color: var(--color-text);
+  margin-bottom: 1.6rem;
+}
+
+.manifesto-body-large strong {
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+.manifesto-body {
+  font-family: var(--font-body);
+  font-size: 0.97rem;
+  font-weight: 400;
+  line-height: 1.85;
+  color: var(--color-text-muted);
+  margin-bottom: 1.2rem;
+}
+
+.manifesto-body strong {
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+
+.manifesto-shona {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-tanzanite);
+  font-weight: 700;
+}
+
+/* Pull quote */
+.manifesto-pull-quote {
+  margin: 3rem 0;
+  padding: 2rem 2rem 2rem 2.5rem;
+  background: color-mix(in srgb, var(--color-tanzanite) 8%, transparent);
+  border-left: 4px solid var(--color-tanzanite);
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  position: relative;
+}
+
+.manifesto-pull-quote--green {
+  background: color-mix(in srgb, var(--color-malachite) 8%, transparent);
+  border-left-color: var(--color-malachite);
+}
+
+.manifesto-pull-quote p {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--color-tanzanite);
+  margin-bottom: 0.7rem;
+}
+
+.manifesto-pull-quote--green p {
+  color: var(--color-malachite);
+}
+
+.manifesto-pull-quote cite {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-style: normal;
+  opacity: 0.6;
+}
+
+/* App map */
+.manifesto-app-map {
+  background: var(--color-surface-inverse);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  margin: 2rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  line-height: 2;
+  overflow-x: auto;
+}
+
+.manifesto-app-map span {
+  display: block;
+}
+
+.manifesto-app-map .am-name {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+.manifesto-app-map .am-anchor {
+  color: var(--color-gold);
+  font-weight: 700;
+}
+
+.manifesto-app-map .am-infra {
+  color: var(--color-malachite);
+}
+
+/* Pillar grid */
+.manifesto-pillar-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 580px) {
+  .manifesto-pillar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manifesto-pillar-card {
+  padding: 1.75rem;
+  border-radius: var(--radius-card);
+}
+
+.manifesto-pillar-card--cobalt {
+  background: color-mix(in srgb, var(--color-cobalt) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-cobalt) 18%, transparent);
+}
+
+.manifesto-pillar-card--tanzanite {
+  background: color-mix(in srgb, var(--color-tanzanite) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-tanzanite) 18%, transparent);
+}
+
+.manifesto-pillar-card--malachite {
+  background: color-mix(in srgb, var(--color-malachite) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-malachite) 18%, transparent);
+}
+
+.manifesto-pillar-card--terracotta {
+  background: color-mix(in srgb, var(--color-terracotta) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-terracotta) 18%, transparent);
+}
+
+.manifesto-pillar-card__icon {
+  font-size: 1.4rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.manifesto-pillar-card__title {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.manifesto-pillar-card--cobalt .manifesto-pillar-card__title { color: var(--color-cobalt); }
+.manifesto-pillar-card--tanzanite .manifesto-pillar-card__title { color: var(--color-tanzanite); }
+.manifesto-pillar-card--malachite .manifesto-pillar-card__title { color: var(--color-malachite); }
+.manifesto-pillar-card--terracotta .manifesto-pillar-card__title { color: var(--color-terracotta); }
+
+.manifesto-pillar-card__body {
+  font-family: var(--font-body);
+  font-size: 0.87rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+}
+
+/* Ubuntu questions */
+.manifesto-ubuntu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 2rem 0;
+}
+
+.manifesto-ubuntu-q {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.manifesto-ubuntu-q:last-child {
+  border-bottom: none;
+}
+
+.manifesto-ubuntu-q__num {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-tanzanite);
+  opacity: 0.45;
+  min-width: 1.8rem;
+  padding-top: 0.2rem;
+}
+
+.manifesto-ubuntu-q__text {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.manifesto-ubuntu-q__text strong {
+  color: var(--color-tanzanite);
+  font-weight: 700;
+  font-style: italic;
+}
+
+.manifesto-ubuntu-q__sub {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Pledge list */
+.manifesto-pledge-list {
+  list-style: none;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.manifesto-pledge-list li {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1.2rem 1.4rem;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-button);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+
+.manifesto-pledge-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-tanzanite);
+  opacity: 0.45;
+  min-width: 1.8rem;
+  padding-top: 0.15rem;
+}
+
+.manifesto-pledge-text {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+.manifesto-pledge-text strong {
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+/* Never list */
+.manifesto-never-list {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.manifesto-never-item {
+  font-family: var(--font-body);
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.manifesto-never-item::before {
+  content: '✕';
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--color-tanzanite);
+  opacity: 0.5;
+  min-width: 1rem;
+}
+
+/* Divider */
+.manifesto-divider {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 2.5rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.35;
+}
+
+.manifesto-divider::before,
+.manifesto-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+}
+
+/* Vision blocks */
+.manifesto-vision-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.manifesto-vision-block {
+  padding: 1.6rem 1.75rem;
+  border-radius: var(--radius-button);
+  border-left: 4px solid transparent;
+  background: var(--color-bg-alt);
+}
+
+.manifesto-vision-block:nth-child(1) { border-left-color: var(--color-tanzanite); }
+.manifesto-vision-block:nth-child(2) { border-left-color: var(--color-cobalt); }
+.manifesto-vision-block:nth-child(3) { border-left-color: var(--color-malachite); }
+.manifesto-vision-block:nth-child(4) { border-left-color: var(--color-accent); }
+
+.manifesto-vision-block__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.55;
+  margin-bottom: 0.5rem;
+}
+
+.manifesto-vision-block__text {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+.manifesto-vision-block__text strong {
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+
+/* Stack (prose poetry) */
+.manifesto-stack {
+  padding: 1.5rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.manifesto-stack-line {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--color-text);
+  line-height: 1.5;
+  padding-left: 1.4rem;
+  border-left: 2px solid color-mix(in srgb, var(--color-tanzanite) 20%, transparent);
+}
+
+.manifesto-stack-line--strong {
+  font-weight: 700;
+  font-style: normal;
+  color: var(--color-foreground);
+  border-left-color: var(--color-tanzanite);
+  font-size: 1rem;
+}
+
+/* Closing */
+.manifesto-closing {
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.manifesto-closing__ubuntu {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-foreground);
+  margin-bottom: 0.7rem;
+  line-height: 1.2;
+}
+
+.manifesto-closing__sub {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.manifesto-closing__tagline {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--color-tanzanite);
+  margin-bottom: 3rem;
+  opacity: 0.75;
+}
+
+.manifesto-closing__byline {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.4;
+  line-height: 2.2;
+}
+
+.manifesto-honeycomb {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0 2.5rem;
+  opacity: 0.12;
+}
+
+.manifesto-honeycomb svg {
+  width: 90px;
+  height: 65px;
+}

@@ -1,4 +1,6 @@
-import { useState } from "preact/hooks";
+"use client";
+
+import { useState } from "react";
 
 const FORMSPREE_ID = "mwvnprag";
 
@@ -6,7 +8,7 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
-  const handleSubmit = async (e: Event) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email) return;
 
@@ -28,7 +30,9 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
 
   if (status === "success") {
     return (
-      <div class={`waitlist-success ${variant === "compact" ? "waitlist-success--compact" : ""}`}>
+      <div
+        className={`waitlist-success ${variant === "compact" ? "waitlist-success--compact" : ""}`}
+      >
         <p>You're on the list. We'll be in touch.</p>
       </div>
     );
@@ -36,22 +40,22 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
 
   return (
     <form
-      class={`waitlist-form ${variant === "compact" ? "waitlist-form--compact" : ""}`}
+      className={`waitlist-form ${variant === "compact" ? "waitlist-form--compact" : ""}`}
       onSubmit={handleSubmit}
     >
       <input
         type="email"
         placeholder="Your email address"
         value={email}
-        onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
+        onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
         required
-        class="waitlist-input"
+        className="waitlist-input"
         disabled={status === "submitting"}
       />
-      <button type="submit" class="waitlist-button" disabled={status === "submitting"}>
+      <button type="submit" className="waitlist-button" disabled={status === "submitting"}>
         {status === "submitting" ? "Joining…" : "Join the waitlist"}
       </button>
-      {status === "error" && <p class="waitlist-error">Something went wrong. Try again.</p>}
+      {status === "error" && <p className="waitlist-error">Something went wrong. Try again.</p>}
     </form>
   );
 }

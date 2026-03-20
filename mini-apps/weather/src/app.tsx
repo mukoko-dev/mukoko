@@ -2,8 +2,12 @@ import type { FunctionalComponent } from "preact";
 
 export const App: FunctionalComponent = () => {
   return (
-    <div style={{ fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)", padding: "1rem" }}>
-      <h1 style={{ fontFamily: "var(--font-display, 'Noto Serif', serif)" }}>weather — zimbabwe forecasts</h1>
+    <div
+      style={{ fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)", padding: "1rem" }}
+    >
+      <h1 style={{ fontFamily: "var(--font-display, 'Noto Serif', serif)" }}>
+        weather — zimbabwe forecasts
+      </h1>
       <p>Local weather forecasts for Zimbabwe.</p>
     </div>
   );

@@ -1,18 +1,16 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-const COLORS = {
-  light: {
-    primary: "#4B0082",   // Tanzanite
-    secondary: "#0047AB", // Cobalt
-    background: "#ffffff",
-  },
-  dark: {
-    primary: "#B388FF",   // Tanzanite
-    secondary: "#00B0FF", // Cobalt
-    background: "#0f0e17",
-  },
-};
+function getColors(): { primary: string; secondary: string; background: string } {
+  const style = getComputedStyle(document.documentElement);
+  return {
+    primary: style.getPropertyValue("--color-tanzanite").trim() || "#B388FF",
+    secondary: style.getPropertyValue("--color-cobalt").trim() || "#0047AB",
+    background: style.getPropertyValue("--color-bg").trim() || "#FAF9F5",
+  };
+}
 
 interface HoneycombBackgroundProps {
   intensity?: number;
@@ -20,18 +18,12 @@ interface HoneycombBackgroundProps {
 }
 
 function useTheme(): "light" | "dark" {
-  const [theme, setTheme] = useState<"light" | "dark">(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-  );
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) =>
-      setTheme(e.matches ? "dark" : "light");
+    setTheme(mq.matches ? "dark" : "light");
+    const handler = (e: MediaQueryListEvent) => setTheme(e.matches ? "dark" : "light");
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
@@ -40,14 +32,11 @@ function useTheme(): "light" | "dark" {
 }
 
 function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
     const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -56,10 +45,7 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-export function HoneycombBackground({
-  intensity = 0.5,
-  speed = 0.6,
-}: HoneycombBackgroundProps) {
+export function HoneycombBackground({ intensity = 0.5, speed = 0.6 }: HoneycombBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animationRef = useRef<number>(0);
@@ -83,7 +69,7 @@ export function HoneycombBackground({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const colors = COLORS[theme];
+    const colors = getColors();
     const primaryColor = new THREE.Color(colors.primary);
     const secondaryColor = new THREE.Color(colors.secondary);
     const bgColor = new THREE.Color(colors.background);
@@ -96,7 +82,6 @@ export function HoneycombBackground({
       }
     `;
 
-    // Pulsating honeycomb shader
     const fragmentShader = `
       uniform float uTime;
       uniform float uIntensity;
@@ -129,46 +114,34 @@ export function HoneycombBackground({
         uv.x *= aspect;
 
         float t = uTime;
-
-        // Hex grid — larger cells so the pattern reads clearly
         float scale = 6.0;
         vec4 hc = hexCoord(uv * scale);
         vec2 gv = hc.xy;
         vec2 id = hc.zw;
 
-        // Thicker, more visible edges
         float fill = hexEdge(gv, 0.08);
         float innerFill = hexEdge(gv, 0.18);
         float edge = innerFill - fill;
 
-        // Ripple pulse from center — faster, more dramatic
         float distFromCenter = length(id / scale - vec2(aspect * 0.5, 0.5));
         float pulse = sin(distFromCenter * 4.0 - t * 3.0) * 0.5 + 0.5;
-        pulse = pulse * pulse; // sharpen the wave crest
+        pulse = pulse * pulse;
 
-        // Secondary wave for layered breathing
         float pulse2 = sin(distFromCenter * 2.0 + t * 1.8) * 0.5 + 0.5;
 
-        // Per-cell random phase so cells don't all pulse identically
         float cellHash = fract(sin(dot(id, vec2(127.1, 311.7))) * 43758.5453);
         float cellPulse = sin(t * 2.0 + cellHash * 6.2831) * 0.5 + 0.5;
 
-        // Blend: mostly ripple, some per-cell variation
         float combined = mix(pulse, cellPulse, 0.25);
         combined = combined * (0.6 + pulse2 * 0.4);
 
-        // Strong edge glow — this is the main visible element
         float edgeGlow = edge * (0.3 + combined * 0.7);
-
-        // Cell interior fill — noticeable breathing
         float cellFill = fill * combined * 0.35;
 
-        // Compose
         vec3 color = uBgColor;
         color = mix(color, uSecondaryColor, cellFill * uIntensity);
         color = mix(color, uPrimaryColor, edgeGlow * uIntensity);
 
-        // Gentle vignette — don't kill the edges
         float vignette = 1.0 - smoothstep(0.5, 1.8, distFromCenter);
         color = mix(uBgColor, color, 0.7 + vignette * 0.3);
 
@@ -224,12 +197,11 @@ export function HoneycombBackground({
     };
   }, [theme, intensity, speed, prefersReducedMotion]);
 
-  // Static fallback for reduced motion
   if (prefersReducedMotion) {
-    const colors = COLORS[theme];
+    const colors = getColors();
     return (
       <div
-        class="honeycomb-bg"
+        className="honeycomb-bg"
         style={{
           background:
             theme === "dark"
@@ -241,5 +213,5 @@ export function HoneycombBackground({
     );
   }
 
-  return <div ref={containerRef} class="honeycomb-bg" aria-hidden="true" />;
+  return <div ref={containerRef} className="honeycomb-bg" aria-hidden="true" />;
 }

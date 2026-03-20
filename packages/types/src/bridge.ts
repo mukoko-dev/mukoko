@@ -22,11 +22,7 @@ export interface AuthBridge {
 
 export interface HoneyBridge {
   getInterests(): Promise<Interest[]>;
-  trackInteraction(interaction: {
-    type: string;
-    contentId: string;
-    duration?: number;
-  }): void;
+  trackInteraction(interaction: { type: string; contentId: string; duration?: number }): void;
   getSuggestions(context: string): Promise<string[]>;
 }
 
@@ -43,13 +39,8 @@ export interface WalletBridge {
     currency: string;
     description: string;
   }): Promise<{ success: boolean; transactionId?: string }>;
-  transferTokens(params: {
-    to: string;
-    amount: number;
-  }): Promise<{ success: boolean }>;
-  onPaymentResult(
-    cb: (result: { success: boolean; transactionId?: string }) => void,
-  ): () => void;
+  transferTokens(params: { to: string; amount: number }): Promise<{ success: boolean }>;
+  onPaymentResult(cb: (result: { success: boolean; transactionId?: string }) => void): () => void;
 }
 
 export interface DeviceBridge {

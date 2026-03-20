@@ -5,6 +5,7 @@ Mukoko uses Stytch as its authentication provider, offering passwordless auth fl
 ## Overview
 
 Stytch provides:
+
 - OTP via SMS and WhatsApp
 - Email magic links
 - OAuth (Google, Apple)

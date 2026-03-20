@@ -6,9 +6,9 @@
 
 🟩🟨🟥⬛
 
-*A Product of The Bundu Family — Built by Nyuchi Africa*
+_A Product of The Bundu Family — Built by Nyuchi Africa_
 
-*Ndiri nekuti tiri — I am because we are*
+_Ndiri nekuti tiri — I am because we are_
 
 **Your Honey. Your Identity. Your Sovereignty.**
 
@@ -42,17 +42,17 @@ Mukoko exists within a unified brand ecosystem rooted in Shona language and Ubun
 
 ### 2.1 Brand Hierarchy
 
-| Layer | Name | Role | Mineral | Hex (Light) | Hex (Dark) |
-|-------|------|------|---------|-------------|------------|
-| Container | Bundu | The Family — Parent Entity | Terracotta | `#8B4513` | `#D4A574` |
-| Philosophy | Ubuntu | Guidelines & Guardrails | Gold | `#5D4037` | `#FFD740` |
-| Action | Nyuchi (Bee) | Collective Effort, Pollination | Gold | `#5D4037` | `#FFD740` |
-| Structure | Mukoko (Hive) | Community Gathering Space | Tanzanite | `#4B0082` | `#B388FF` |
-| Intelligence | Shamwari (Friend) | AI That Lives Inside the Hive | Malachite | `#004D40` | `#64FFDA` |
+| Layer        | Name              | Role                           | Mineral    | Hex (Light) | Hex (Dark) |
+| ------------ | ----------------- | ------------------------------ | ---------- | ----------- | ---------- |
+| Container    | Bundu             | The Family — Parent Entity     | Terracotta | `#8B4513`   | `#D4A574`  |
+| Philosophy   | Ubuntu            | Guidelines & Guardrails        | Gold       | `#5D4037`   | `#FFD740`  |
+| Action       | Nyuchi (Bee)      | Collective Effort, Pollination | Gold       | `#5D4037`   | `#FFD740`  |
+| Structure    | Mukoko (Hive)     | Community Gathering Space      | Tanzanite  | `#4B0082`   | `#B388FF`  |
+| Intelligence | Shamwari (Friend) | AI That Lives Inside the Hive  | Malachite  | `#004D40`   | `#64FFDA`  |
 
 ### 2.2 The Symbiotic Metaphor
 
-> *"The bee needs the hive. The hive needs the bees. Neither exists meaningfully without the other."*
+> _"The bee needs the hive. The hive needs the bees. Neither exists meaningfully without the other."_
 
 Bees (Nyuchi) fly out into the Bundu (wilderness) to collect, pollinate, and build. They return to the Mukoko (hive) to store knowledge, collaborate, and rest. Inside the Mukoko lives Shamwari — the collective wisdom, the helpful AI intelligence. The cycle continues: gather → store → share → grow.
 
@@ -79,7 +79,7 @@ Mukoko is the flagship Digital Twin Social Ecosystem. Other Nyuchi products are 
 
 ## 3. Your Honey — The Core Product
 
-> *"Your Honey. Your Identity. Your Sovereignty."*
+> _"Your Honey. Your Identity. Your Sovereignty."_
 
 Your Honey is the single most important component of Mukoko. It is a personalization engine that learns user preferences on-device and surfaces relevant content across all six ecosystem apps. Unlike exploitative algorithms that optimize for engagement (platform profit), Your Honey optimizes for enrichment (user growth).
 
@@ -105,19 +105,19 @@ Users select from 32 categories during onboarding and can adjust at any time. Ea
 - Health (Fitness, Mental health, Traditional medicine, Healthcare)
 - Education (STEM, Languages, Vocational training, Scholarships)
 - Entertainment (Movies, Series, Comedy, Theatre, Gaming)
-- *...and 22 more categories*
+- _...and 22 more categories_
 
 ### 3.3 Nuchi Honey Technical Architecture
 
 Nuchi Honey is the backend personalization service that powers Your Honey. It runs on completely isolated infrastructure, separate from the main Cloudflare Workers deployment, for maximum privacy and security.
 
-| Component | Detail |
-|-----------|--------|
-| Endpoint | `honey.nyuchi.com` |
-| Access | Secret-based authentication via Cloudflare Tunnel (zero public exposure) |
-| Runtime | Docker containerized, FastAPI-based service |
-| Monitoring | Prometheus metrics collection, comprehensive health checks |
-| Resilience | Netflix-inspired: circuit breakers, retry logic, bulkhead isolation |
+| Component     | Detail                                                                      |
+| ------------- | --------------------------------------------------------------------------- |
+| Endpoint      | `honey.nyuchi.com`                                                          |
+| Access        | Secret-based authentication via Cloudflare Tunnel (zero public exposure)    |
+| Runtime       | Docker containerized, FastAPI-based service                                 |
+| Monitoring    | Prometheus metrics collection, comprehensive health checks                  |
+| Resilience    | Netflix-inspired: circuit breakers, retry logic, bulkhead isolation         |
 | Privacy Model | Federated learning — improves platform without exposing individual behavior |
 
 ### 3.4 On-Device AI Architecture
@@ -136,14 +136,14 @@ The on-device component runs as a lightweight ML model embedded in the Flutter s
 
 Mukoko consists of six interconnected apps, all sharing one Digital Twin, one Your Honey engine, one reputation system, and one token economy. Each app is implemented as a WebView mini-app loaded inside the Flutter shell.
 
-| App | Domain | Purpose | Migrating From |
-|-----|--------|---------|----------------|
-| Mukoko ID | `id.mukoko.com` | Unified identity, Digital Twin, single sign-on | mukoko-id-api (existing) |
-| Clips | `clips.mukoko.com` | Context-rich news from trusted African + global sources | Harare Metro / Mukoko News |
-| Pulse | *(super app only)* | Personalized aggregated feed — pulls from all apps, powered by Memory File | Monorepo-native |
-| Connect | `connect.mukoko.com` | Interest-based Circles (communities), social forum | New build |
-| Novels | `novels.mukoko.com` | African author platform, web novels, long-form stories | New build |
-| Events | `events.mukoko.com` | Cultural gatherings, meetups, ticket purchasing | Nhimbe (existing) |
+| App       | Domain               | Purpose                                                                    | Migrating From             |
+| --------- | -------------------- | -------------------------------------------------------------------------- | -------------------------- |
+| Mukoko ID | `id.mukoko.com`      | Unified identity, Digital Twin, single sign-on                             | mukoko-id-api (existing)   |
+| Clips     | `clips.mukoko.com`   | Context-rich news from trusted African + global sources                    | Harare Metro / Mukoko News |
+| Pulse     | _(super app only)_   | Personalized aggregated feed — pulls from all apps, powered by Memory File | Monorepo-native            |
+| Connect   | `connect.mukoko.com` | Interest-based Circles (communities), social forum                         | New build                  |
+| Novels    | `novels.mukoko.com`  | African author platform, web novels, long-form stories                     | New build                  |
+| Events    | `events.mukoko.com`  | Cultural gatherings, meetups, ticket purchasing                            | Nhimbe (existing)          |
 
 ### 4.1 Clips — Informed Communities
 
@@ -206,7 +206,7 @@ Beyond the six core ecosystem apps, Mukoko supports utility mini-apps that exten
 
 ## 5. Shamwari AI — The Intelligence Layer
 
-> *"I serve, I do not control."*
+> _"I serve, I do not control."_
 
 Shamwari (Shona for "friend") is the AI companion that lives inside the Mukoko hive. It is not a separate app but an omnipresent intelligence woven into every part of the ecosystem, guiding users, providing recommendations, and bridging human connection with technology.
 
@@ -355,18 +355,18 @@ The Flutter shell handles everything requiring native device access or persisten
 
 #### Key Flutter Dependencies
 
-| Package | Purpose | Notes |
-|---------|---------|-------|
-| `flutter_inappwebview` | Mini-app WebView runtime | JS bridge, caching, offline |
-| `stytch_flutter` | Authentication | Mukoko ID (Stytch sessions, OAuth, MFA) |
-| `sqflite` | Local database | Offline cache + sync queue |
-| `flutter_secure_storage` | Secure tokens | Keychain/Keystore |
-| `tflite_flutter` | On-device ML | Your Honey AI model |
-| `firebase_messaging` | Push (Android/iOS) | + `agconnect_push` for Huawei |
-| `local_auth` | Biometrics | Fingerprint, Face ID |
-| `flutter_riverpod` | State management | Clean, testable state |
-| `web3dart` | Blockchain | Digital Twin NFT minting (Base) |
-| `mobile_scanner` | QR scanning | Wallet payments |
+| Package                  | Purpose                  | Notes                                   |
+| ------------------------ | ------------------------ | --------------------------------------- |
+| `flutter_inappwebview`   | Mini-app WebView runtime | JS bridge, caching, offline             |
+| `stytch_flutter`         | Authentication           | Mukoko ID (Stytch sessions, OAuth, MFA) |
+| `sqflite`                | Local database           | Offline cache + sync queue              |
+| `flutter_secure_storage` | Secure tokens            | Keychain/Keystore                       |
+| `tflite_flutter`         | On-device ML             | Your Honey AI model                     |
+| `firebase_messaging`     | Push (Android/iOS)       | + `agconnect_push` for Huawei           |
+| `local_auth`             | Biometrics               | Fingerprint, Face ID                    |
+| `flutter_riverpod`       | State management         | Clean, testable state                   |
+| `web3dart`               | Blockchain               | Digital Twin NFT minting (Base)         |
+| `mobile_scanner`         | QR scanning              | Wallet payments                         |
 
 ### 7.3 MukokoBridge JavaScript API
 
@@ -437,38 +437,38 @@ The backend leverages existing Cloudflare Workers infrastructure already deploye
 
 ### 8.1 Existing Cloudflare Workers (Production)
 
-| Worker | Purpose | Domain/Route | Status |
-|--------|---------|--------------|--------|
-| `mukoko-news-backend` | News aggregation, RSS, search, analytics | `app.mukoko.com` | Production |
-| `mukoko-id-api` | Authentication, profiles, sessions | — | Production |
-| `mukoko-id-api-staging` | Auth staging environment | — | Staging |
-| `mukoko-nhimbe-api` | Events discovery, ticketing | — | Production |
-| `mukoko-events-api` | Events API | — | Production |
-| `mukoko-events-api-staging` | Events staging | — | Staging |
-| `mukoko-auth-staging` | Auth staging | — | Staging |
-| `nyuchi_api` | Core Nyuchi platform API | — | Production |
-| `nyuchi-brand-assets` | Brand system CDN | `assets.nyuchi.com` | Production |
-| `hararemetro-redirect` | Legacy redirect | — | Production |
-| `r2-brand-explorer` | R2 asset browser | — | Production |
-| `zimbabwe-travel` | Travel platform | — | Production |
-| `origins-with-perspective` | — | — | Production |
-| `nyuchi-africa-dispatcher-staging` | Dispatcher staging | — | Staging |
-| `raspy-fog-4352-nlweb` | NLWeb | — | Production |
+| Worker                             | Purpose                                  | Domain/Route        | Status     |
+| ---------------------------------- | ---------------------------------------- | ------------------- | ---------- |
+| `mukoko-news-backend`              | News aggregation, RSS, search, analytics | `app.mukoko.com`    | Production |
+| `mukoko-id-api`                    | Authentication, profiles, sessions       | —                   | Production |
+| `mukoko-id-api-staging`            | Auth staging environment                 | —                   | Staging    |
+| `mukoko-nhimbe-api`                | Events discovery, ticketing              | —                   | Production |
+| `mukoko-events-api`                | Events API                               | —                   | Production |
+| `mukoko-events-api-staging`        | Events staging                           | —                   | Staging    |
+| `mukoko-auth-staging`              | Auth staging                             | —                   | Staging    |
+| `nyuchi_api`                       | Core Nyuchi platform API                 | —                   | Production |
+| `nyuchi-brand-assets`              | Brand system CDN                         | `assets.nyuchi.com` | Production |
+| `hararemetro-redirect`             | Legacy redirect                          | —                   | Production |
+| `r2-brand-explorer`                | R2 asset browser                         | —                   | Production |
+| `zimbabwe-travel`                  | Travel platform                          | —                   | Production |
+| `origins-with-perspective`         | —                                        | —                   | Production |
+| `nyuchi-africa-dispatcher-staging` | Dispatcher staging                       | —                   | Staging    |
+| `raspy-fog-4352-nlweb`             | NLWeb                                    | —                   | Production |
 
 **Total: 15 workers deployed**
 
 ### 8.2 Data Layer
 
-| Service | Usage | Key Resources |
-|---------|-------|---------------|
-| **MongoDB Atlas** | Primary database — all application data | `users`, `articles`, `events`, `novels`, `circles`, `pulse_posts`, `transactions`, `notifications` |
-| **Stytch** | Authentication — sessions, OAuth, MFA, SSO | Mukoko ID SSO across all Nyuchi products |
-| **Cloudflare D1** | Edge-local reads for fast auth verification | `mukoko_users` |
-| **Cloudflare KV** | Config, cache, sessions, news storage | 4 namespaces: `CONFIG_STORAGE`, `CACHE_STORAGE`, `USER_STORAGE`, `NEWS_STORAGE` |
-| **Durable Objects** | Real-time chat, user presence | `ChatRoom`, `UserSession` |
-| **Analytics Engine** | Interaction tracking | 3 datasets: `category_clicks`, `news_interactions`, `search_queries` |
-| **R2 Storage** | Media, mini-app bundles, brand assets | Brand assets bucket |
-| **Nuchi Honey** | Personalization AI (isolated) | `honey.nyuchi.com` (Docker/FastAPI) |
+| Service              | Usage                                       | Key Resources                                                                                      |
+| -------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **MongoDB Atlas**    | Primary database — all application data     | `users`, `articles`, `events`, `novels`, `circles`, `pulse_posts`, `transactions`, `notifications` |
+| **Stytch**           | Authentication — sessions, OAuth, MFA, SSO  | Mukoko ID SSO across all Nyuchi products                                                           |
+| **Cloudflare D1**    | Edge-local reads for fast auth verification | `mukoko_users`                                                                                     |
+| **Cloudflare KV**    | Config, cache, sessions, news storage       | 4 namespaces: `CONFIG_STORAGE`, `CACHE_STORAGE`, `USER_STORAGE`, `NEWS_STORAGE`                    |
+| **Durable Objects**  | Real-time chat, user presence               | `ChatRoom`, `UserSession`                                                                          |
+| **Analytics Engine** | Interaction tracking                        | 3 datasets: `category_clicks`, `news_interactions`, `search_queries`                               |
+| **R2 Storage**       | Media, mini-app bundles, brand assets       | Brand assets bucket                                                                                |
+| **Nuchi Honey**      | Personalization AI (isolated)               | `honey.nyuchi.com` (Docker/FastAPI)                                                                |
 
 ### 8.3 Auth — Stytch
 
@@ -482,18 +482,18 @@ Stytch is the auth provider for the entire ecosystem. NOT Supabase.
 
 ### 8.4 New Services Required
 
-| Service | Purpose | Priority |
-|---------|---------|----------|
-| API Gateway Worker | Unified routing, rate limiting, auth verification | Phase 1 |
-| Weather API Worker | Weather data for utility mini-app | Phase 2 |
-| Wallet Service Worker | Payment processing, EcoCash/InnBucks, MUKOKO token ledger | Phase 3 |
-| Mini-App Registry Worker | Manifest management, versioning, asset serving from R2 | Phase 1 |
-| Push Notification Worker | Unified push for FCM, APNs, HMS Push | Phase 2 |
-| Shamwari AI Worker | AI inference, conversational assistance, content summarization | Phase 2 |
-| Digital Twin Worker | NFT minting on Base, profile sync, reputation calculation | Phase 3 |
-| Pulse API Worker | Short-form content, creator profiles, trending | Phase 2 |
-| Connect API Worker | Circles, discussions, community management | Phase 2 |
-| Novels API Worker | Author platform, chapters, payments | Phase 3 |
+| Service                  | Purpose                                                        | Priority |
+| ------------------------ | -------------------------------------------------------------- | -------- |
+| API Gateway Worker       | Unified routing, rate limiting, auth verification              | Phase 1  |
+| Weather API Worker       | Weather data for utility mini-app                              | Phase 2  |
+| Wallet Service Worker    | Payment processing, EcoCash/InnBucks, MUKOKO token ledger      | Phase 3  |
+| Mini-App Registry Worker | Manifest management, versioning, asset serving from R2         | Phase 1  |
+| Push Notification Worker | Unified push for FCM, APNs, HMS Push                           | Phase 2  |
+| Shamwari AI Worker       | AI inference, conversational assistance, content summarization | Phase 2  |
+| Digital Twin Worker      | NFT minting on Base, profile sync, reputation calculation      | Phase 3  |
+| Pulse API Worker         | Short-form content, creator profiles, trending                 | Phase 2  |
+| Connect API Worker       | Circles, discussions, community management                     | Phase 2  |
+| Novels API Worker        | Author platform, chapters, payments                            | Phase 3  |
 
 ---
 
@@ -520,6 +520,7 @@ Quality contributions deserve quality rewards. The token economy creates sustain
 ### 9.3 Creator Economics
 
 Creators keep **80%+** of revenue (vs. 30-50% on mainstream platforms):
+
 - Novel authors: 85% of chapter revenue
 - Pulse creators: 80% of tipping revenue
 - Event organizers: 90% of ticket revenue (platform takes 10% for infrastructure)
@@ -533,13 +534,13 @@ MUKOKO tokens bridge Web3 and traditional finance. Users can convert between tok
 
 ## 10. Mukoko Wallet & Payments
 
-| Method | Integration | Priority |
-|--------|-------------|----------|
-| EcoCash | Econet API — USSD push / app-to-app | v1 — Critical |
-| InnBucks | InnBucks API — wallet integration | v1 — Critical |
-| MUKOKO Tokens | Base blockchain — internal ledger + on-chain | v1 |
-| Bank Transfer | ZimSwitch / RTGS integration | v2 |
-| Card Payments | Visa/Mastercard via payment gateway | v2 |
+| Method        | Integration                                  | Priority      |
+| ------------- | -------------------------------------------- | ------------- |
+| EcoCash       | Econet API — USSD push / app-to-app          | v1 — Critical |
+| InnBucks      | InnBucks API — wallet integration            | v1 — Critical |
+| MUKOKO Tokens | Base blockchain — internal ledger + on-chain | v1            |
+| Bank Transfer | ZimSwitch / RTGS integration                 | v2            |
+| Card Payments | Visa/Mastercard via payment gateway          | v2            |
 
 ### Wallet Features
 
@@ -572,13 +573,13 @@ SQLite (`sqflite`) serves as local database with sync queue pattern. When offlin
 
 ### 11.3 Data Budget Targets
 
-| Action | Data Cost |
-|--------|-----------|
-| App install (Flutter shell) | < 25MB |
-| Each mini-app first load | < 150KB gzipped |
-| News feed refresh (20 articles) | < 50KB |
-| Your Honey model sync | < 500KB (delta) |
-| Image (article thumbnail) | < 30KB (WebP) |
+| Action                          | Data Cost       |
+| ------------------------------- | --------------- |
+| App install (Flutter shell)     | < 25MB          |
+| Each mini-app first load        | < 150KB gzipped |
+| News feed refresh (20 articles) | < 50KB          |
+| Your Honey model sync           | < 500KB (delta) |
+| Image (article thumbnail)       | < 30KB (WebP)   |
 
 ---
 
@@ -650,13 +651,13 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 
 ### Color System
 
-| Role | Light Mode | Dark Mode | Usage |
-|------|-----------|-----------|-------|
-| Primary (Tanzanite) | `#4B0082` | `#B388FF` | CTAs, active states, primary nav |
-| Secondary (Cobalt) | `#0047AB` | `#00B0FF` | Links, info states, secondary actions |
-| Accent (Gold) | `#5D4037` | `#FFD740` | Rewards, wallet, honey, highlights |
-| Shamwari (Malachite) | `#004D40` | `#64FFDA` | AI companion, success states |
-| Bundu (Terracotta) | `#8B4513` | `#D4A574` | Community, Ubuntu, parent brand |
+| Role                 | Light Mode | Dark Mode | Usage                                 |
+| -------------------- | ---------- | --------- | ------------------------------------- |
+| Primary (Tanzanite)  | `#4B0082`  | `#B388FF` | CTAs, active states, primary nav      |
+| Secondary (Cobalt)   | `#0047AB`  | `#00B0FF` | Links, info states, secondary actions |
+| Accent (Gold)        | `#5D4037`  | `#FFD740` | Rewards, wallet, honey, highlights    |
+| Shamwari (Malachite) | `#004D40`  | `#64FFDA` | AI companion, success states          |
+| Bundu (Terracotta)   | `#8B4513`  | `#D4A574` | Community, Ubuntu, parent brand       |
 
 ### Typography
 
@@ -685,13 +686,13 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 
 ## 14. Platform Distribution
 
-| Platform | Store | Notes |
-|----------|-------|-------|
-| Android | Google Play Store | API 24+ (Android 7.0), primary market |
-| Android (alt) | APK direct download (mukoko.com) | For devices without Play Store |
-| iOS | Apple App Store | iOS 15+, secondary market |
-| Huawei | Huawei AppGallery | HarmonyOS, HMS Core, Petal Maps |
-| Web (PWA) | `*.mukoko.com` subdomains | Standalone mini-apps as PWAs |
+| Platform      | Store                            | Notes                                 |
+| ------------- | -------------------------------- | ------------------------------------- |
+| Android       | Google Play Store                | API 24+ (Android 7.0), primary market |
+| Android (alt) | APK direct download (mukoko.com) | For devices without Play Store        |
+| iOS           | Apple App Store                  | iOS 15+, secondary market             |
+| Huawei        | Huawei AppGallery                | HarmonyOS, HMS Core, Petal Maps       |
+| Web (PWA)     | `*.mukoko.com` subdomains        | Standalone mini-apps as PWAs          |
 
 ### HarmonyOS Strategy
 
@@ -789,4 +790,4 @@ If the answer to any is "no," reconsider.
 **The identity belongs TO you.**
 **The community strengthens WITH you.**
 
-*Ndiri nekuti tiri — Built by Nyuchi Africa*
+_Ndiri nekuti tiri — Built by Nyuchi Africa_
