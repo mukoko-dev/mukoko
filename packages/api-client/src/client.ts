@@ -38,11 +38,7 @@ export class MukokoClient {
    * Core request method with auth, JSON handling, and retry logic.
    * Retries up to MAX_RETRIES times for 5xx errors with exponential backoff.
    */
-  private async request<T>(
-    method: string,
-    path: string,
-    options?: RequestOptions,
-  ): Promise<T> {
+  private async request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
     const url = this.buildUrl(path, options?.params);
 
     const headers: Record<string, string> = {
@@ -88,7 +84,9 @@ export class MukokoClient {
         let errorCode = "UNKNOWN_ERROR";
         let errorDetails: unknown;
         try {
-          const body = (await response.json()) as { error?: { code?: string; message?: string; details?: unknown } };
+          const body = (await response.json()) as {
+            error?: { code?: string; message?: string; details?: unknown };
+          };
           if (body.error) {
             errorMessage = body.error.message ?? errorMessage;
             errorCode = body.error.code ?? errorCode;
@@ -98,12 +96,7 @@ export class MukokoClient {
           // Response body was not valid JSON
         }
 
-        const apiError = new ApiClientError(
-          errorMessage,
-          response.status,
-          errorCode,
-          errorDetails,
-        );
+        const apiError = new ApiClientError(errorMessage, response.status, errorCode, errorDetails);
 
         // Only retry on server errors (5xx)
         if (response.status >= 500 && attempt < MAX_RETRIES) {
@@ -142,10 +135,7 @@ export class MukokoClient {
   /**
    * Build a full URL from baseUrl + path, appending query params if provided.
    */
-  private buildUrl(
-    path: string,
-    params?: Record<string, string>,
-  ): URL {
+  private buildUrl(path: string, params?: Record<string, string>): URL {
     const url = new URL(`${this.baseUrl}${path}`);
     if (params) {
       for (const [key, value] of Object.entries(params)) {
@@ -169,10 +159,7 @@ export class MukokoClient {
   /**
    * Perform a GET request.
    */
-  async get<T>(
-    path: string,
-    options?: Omit<RequestOptions, "body">,
-  ): Promise<ApiResponse<T>> {
+  async get<T>(path: string, options?: Omit<RequestOptions, "body">): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>("GET", path, options);
   }
 
@@ -221,10 +208,7 @@ export class MukokoClient {
   /**
    * Perform a DELETE request.
    */
-  async delete<T>(
-    path: string,
-    options?: Omit<RequestOptions, "body">,
-  ): Promise<ApiResponse<T>> {
+  async delete<T>(path: string, options?: Omit<RequestOptions, "body">): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>("DELETE", path, options);
   }
 
@@ -235,10 +219,7 @@ export class MukokoClient {
   /**
    * Fetch a paginated endpoint. Passes page/pageSize as query params.
    */
-  async paginated<T>(
-    path: string,
-    params?: Record<string, string>,
-  ): Promise<PaginatedResponse<T>> {
+  async paginated<T>(path: string, params?: Record<string, string>): Promise<PaginatedResponse<T>> {
     return this.request<PaginatedResponse<T>>("GET", path, { params });
   }
 }

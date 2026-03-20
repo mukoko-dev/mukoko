@@ -10,14 +10,14 @@ Mukoko uses MongoDB Atlas as its primary database, chosen for its flexible docum
 
 ## Collections Overview
 
-| Collection | Purpose |
-|-----------|---------|
-| `users` | User profiles and Digital Twin metadata |
-| `honeyProfiles` | Honey personalization data (encrypted) |
-| `miniApps` | Mini-app registry and metadata |
-| `transactions` | Wallet and payment records |
-| `content` | User-generated content (clips, posts) |
-| `events` | Nhimbe event listings |
+| Collection      | Purpose                                 |
+| --------------- | --------------------------------------- |
+| `users`         | User profiles and Digital Twin metadata |
+| `honeyProfiles` | Honey personalization data (encrypted)  |
+| `miniApps`      | Mini-app registry and metadata          |
+| `transactions`  | Wallet and payment records              |
+| `content`       | User-generated content (clips, posts)   |
+| `events`        | Nhimbe event listings                   |
 
 ## Connection
 

@@ -1,4 +1,4 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
 
 export interface SkeletonProps {
   width?: string;
@@ -27,13 +27,7 @@ export function Skeleton({
   };
 
   return (
-    <span
-      style={style}
-      class={className}
-      role="status"
-      aria-label="Loading"
-      aria-busy="true"
-    />
+    <span style={style} class={className} role="status" aria-label="Loading" aria-busy="true" />
   );
 }
 

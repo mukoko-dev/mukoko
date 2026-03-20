@@ -23,20 +23,20 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 
 ## Repository Map
 
-| Standalone Repo | Owns | Standalone PWA | Super App Frontend |
-|-----------------|------|----------------|--------------------|
-| `mukoko-news` | Clips + Bytes backend | `clips.mukoko.com` | `mini-apps/clips/` |
-| `nhimbe` | Events backend | `events.mukoko.com` | `mini-apps/events/` |
-| `mukoko-weather` | Weather backend | `weather.mukoko.com` | `mini-apps/weather/` |
-| `mukoko-connect` *(new)* | Connect/Circles backend | `connect.mukoko.com` | `mini-apps/connect/` |
-| `mukoko-novels` *(new)* | Novels backend | `novels.mukoko.com` | `mini-apps/novels/` |
-| `mukoko-auth` | Auth backend (Stytch) | `id.mukoko.com` | `services/id-api/` |
-| `brand-warehouse` | Brand assets CDN | — | `packages/design-system/assets/` |
+| Standalone Repo          | Owns                    | Standalone PWA       | Super App Frontend               |
+| ------------------------ | ----------------------- | -------------------- | -------------------------------- |
+| `mukoko-news`            | Clips + Bytes backend   | `clips.mukoko.com`   | `mini-apps/clips/`               |
+| `nhimbe`                 | Events backend          | `events.mukoko.com`  | `mini-apps/events/`              |
+| `mukoko-weather`         | Weather backend         | `weather.mukoko.com` | `mini-apps/weather/`             |
+| `mukoko-connect` _(new)_ | Connect/Circles backend | `connect.mukoko.com` | `mini-apps/connect/`             |
+| `mukoko-novels` _(new)_  | Novels backend          | `novels.mukoko.com`  | `mini-apps/novels/`              |
+| `mukoko-auth`            | Auth backend (Stytch)   | `id.mukoko.com`      | `services/id-api/`               |
+| `brand-warehouse`        | Brand assets CDN        | —                    | `packages/design-system/assets/` |
 
 ### Monorepo-native features (no standalone repo)
 
-| Feature | Location | Notes |
-|---------|----------|-------|
+| Feature   | Location           | Notes                                                                                       |
+| --------- | ------------------ | ------------------------------------------------------------------------------------------- |
 | **Pulse** | `mini-apps/pulse/` | Personalized aggregated feed — pulls content from all apps, personalized by the Memory File |
 
 ### mukoko-news — Clips + Bytes
@@ -50,17 +50,17 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 
 ### Also in the monorepo (not dual-frontend)
 
-| What | Location | Notes |
-|------|----------|-------|
-| Flutter super app shell | `app/` | Native platform services |
-| Nuchi Honey AI service | `honey/` | Privacy-first personalization, co-creates Memory File |
-| Shared packages | `packages/` | Types, design system, bridge SDK, API client |
-| API gateway | `services/gateway/` | Routing + Stytch session verification |
-| Mukoko ID | `services/id-api/` | Stytch auth + Memory File storage |
-| Wallet | `services/wallet-api/` | Payments + MUKOKO tokens |
-| Shamwari AI | `services/shamwari-api/` | AI companion (reads Memory File) |
-| Mini-app registry | `services/miniapp-registry/` | App manifests + R2 assets |
-| Digital Twin | `services/digital-twin/` | NFT + reputation |
+| What                    | Location                     | Notes                                                 |
+| ----------------------- | ---------------------------- | ----------------------------------------------------- |
+| Flutter super app shell | `app/`                       | Native platform services                              |
+| Nuchi Honey AI service  | `honey/`                     | Privacy-first personalization, co-creates Memory File |
+| Shared packages         | `packages/`                  | Types, design system, bridge SDK, API client          |
+| API gateway             | `services/gateway/`          | Routing + Stytch session verification                 |
+| Mukoko ID               | `services/id-api/`           | Stytch auth + Memory File storage                     |
+| Wallet                  | `services/wallet-api/`       | Payments + MUKOKO tokens                              |
+| Shamwari AI             | `services/shamwari-api/`     | AI companion (reads Memory File)                      |
+| Mini-app registry       | `services/miniapp-registry/` | App manifests + R2 assets                             |
+| Digital Twin            | `services/digital-twin/`     | NFT + reputation                                      |
 
 ## How It Works
 
@@ -72,11 +72,11 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 
 ## Naming Convention
 
-| Type | Convention | Examples |
-|------|-----------|----------|
-| Standalone repos | `mukoko-{name}` or brand name | `mukoko-news`, `nhimbe`, `mukoko-connect` |
-| Super app frontends | `mini-apps/{name}/` | `mini-apps/clips/`, `mini-apps/pulse/` |
-| Standalone PWA domains | `{name}.mukoko.com` | `clips.mukoko.com`, `events.mukoko.com` |
+| Type                   | Convention                    | Examples                                  |
+| ---------------------- | ----------------------------- | ----------------------------------------- |
+| Standalone repos       | `mukoko-{name}` or brand name | `mukoko-news`, `nhimbe`, `mukoko-connect` |
+| Super app frontends    | `mini-apps/{name}/`           | `mini-apps/clips/`, `mini-apps/pulse/`    |
+| Standalone PWA domains | `{name}.mukoko.com`           | `clips.mukoko.com`, `events.mukoko.com`   |
 
 ## Rules
 

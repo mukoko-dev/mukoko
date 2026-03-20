@@ -8,7 +8,10 @@ type AuthBindings = {
 export const requireAuth = createMiddleware<{ Bindings: AuthBindings }>(async (c, next) => {
   const token = c.req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
-    return c.json({ success: false, error: { code: "UNAUTHORIZED", message: "Missing session token" } }, 401);
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Missing session token" } },
+      401,
+    );
   }
   // TODO: Verify Stytch session token
   // const stytch = new stytch.Client({ project_id: c.env.STYTCH_PROJECT_ID, secret: c.env.STYTCH_SECRET });

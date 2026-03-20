@@ -51,10 +51,7 @@ export function Footer() {
         <div className="footer__grid">
           {/* Brand column */}
           <div className="footer__brand">
-            <Link
-              href="/"
-              className="footer__logo-btn"
-            >
+            <Link href="/" className="footer__logo-btn">
               <span className="footer__wordmark">mukoko</span>
             </Link>
             <p className="footer__tagline">
@@ -71,10 +68,7 @@ export function Footer() {
                 {col.links.map((link) => (
                   <li key={link.label}>
                     {link.internal ? (
-                      <Link
-                        href={link.href}
-                        className="footer__col-link-btn"
-                      >
+                      <Link href={link.href} className="footer__col-link-btn">
                         {link.label}
                       </Link>
                     ) : (
@@ -88,12 +82,8 @@ export function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <p className="text-muted">
-            &copy; {year} Nyuchi Africa. All rights reserved.
-          </p>
-          <p className="footer__motto text-muted">
-            Ndiri nekuti tiri — I am because we are.
-          </p>
+          <p className="text-muted">&copy; {year} Nyuchi Africa. All rights reserved.</p>
+          <p className="footer__motto text-muted">Ndiri nekuti tiri — I am because we are.</p>
         </div>
       </div>
     </footer>

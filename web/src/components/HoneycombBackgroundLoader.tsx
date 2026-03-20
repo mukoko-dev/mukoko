@@ -3,11 +3,8 @@
 import dynamic from "next/dynamic";
 
 const HoneycombBackground = dynamic(
-  () =>
-    import("@/components/HoneycombBackground").then(
-      (mod) => mod.HoneycombBackground
-    ),
-  { ssr: false }
+  () => import("@/components/HoneycombBackground").then((mod) => mod.HoneycombBackground),
+  { ssr: false },
 );
 
 export function HoneycombBackgroundLoader({

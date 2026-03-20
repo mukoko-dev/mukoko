@@ -16,10 +16,7 @@ export default defineConfig({
 
   theme: mukokoTheme,
 
-  plugins: [
-    structureTool({structure}),
-    visionTool(),
-  ],
+  plugins: [structureTool({structure}), visionTool()],
 
   schema: {
     types: schemaTypes,

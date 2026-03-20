@@ -43,12 +43,12 @@ The landing page deploys to Vercel automatically on push to `main` (see `.github
 
 ## Key Technologies
 
-| Layer | Technology |
-|-------|-----------|
-| Database | MongoDB Atlas |
-| Auth | Stytch |
-| Web | Vercel (Preact + Vite) |
-| Backend | Cloudflare Workers + Containers |
-| Mobile | Flutter |
-| Mini-Apps | Preact + Vite |
-| Monorepo | Turborepo + pnpm |
+| Layer     | Technology                      |
+| --------- | ------------------------------- |
+| Database  | MongoDB Atlas                   |
+| Auth      | Stytch                          |
+| Web       | Vercel (Preact + Vite)          |
+| Backend   | Cloudflare Workers + Containers |
+| Mobile    | Flutter                         |
+| Mini-Apps | Preact + Vite                   |
+| Monorepo  | Turborepo + pnpm                |

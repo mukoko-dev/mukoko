@@ -1,4 +1,4 @@
-import { h, JSX } from "preact";
+import type { JSX } from "preact";
 
 export type ButtonVariant = "primary" | "secondary" | "accent" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";

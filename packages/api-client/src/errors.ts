@@ -7,12 +7,7 @@ export class ApiClientError extends Error {
   public readonly code: string;
   public readonly details: unknown | undefined;
 
-  constructor(
-    message: string,
-    status: number,
-    code: string,
-    details?: unknown,
-  ) {
+  constructor(message: string, status: number, code: string, details?: unknown) {
     super(message);
     this.name = "ApiClientError";
     this.status = status;

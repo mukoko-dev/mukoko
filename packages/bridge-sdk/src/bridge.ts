@@ -29,13 +29,10 @@ declare global {
  * const user = await bridge.auth.getUser();
  * ```
  */
-class MukokoBridge
-  implements
-    Record<
-      "auth" | "honey" | "shamwari" | "wallet" | "device" | "nav" | "storage" | "reputation",
-      unknown
-    >
-{
+class MukokoBridge implements Record<
+  "auth" | "honey" | "shamwari" | "wallet" | "device" | "nav" | "storage" | "reputation",
+  unknown
+> {
   // ---------------------------------------------------------------------------
   // Internal helpers
   // ---------------------------------------------------------------------------
@@ -44,18 +41,14 @@ class MukokoBridge
   private getNativeBridge(): MukokoBridgeAPI {
     const native = window.MukokoBridge;
     if (!native) {
-      throw new Error(
-        "MukokoBridge is not available. Are you running inside the Mukoko WebView?",
-      );
+      throw new Error("MukokoBridge is not available. Are you running inside the Mukoko WebView?");
     }
     return native;
   }
 
   /** Check whether the native bridge is injected into the page. */
   static isAvailable(): boolean {
-    return (
-      typeof window !== "undefined" && typeof window.MukokoBridge !== "undefined"
-    );
+    return typeof window !== "undefined" && typeof window.MukokoBridge !== "undefined";
   }
 
   // ---------------------------------------------------------------------------
@@ -168,11 +161,7 @@ class MukokoBridge
       return this.getNativeBridge().device.scanQR();
     },
 
-    share: async (params: {
-      title: string;
-      text?: string;
-      url?: string;
-    }): Promise<void> => {
+    share: async (params: { title: string; text?: string; url?: string }): Promise<void> => {
       return this.getNativeBridge().device.share(params);
     },
 

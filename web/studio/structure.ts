@@ -69,10 +69,6 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       // Manage
-      S.listItem()
-        .title('Authors')
-        .child(S.documentTypeList('author').title('Authors')),
-      S.listItem()
-        .title('Categories')
-        .child(S.documentTypeList('category').title('Categories')),
+      S.listItem().title('Authors').child(S.documentTypeList('author').title('Authors')),
+      S.listItem().title('Categories').child(S.documentTypeList('category').title('Categories')),
     ])

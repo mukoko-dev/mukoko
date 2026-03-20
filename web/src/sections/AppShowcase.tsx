@@ -8,7 +8,8 @@ const apps = [
   },
   {
     name: "Pulse",
-    description: "Your personalized feed — everything happening across the ecosystem, curated for you.",
+    description:
+      "Your personalized feed — everything happening across the ecosystem, curated for you.",
     icon: "⚡",
     color: "var(--color-tanzanite)",
     colorBg: "var(--color-tanzanite-container)",
@@ -29,7 +30,8 @@ const apps = [
   },
   {
     name: "Events",
-    description: "Cultural gatherings, concerts, meetups — discover and book what's happening near you.",
+    description:
+      "Cultural gatherings, concerts, meetups — discover and book what's happening near you.",
     icon: "🎉",
     color: "var(--color-malachite)",
     colorBg: "var(--color-malachite-container)",

@@ -30,7 +30,9 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
 
   if (status === "success") {
     return (
-      <div className={`waitlist-success ${variant === "compact" ? "waitlist-success--compact" : ""}`}>
+      <div
+        className={`waitlist-success ${variant === "compact" ? "waitlist-success--compact" : ""}`}
+      >
         <p>You're on the list. We'll be in touch.</p>
       </div>
     );

@@ -21,7 +21,7 @@ describe("Footer", () => {
     render(<Footer />);
     const year = new Date().getFullYear();
     expect(
-      screen.getByText(new RegExp(`${year} Nyuchi Africa. All rights reserved.`))
+      screen.getByText(new RegExp(`${year} Nyuchi Africa. All rights reserved.`)),
     ).toBeInTheDocument();
   });
 
@@ -37,8 +37,6 @@ describe("Footer", () => {
 
   it("renders the tagline", () => {
     render(<Footer />);
-    expect(
-      screen.getByText(/A Digital Twin Social Ecosystem for Africa/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/A Digital Twin Social Ecosystem for Africa/)).toBeInTheDocument();
   });
 });

@@ -38,18 +38,14 @@ export function Header() {
         <nav className="header__nav">
           {navLinks.map((link) =>
             link.internal ? (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="header__link header__link--btn"
-              >
+              <Link key={link.href} href={link.href} className="header__link header__link--btn">
                 {link.label}
               </Link>
             ) : (
               <a key={link.href} href={link.href} className="header__link">
                 {link.label}
               </a>
-            )
+            ),
           )}
         </nav>
 
@@ -57,7 +53,16 @@ export function Header() {
         <div className="header__actions">
           <a href="#waitlist" className="header__pill-btn">
             Join waitlist
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </a>

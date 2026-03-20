@@ -7,17 +7,20 @@ const steps = [
   {
     number: "02",
     title: "Explore the apps",
-    description: "News, community, novels, events — each app works standalone or together in the super app.",
+    description:
+      "News, community, novels, events — each app works standalone or together in the super app.",
   },
   {
     number: "03",
     title: "Your Memory File grows",
-    description: "Nyuchi Honey learns on-device. Your preferences shape your experience — privately.",
+    description:
+      "Nyuchi Honey learns on-device. Your preferences shape your experience — privately.",
   },
   {
     number: "04",
     title: "shamwari assists you",
-    description: "Your AI companion summarizes, translates, and personalizes — powered by your Memory File.",
+    description:
+      "Your AI companion summarizes, translates, and personalizes — powered by your Memory File.",
   },
 ];
 

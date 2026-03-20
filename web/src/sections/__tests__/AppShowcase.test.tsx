@@ -18,23 +18,11 @@ describe("AppShowcase", () => {
 
   it("renders descriptions for each app", () => {
     render(<AppShowcase />);
-    expect(
-      screen.getByText(/Context-rich news from trusted sources/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Your personalized feed/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Interest-based Circles/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/platform for African authors/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Cultural gatherings, concerts/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Hyperlocal forecasts/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Context-rich news from trusted sources/)).toBeInTheDocument();
+    expect(screen.getByText(/Your personalized feed/)).toBeInTheDocument();
+    expect(screen.getByText(/Interest-based Circles/)).toBeInTheDocument();
+    expect(screen.getByText(/platform for African authors/)).toBeInTheDocument();
+    expect(screen.getByText(/Cultural gatherings, concerts/)).toBeInTheDocument();
+    expect(screen.getByText(/Hyperlocal forecasts/)).toBeInTheDocument();
   });
 });

@@ -23,8 +23,7 @@ function useTheme(): "light" | "dark" {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     setTheme(mq.matches ? "dark" : "light");
-    const handler = (e: MediaQueryListEvent) =>
-      setTheme(e.matches ? "dark" : "light");
+    const handler = (e: MediaQueryListEvent) => setTheme(e.matches ? "dark" : "light");
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   }, []);
@@ -46,10 +45,7 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-export function HoneycombBackground({
-  intensity = 0.5,
-  speed = 0.6,
-}: HoneycombBackgroundProps) {
+export function HoneycombBackground({ intensity = 0.5, speed = 0.6 }: HoneycombBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const animationRef = useRef<number>(0);

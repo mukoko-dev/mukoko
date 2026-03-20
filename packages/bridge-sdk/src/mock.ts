@@ -74,9 +74,7 @@ class MockBridge implements MukokoBridgeAPI {
       return "mock-session-token";
     },
 
-    onAuthChange: (
-      _cb: (user: MukokoUser | null) => void,
-    ): (() => void) => {
+    onAuthChange: (_cb: (user: MukokoUser | null) => void): (() => void) => {
       // In the mock we never fire auth changes -- return a no-op unsubscribe.
       return () => {
         /* noop */
@@ -186,11 +184,7 @@ class MockBridge implements MukokoBridgeAPI {
       return { data: "https://mukoko.app/mock-qr" };
     },
 
-    share: async (params: {
-      title: string;
-      text?: string;
-      url?: string;
-    }): Promise<void> => {
+    share: async (params: { title: string; text?: string; url?: string }): Promise<void> => {
       console.log("[MockBridge] device.share", params);
     },
 

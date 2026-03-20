@@ -5,16 +5,12 @@ import { WaitlistForm } from "../WaitlistForm";
 describe("WaitlistForm", () => {
   it("renders the email input", () => {
     render(<WaitlistForm />);
-    expect(
-      screen.getByPlaceholderText("Your email address")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Your email address")).toBeInTheDocument();
   });
 
   it("renders the submit button", () => {
     render(<WaitlistForm />);
-    expect(
-      screen.getByRole("button", { name: /Join the waitlist/ })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Join the waitlist/ })).toBeInTheDocument();
   });
 
   it("email input has required attribute", () => {
