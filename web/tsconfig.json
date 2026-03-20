@@ -29,7 +29,8 @@
     ],
     "allowJs": true,
     "noEmit": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
     "**/*.ts",
