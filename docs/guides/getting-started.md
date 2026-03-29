@@ -39,16 +39,27 @@ pnpm turbo run dev --filter=@mukoko/web
 pnpm turbo run build --filter=@mukoko/web
 ```
 
-The landing page deploys to Vercel automatically on push to `main` (see `.github/workflows/deploy-web.yml`). Waitlist form submissions go to Formspree.
+The landing page deploys to Vercel automatically on push to `main`.
 
 ## Key Technologies
 
-| Layer     | Technology                      |
-| --------- | ------------------------------- |
-| Database  | MongoDB Atlas                   |
-| Auth      | Stytch                          |
-| Web       | Vercel (Preact + Vite)          |
-| Backend   | Cloudflare Workers + Containers |
-| Mobile    | Flutter                         |
-| Mini-Apps | Preact + Vite                   |
-| Monorepo  | Turborepo + pnpm                |
+| Layer      | Technology                      |
+| ---------- | ------------------------------- |
+| Database   | MongoDB Atlas                   |
+| Auth       | Stytch                          |
+| Web        | Vercel (Next.js 15 + React 19)  |
+| Backend    | Cloudflare Workers + Containers |
+| Mobile     | Flutter                         |
+| Mini-Apps  | Preact + Vite                   |
+| Blockchain | Polygon PoS (MIT + MXT tokens)  |
+| Monorepo   | Turborepo + pnpm                |
+
+## Key Documentation
+
+| Document                                      | Purpose                                            |
+| --------------------------------------------- | -------------------------------------------------- |
+| [CLAUDE.md](../../CLAUDE.md)                  | How we build — coding standards, patterns, tooling |
+| [ARCHITECTURE.md](../../ARCHITECTURE.md)      | Full technical specification                       |
+| [Connected Repos](./connected-repos.md)       | Dual-frontend architecture guide                   |
+| [Creating a Mini-App](./creating-mini-app.md) | Step-by-step mini-app guide                        |
+| [Creating a Service](./creating-service.md)   | Step-by-step worker guide                          |

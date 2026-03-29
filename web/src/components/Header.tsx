@@ -4,11 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const navLinks = [
-  { href: "#apps", label: "Apps" },
-  { href: "#privacy", label: "Privacy" },
-  { href: "#how-it-works", label: "How It Works" },
-  { href: "#ubuntu", label: "Ubuntu" },
+  { href: "/", label: "Home", internal: true },
   { href: "/manifesto", label: "Manifesto", internal: true },
+  { href: "/help", label: "Help", internal: true },
 ];
 
 export function Header() {
@@ -36,17 +34,11 @@ export function Header() {
 
         {/* Center: Nav links (hidden on mobile) */}
         <nav className="header__nav">
-          {navLinks.map((link) =>
-            link.internal ? (
-              <Link key={link.href} href={link.href} className="header__link header__link--btn">
-                {link.label}
-              </Link>
-            ) : (
-              <a key={link.href} href={link.href} className="header__link">
-                {link.label}
-              </a>
-            ),
-          )}
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="header__link header__link--btn">
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Right: Action pill */}

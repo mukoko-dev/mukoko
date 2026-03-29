@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
-import { Noto_Serif, Noto_Sans, JetBrains_Mono } from "next/font/google";
+import {
+  Noto_Serif,
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 const notoSerif = Noto_Serif({
   subsets: ["latin"],
@@ -10,7 +15,7 @@ const notoSerif = Noto_Serif({
   display: "swap",
 });
 
-const notoSans = Noto_Sans({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-body",
@@ -27,15 +32,25 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "mukoko — I am because we are",
   description:
-    "mukoko is a digital twin social ecosystem for Africa. Six apps, one identity, your sovereignty.",
+    "mukoko is a digital twin social ecosystem for Africa. 15 mini-apps, one identity, your sovereignty.",
+  metadataBase: new URL("https://mukoko.com"),
   openGraph: {
     title: "mukoko — I am because we are",
     description:
-      "A digital twin social ecosystem for Africa. Six apps, one identity, your sovereignty.",
+      "A digital twin social ecosystem for Africa. 15 mini-apps, one identity, your sovereignty.",
     type: "website",
     url: "https://mukoko.com",
+    siteName: "mukoko",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "mukoko — I am because we are",
+    description:
+      "A digital twin social ecosystem for Africa. 15 mini-apps, one identity, your sovereignty.",
   },
   icons: { icon: "/favicon.svg" },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -46,9 +61,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${notoSerif.variable} ${notoSans.variable} ${jetbrainsMono.variable}`}
+      className={cn(
+        "dark",
+        notoSerif.variable,
+        plusJakartaSans.variable,
+        jetbrainsMono.variable,
+      )}
+      style={{ colorScheme: "dark" }}
     >
-      <body>{children}</body>
+      <body>
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

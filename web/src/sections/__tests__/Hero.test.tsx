@@ -11,13 +11,13 @@ vi.mock("next/link", () => ({
 describe("Hero", () => {
   it("renders the heading", () => {
     render(<Hero />);
-    expect(screen.getByText(/Your digital twin\./)).toBeInTheDocument();
-    expect(screen.getByText(/Your sovereignty\./)).toBeInTheDocument();
+    expect(screen.getByText(/The Algorithm Works/)).toBeInTheDocument();
+    expect(screen.getByText(/For You\./)).toBeInTheDocument();
   });
 
   it("renders the description", () => {
     render(<Hero />);
-    expect(screen.getByText(/Six apps, one identity, built on community/)).toBeInTheDocument();
+    expect(screen.getByText(/15 mini-apps, one identity, built on community/)).toBeInTheDocument();
   });
 
   it("renders the waitlist form", () => {

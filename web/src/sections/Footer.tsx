@@ -1,44 +1,38 @@
 import Link from "next/link";
 
-const year = new Date().getFullYear();
-
 const columns = [
-  {
-    heading: "Company",
-    links: [
-      { label: "About", href: "/#ubuntu" },
-      { label: "Manifesto", href: "/manifesto", internal: true },
-      { label: "Careers", href: "mailto:careers@nyuchi.com" },
-      { label: "Press", href: "mailto:press@nyuchi.com" },
-      { label: "Contact", href: "mailto:hello@mukoko.com" },
-    ],
-  },
   {
     heading: "Products",
     links: [
-      { label: "Clips", href: "https://clips.mukoko.com" },
+      { label: "Campfire", href: "https://campfire.mukoko.com" },
       { label: "Pulse", href: "/#apps" },
-      { label: "Connect", href: "https://connect.mukoko.com" },
-      { label: "Novels", href: "https://novels.mukoko.com" },
-      { label: "Events", href: "https://events.mukoko.com" },
+      { label: "Bytes", href: "https://bytes.mukoko.com" },
+      { label: "Circles", href: "https://circles.mukoko.com" },
+      { label: "Nhimbe", href: "https://nhimbe.mukoko.com" },
+      { label: "BushTrade", href: "https://trade.mukoko.com" },
+      { label: "Mukoko Lingo", href: "https://lingo.mukoko.com" },
+      { label: "Mukoko News", href: "https://news.mukoko.com" },
       { label: "Weather", href: "https://weather.mukoko.com" },
     ],
   },
   {
-    heading: "Resources",
+    heading: "Company",
     links: [
+      { label: "About Nyuchi", href: "https://nyuchi.com" },
+      { label: "Manifesto", href: "/manifesto", internal: true },
+      { label: "Help", href: "/help", internal: true },
       { label: "Blog", href: "/blog", internal: true },
-      { label: "Documentation", href: "/docs", internal: true },
-      { label: "Brand Kit", href: "https://assets.nyuchi.com" },
-      { label: "API Status", href: "https://status.mukoko.com" },
+      { label: "Contact", href: "mailto:hello@mukoko.com" },
+      { label: "nyuchi.com", href: "https://nyuchi.com" },
     ],
   },
   {
-    heading: "Legal & Security",
+    heading: "Legal",
     links: [
-      { label: "Privacy Policy", href: "/privacy", internal: true },
-      { label: "Terms of Service", href: "/terms", internal: true },
-      { label: "Cookie Policy", href: "/cookies", internal: true },
+      { label: "Privacy Policy", href: "/legal/privacy", internal: true },
+      { label: "Terms", href: "/legal/terms", internal: true },
+      { label: "Cookie Policy", href: "/legal/cookies", internal: true },
+      { label: "Community Guidelines", href: "/legal/community-guidelines", internal: true },
       { label: "Security", href: "mailto:security@nyuchi.com" },
     ],
   },
@@ -54,10 +48,7 @@ export function Footer() {
             <Link href="/" className="footer__logo-btn">
               <span className="footer__wordmark">mukoko</span>
             </Link>
-            <p className="footer__tagline">
-              A Digital Twin Social Ecosystem for Africa. Built by Nyuchi Africa.
-            </p>
-            <p className="footer__nyuchi text-muted">A Nyuchi Africa product</p>
+            <p className="footer__tagline">Your Honey. Your Identity. Your Sovereignty.</p>
           </div>
 
           {/* Link columns */}
@@ -82,7 +73,8 @@ export function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <p className="text-muted">&copy; {year} Nyuchi Africa. All rights reserved.</p>
+          <p className="text-muted">Built with Ubuntu &middot; Zimbabwe</p>
+          <p className="text-muted">&copy; 2026 Nyuchi Africa. All rights reserved.</p>
           <p className="footer__motto text-muted">Ndiri nekuti tiri — I am because we are.</p>
         </div>
       </div>

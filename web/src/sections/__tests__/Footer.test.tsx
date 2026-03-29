@@ -11,18 +11,14 @@ vi.mock("next/link", () => ({
 describe("Footer", () => {
   it("renders all column headings", () => {
     render(<Footer />);
-    expect(screen.getByText("Company")).toBeInTheDocument();
     expect(screen.getByText("Products")).toBeInTheDocument();
-    expect(screen.getByText("Resources")).toBeInTheDocument();
-    expect(screen.getByText("Legal & Security")).toBeInTheDocument();
+    expect(screen.getByText("Company")).toBeInTheDocument();
+    expect(screen.getByText("Legal")).toBeInTheDocument();
   });
 
   it("renders the copyright notice", () => {
     render(<Footer />);
-    const year = new Date().getFullYear();
-    expect(
-      screen.getByText(new RegExp(`${year} Nyuchi Africa. All rights reserved.`)),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Nyuchi Africa/)).toBeInTheDocument();
   });
 
   it("renders the manifesto link", () => {
@@ -37,6 +33,14 @@ describe("Footer", () => {
 
   it("renders the tagline", () => {
     render(<Footer />);
-    expect(screen.getByText(/A Digital Twin Social Ecosystem for Africa/)).toBeInTheDocument();
+    expect(screen.getByText(/Your Honey\. Your Identity\. Your Sovereignty\./)).toBeInTheDocument();
+  });
+
+  it("renders new product names", () => {
+    render(<Footer />);
+    expect(screen.getByText("Campfire")).toBeInTheDocument();
+    expect(screen.getByText("Circles")).toBeInTheDocument();
+    expect(screen.getByText("Nhimbe")).toBeInTheDocument();
+    expect(screen.getByText("Mukoko News")).toBeInTheDocument();
   });
 });

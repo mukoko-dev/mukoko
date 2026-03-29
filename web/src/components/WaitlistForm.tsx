@@ -32,8 +32,10 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
     return (
       <div
         className={`waitlist-success ${variant === "compact" ? "waitlist-success--compact" : ""}`}
+        role="status"
+        aria-live="polite"
       >
-        <p>You're on the list. We'll be in touch.</p>
+        <p>You&apos;re on the list. We&apos;ll be in touch.</p>
       </div>
     );
   }
@@ -43,7 +45,11 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
       className={`waitlist-form ${variant === "compact" ? "waitlist-form--compact" : ""}`}
       onSubmit={handleSubmit}
     >
+      <label htmlFor={`waitlist-email-${variant}`} className="sr-only">
+        Email address
+      </label>
       <input
+        id={`waitlist-email-${variant}`}
         type="email"
         placeholder="Your email address"
         value={email}
@@ -51,11 +57,21 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
         required
         className="waitlist-input"
         disabled={status === "submitting"}
+        aria-describedby={status === "error" ? `waitlist-error-${variant}` : undefined}
       />
       <button type="submit" className="waitlist-button" disabled={status === "submitting"}>
-        {status === "submitting" ? "Joining…" : "Join the waitlist"}
+        {status === "submitting" ? "Joining\u2026" : "Join the waitlist"}
       </button>
-      {status === "error" && <p className="waitlist-error">Something went wrong. Try again.</p>}
+      {status === "error" && (
+        <p
+          id={`waitlist-error-${variant}`}
+          className="waitlist-error"
+          role="alert"
+          aria-live="assertive"
+        >
+          Something went wrong. Try again.
+        </p>
+      )}
     </form>
   );
 }

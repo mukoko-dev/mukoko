@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { WaitlistForm } from "../components/WaitlistForm";
 
 const questions = [
   {
@@ -49,15 +48,8 @@ export function Ubuntu() {
         </div>
 
         <Link href="/manifesto" className="ubuntu__manifesto-link">
-          Read the full manifesto →
+          Read the full manifesto &rarr;
         </Link>
-
-        <div className="mt-4">
-          <h3 className="section__subtitle">Be part of the hive</h3>
-          <div className="ubuntu__cta mt-2">
-            <WaitlistForm variant="compact" />
-          </div>
-        </div>
       </div>
     </section>
   );
