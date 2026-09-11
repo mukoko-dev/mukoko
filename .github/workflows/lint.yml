@@ -1,0 +1,37 @@
+# Lint CI for mukoko-dev/mukoko.
+#
+# A thin caller of the shared lint workflow in nyuchi/.github. That repo
+# is public, so its reusable workflows can be called from any repo in any
+# org — the same wiring bundu-labs and mzizi-dev already use. Nothing is
+# duplicated into this org.
+#
+# The job MUST be named `lint`. A reusable-workflow call publishes its
+# checks as "<caller job>/<called job>", which is what produces the five
+# contexts the mukoko-dev org ruleset requires:
+#
+#   lint / actionlint      lint / markdownlint
+#   lint / JSON validity   lint / yamllint
+#   lint / prettier
+#
+# This repo had no lint workflow at all, so those contexts never
+# reported — and a required context that never reports is permanently
+# pending, which is why every PR here was blocked.
+
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    uses: nyuchi/.github/.github/workflows/reusable-lint.yml@main

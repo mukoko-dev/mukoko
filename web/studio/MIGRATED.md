@@ -5,10 +5,10 @@ sits alongside the studios for the Nyuchi blog and the Bundu newsroom.
 
 ## Where it lives now
 
-- **Path**: https://github.com/bundu-labs/marketing/tree/main/studio-mukoko-blog
+- **Path**: <https://github.com/bundu-labs/marketing/tree/main/studio-mukoko-blog>
 - **Sanity project**: `npzanja1`, dataset `production` — unchanged.
 - **Schema**: post / author / category, ported 1:1.
-- **Studio host**: `https://mukoko-blog.sanity.studio` (configured in
+- **Studio host**: `<https://mukoko-blog.sanity.studio`> (configured in
   `sanity.cli.ts`).
 
 No content migration was required — existing posts, authors, and
