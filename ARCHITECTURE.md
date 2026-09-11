@@ -2,13 +2,13 @@
 
 ## Digital Twin Social Ecosystem — Super App Architecture & Technical Specification
 
-**Version 2.0 | February 2026**
+> **Version 2.0 | February 2026**
 
 🟩🟨🟥⬛
 
-_A Product of The Bundu Family — Built by Nyuchi Africa_
-
-_Ndiri nekuti tiri — I am because we are_
+> _A Product of The Bundu Family — Built by Nyuchi Africa_
+>
+> _Ndiri nekuti tiri — I am because we are_
 
 **Your Honey. Your Identity. Your Sovereignty.**
 
@@ -505,7 +505,7 @@ The backend leverages existing Cloudflare Workers infrastructure already deploye
 | `nyuchi-africa-dispatcher-staging` | Dispatcher staging                       | —                   | Staging    |
 | `raspy-fog-4352-nlweb`             | NLWeb                                    | —                   | Production |
 
-**Total: 15 workers deployed**
+**Total: 15 workers deployed.**
 
 ### 8.2 Data Layer
 
@@ -968,4 +968,4 @@ If the answer to any is "no," reconsider.
 **The identity belongs TO you.**
 **The community strengthens WITH you.**
 
-_Ndiri nekuti tiri — Built by Nyuchi Africa_
+> _Ndiri nekuti tiri — Built by Nyuchi Africa_
