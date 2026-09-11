@@ -1,9 +1,17 @@
 {
   "framework": "nextjs",
   "redirects": [
-    { "source": "/privacy", "destination": "/legal/privacy", "permanent": true },
+    {
+      "source": "/privacy",
+      "destination": "/legal/privacy",
+      "permanent": true
+    },
     { "source": "/terms", "destination": "/legal/terms", "permanent": true },
-    { "source": "/cookies", "destination": "/legal/cookies", "permanent": true },
+    {
+      "source": "/cookies",
+      "destination": "/legal/cookies",
+      "permanent": true
+    },
     {
       "source": "/acceptable-use",
       "destination": "/legal/community-guidelines",
@@ -13,6 +21,9 @@
   ],
   "rewrites": [
     { "source": "/studio", "destination": "https://mukoko.sanity.studio" },
-    { "source": "/studio/(.*)", "destination": "https://mukoko.sanity.studio/$1" }
+    {
+      "source": "/studio/(.*)",
+      "destination": "https://mukoko.sanity.studio/$1"
+    }
   ]
 }

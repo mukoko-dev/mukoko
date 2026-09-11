@@ -13,13 +13,13 @@ mkdir -p services/your-service
 cd services/your-service
 ```
 
-2. Initialize with the standard structure:
+1. Initialize with the standard structure:
 
 ```bash
 pnpm init
 ```
 
-3. Add the required files:
+1. Add the required files:
 
 ```
 services/your-service/

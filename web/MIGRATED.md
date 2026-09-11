@@ -4,8 +4,8 @@ The marketing-Mukoko site has moved out of this repo.
 
 ## Where it lives now
 
-- **Source code**: https://github.com/bundu-labs/marketing/tree/main/apps/mukoko
-- **Sanity studio**: https://github.com/bundu-labs/marketing/tree/main/studio-mukoko-blog
+- **Source code**: <https://github.com/bundu-labs/marketing/tree/main/apps/mukoko>
+- **Sanity studio**: <https://github.com/bundu-labs/marketing/tree/main/studio-mukoko-blog>
 - **Stack**: Astro 6 (was Next.js 15) + Tailwind v4, deployed on Vercel.
 - **Sanity project**: `npzanja1`, dataset `production` — reused as-is, no
   content migration was required.
