@@ -1,0 +1,8 @@
+name: probe
+on:
+  pull_request:
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo $UNQUOTED | ls
