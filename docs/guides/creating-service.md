@@ -6,6 +6,11 @@ New services use Hono as the routing framework.
 
 ## Quick Start
 
+<!-- markdownlint-disable MD029 -->
+<!-- Each step is followed by a fenced code block at column 0,
+     which splits the ordered list so markdownlint restarts the
+     count at every step. The rendered numbering is correct. -->
+
 1. Create a new service directory:
 
 ```bash
@@ -57,3 +62,5 @@ compatibility_date = "2024-12-01"
 ## Deployment
 
 Services deploy automatically via the `deploy-services.yml` GitHub Actions workflow when changes are pushed to `main` in the `services/` directory.
+
+<!-- markdownlint-enable MD029 -->

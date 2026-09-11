@@ -6,6 +6,11 @@ This guide covers creating the super app frontend. The standalone PWA and backen
 
 ## Quick Start
 
+<!-- markdownlint-disable MD029 -->
+<!-- Each step is followed by a fenced code block at column 0,
+     which splits the ordered list so markdownlint restarts the
+     count at every step. The rendered numbering is correct. -->
+
 1. Copy the template:
 
 ```bash
@@ -73,3 +78,5 @@ Every super app frontend must use:
 ## Deployment
 
 Super app frontends are built and bundled as part of the monorepo CI. They are served to the Flutter shell via Workers for Platforms.
+
+<!-- markdownlint-enable MD029 -->
