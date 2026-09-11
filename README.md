@@ -1,166 +1,176 @@
-# mukoko
+# Mukoko
 
-**A Digital Twin Social Ecosystem for Africa.**
+> The monorepo for the Mukoko super app — a privacy-first social ecosystem for
+> Africa, built on Ubuntu philosophy.
 
-mukoko is a WeChat-style super app that gives every user a sovereign digital identity — a soulbound token anchored to their birth date — and connects them through 15 mini-apps, one AI companion, and one token economy. Built for Africa's realities: mixed device quality, high data costs, intermittent connectivity, and mobile money as the primary payment rail.
+[![CI](https://github.com/mukoko-dev/mukoko/actions/workflows/ci.yml/badge.svg)](https://github.com/mukoko-dev/mukoko/actions/workflows/ci.yml)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Preact](https://img.shields.io/badge/Preact-10-673AB8?style=flat-square&logo=preact&logoColor=white)
+![Hono](https://img.shields.io/badge/Hono-4-E36002?style=flat-square&logo=hono&logoColor=white)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-9.15.4-F69220?style=flat-square&logo=pnpm&logoColor=white)
 
-Built by [Nyuchi Africa](https://nyuchi.com). Custodied by the Mukoko Foundation (Mauritius).
-
-_Ndiri nekuti tiri — I am because we are._
-
----
-
-## Why mukoko exists
-
-The platforms that dominate Africa today were not built for Africa. They extract attention, harvest data, and export value. mukoko inverts every assumption:
-
-- **Your data stays yours.** Your Honey (our personalization engine) runs on-device. Raw behavioral data never leaves your phone.
-- **Your identity is sovereign.** Your Digital Twin is a soulbound token (MIT) — non-transferable, anchored to your verified birth date, and deletable by you alone.
-- **The algorithm works FOR you.** Personalization that empowers, not manipulates. You can see, edit, and delete everything the system knows about you.
-- **Value flows back to creators.** Authors keep 85% of revenue. Event organizers keep 90%. The platform takes the minimum needed to operate.
-- **Ubuntu governs everything.** Every feature must pass the Ubuntu Test: Does this strengthen community? Does this respect human dignity? Does this serve the collective good?
+**Node:** 22 | **Package manager:** pnpm 9.15.4 | **Build:** Turborepo |
+**Marketing site:** [mukoko.com](https://mukoko.com) |
+**Identity service:** [id.mukoko.com](https://id.mukoko.com)
 
 ---
 
-## What's in the super app
+## Status: scaffold
 
-| App               | Purpose                                | Type           |
-| ----------------- | -------------------------------------- | -------------- |
-| **Campfire**      | Messaging + payments (platform anchor) | Core           |
-| **Pulse**         | Personalized aggregated feed           | Core           |
-| **Mukoko News**   | Context-rich news from trusted sources | Core           |
-| **Bytes**         | Short-form video scrolling             | Core           |
-| **Circles**       | Interest-based communities             | Core           |
-| **Nhimbe**        | Cultural gatherings, ticketing         | Core           |
-| **Novels**        | African author platform                | Core           |
-| **BushTrade**     | Peer-to-peer marketplace               | Core           |
-| **Mukoko Lingo**  | Language learning                      | Core           |
-| **Weather**       | Localized weather                      | Utility        |
-| **Transport**     | Transit and ride info                  | Utility        |
-| **Mukoko ID**     | Sovereign identity + SSO               | Infrastructure |
-| **shamwari**      | AI companion                           | Infrastructure |
-| **Your Honey**    | On-device personalization              | Infrastructure |
-| **Mukoko Wallet** | Payments + MUKOKO tokens               | Infrastructure |
+**Read this before reading anything else.** This repository is a skeleton, not
+a running platform. The workspace layout, the toolchain, the CI pipeline and
+the architecture decisions are real and settled. The implementations are not:
 
-**Shamwari** is the AI companion that lives inside the hive — context-aware, powered by Your Honey, and designed to help rather than surveil.
+- Every mini-app in `mini-apps/` is a single Preact screen that renders a
+  heading and one line of copy.
+- Every route handler in `services/` returns
+  `{"message": "TODO: Implement ..."}`. No worker declares a route or a custom
+  domain, so nothing here is deployed.
+- `honey/` exposes `/health` and `/` and nothing else; its `models/`,
+  `routes/` and `services/` directories are empty.
+- `web/` has been stubbed out — see [`web/MIGRATED.md`](./web/MIGRATED.md).
+- The Flutter shell that earlier revisions of this README described was
+  removed in [#75](https://github.com/mukoko-dev/mukoko/pull/75). There is no
+  `app/` directory.
 
----
-
-## Architecture at a glance
-
-```
-Flutter shell (native)          WebView mini-apps (Preact)
-┌─────────────────────┐        ┌─────────────────────────┐
-│ Auth (Stytch)       │        │ Campfire, Pulse, News   │
-│ Wallet (EcoCash/MXT)│◄──────►│ Circles, Nhimbe, Novels │
-│ Shamwari AI         │ Bridge │ @mukoko/ui components   │
-│ Your Honey (on-dev) │        │ < 150KB gzipped each    │
-│ Notifications       │        │ Standalone PWA capable  │
-└─────────────────────┘        └─────────────────────────┘
-         │                              │
-         └──────────┬───────────────────┘
-                    ▼
-         Cloudflare Workers (Hono)
-         MongoDB Atlas + KV + D1
-         Polygon PoS (MIT + MXT)
-```
-
-Each ecosystem app has **two frontends**: a standalone PWA (in its own repo) and a super app frontend (in this monorepo's `mini-apps/`). Both consume the same backend API. The standalone repo owns the backend.
+The design intent lives in [ARCHITECTURE.md](./ARCHITECTURE.md) and
+[docs/adr/](./docs/adr/). Treat both as specification, not as description of
+what runs today.
 
 ---
 
-## Token economy
+## What's in here
 
-Two tokens on Polygon PoS:
+### Mini-apps — `mini-apps/`
 
-- **MIT (MUKOKO Identity Token)** — soulbound ERC-721, non-transferable, birth-date anchored. Your permanent stake in the community.
-- **MXT (MUKOKO Exchange Token)** — transferable ERC-20 for all transactions. Floor price derived from MIT pool system. Elastic supply with no hard cap.
+Preact + Vite front-ends, each intended to be loaded as a mini-app inside the
+super app shell. Six of them, plus a template.
 
-More users join, more MITs are minted, pool means grow as the community ages, MXT floor rises. Growth benefits everyone already here. This is Ubuntu expressed as token economics.
+| Directory    | Package                    | Placeholder copy                      |
+| ------------ | -------------------------- | ------------------------------------- |
+| `clips/`     | `@mukoko/clips`            | clips — informed communities          |
+| `connect/`   | `@mukoko/connect`          | connect — interest communities        |
+| `events/`    | `@mukoko/events`           | events — community gatherings         |
+| `novels/`    | `@mukoko/novels`           | novels — african stories              |
+| `pulse/`     | `@mukoko/pulse`            | pulse — trending moments              |
+| `weather/`   | `@mukoko/weather`          | weather — zimbabwe forecasts          |
+| `_template/` | `@mukoko/miniapp-template` | the starting point for a new mini-app |
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) sections 6 and 9 for the full specification.
+The repository description names six apps — ID, Clips, Pulse, Connect, Novels
+and Events. Five of those are the mini-apps above. **ID is not a mini-app**: it
+is `services/id-api`, and the identity product that actually ships lives in a
+separate repository, [`mukoko-dev/mukoko-auth`](https://github.com/mukoko-dev/mukoko-auth)
+(deployed at [id.mukoko.com](https://id.mukoko.com)). **Weather is a seventh
+mini-app** the description omits.
+
+### Services — `services/`
+
+Cloudflare Workers written with Hono. Six, plus a template.
+
+| Directory           | Worker name               | Bindings declared                               |
+| ------------------- | ------------------------- | ----------------------------------------------- |
+| `gateway/`          | `mukoko-gateway`          | KV `CACHE_STORAGE`                              |
+| `id-api/`           | `mukoko-id-api`           | D1 `mukoko_users`, KV `USER_STORAGE`            |
+| `miniapp-registry/` | `mukoko-miniapp-registry` | KV `CONFIG_STORAGE`, R2 `mukoko-miniapp-assets` |
+| `shamwari-api/`     | `mukoko-shamwari-api`     | Workers AI                                      |
+| `wallet-api/`       | `mukoko-wallet-api`       | none yet                                        |
+| `digital-twin/`     | `mukoko-digital-twin`     | none yet                                        |
+
+The gateway is the front door: it declares route groups for `/clips`,
+`/events`, `/pulse`, `/connect`, `/novels` and `/weather`. All six are stubs.
+
+### Shared packages — `packages/`
+
+| Directory        | Package                 | Purpose                       |
+| ---------------- | ----------------------- | ----------------------------- |
+| `design-system/` | `@mukoko/ui`            | Shared UI primitives          |
+| `bridge-sdk/`    | `@mukoko/bridge`        | Shell ↔ mini-app bridge       |
+| `api-client/`    | `@mukoko/api`           | Typed client for the services |
+| `types/`         | `@mukoko/types`         | Shared TypeScript types       |
+| `eslint-config/` | `@mukoko/eslint-config` | Lint config for the workspace |
+| `tsconfig/`      | `@mukoko/tsconfig`      | Base TypeScript configs       |
+
+### Your Honey — `honey/`
+
+The personalization engine, and the one part of the system with a hard rule
+attached: personalization is meant to run for the user, not on them. It is a
+Python 3.12 FastAPI service (`nuchi-honey`, version 0.1.0) with a Dockerfile
+and a `docker-compose.yml`. Today it serves a health check and a root message.
+
+### Marketing site — `web/`
+
+Stubbed. The Mukoko marketing site moved to the shared Bundu Family marketing
+monorepo, `bundu-labs/marketing`, and was rebuilt in Astro 6. The old Next.js
+tree is kept on `main` only so deploys can be rolled back, and a follow-up PR
+removes it. [`web/MIGRATED.md`](./web/MIGRATED.md) has the details. Do not
+develop here.
 
 ---
 
-## Repository structure
+## Architecture
 
-```
-mukoko/
-├── app/            # Flutter super app shell (not a pnpm workspace)
-├── mini-apps/      # Super app frontends (Preact, loaded in WebView)
-│   ├── campfire/   # Messaging + payments (platform anchor)
-│   ├── pulse/      # Aggregated feed (monorepo-native)
-│   ├── news/       # News UI (backend in mukoko-news)
-│   ├── bytes/      # Short-form video scrolling
-│   ├── circles/    # Communities UI (backend in mukoko-connect)
-│   ├── nhimbe/     # Events UI (backend in nhimbe)
-│   ├── novels/     # Author platform UI (backend in mukoko-novels)
-│   ├── bushtrade/  # Peer-to-peer marketplace
-│   ├── lingo/      # Language learning
-│   ├── weather/    # Weather UI (backend in mukoko-weather)
-│   └── transport/  # Transit and ride info
-├── services/       # Cloudflare Workers (gateway, auth, wallet, AI)
-├── packages/       # Shared: @mukoko/ui, @mukoko/bridge, @mukoko/types
-├── honey/          # Your Honey AI service (Python/FastAPI, isolated)
-├── web/            # Marketing site (Next.js 15, Vercel)
-└── docs/           # Architecture docs, ADRs, developer guides
-```
+| Layer          | Choice                               | Decision record                                     |
+| -------------- | ------------------------------------ | --------------------------------------------------- |
+| Monorepo       | pnpm workspaces + Turborepo          | [ADR 001](./docs/adr/001-monorepo-turborepo.md)     |
+| Mini-app UI    | Preact, not React                    | [ADR 002](./docs/adr/002-preact-over-react.md)      |
+| Workers        | Hono for anything new                | [ADR 003](./docs/adr/003-hono-for-new-workers.md)   |
+| Primary data   | MongoDB Atlas                        | [ADR 004](./docs/adr/004-mongodb-atlas-primary.md)  |
+| Authentication | Stytch                               | [ADR 005](./docs/adr/005-stytch-auth.md)            |
+| Web hosting    | Vercel                               | [ADR 006](./docs/adr/006-vercel-web-deployment.md)  |
+| Mini-app host  | Workers for Platforms                | [ADR 007](./docs/adr/007-workers-for-platforms.md)  |
+| Token economy  | Two tokens on Polygon PoS            | [ADR 008](./docs/adr/008-polygon-two-token.md)      |
+| Governance     | Foundation / operating company split | [ADR 009](./docs/adr/009-foundation-dual-entity.md) |
+
+MongoDB Atlas is the intended primary database; the workers type a
+`MONGODB_URI` binding but none of them connect to it yet.
 
 ---
 
 ## Getting started
 
-### Prerequisites
-
-| Tool    | Version                         |
-| ------- | ------------------------------- |
-| Node.js | 22+ (pinned in `.nvmrc`)        |
-| pnpm    | 9.15.4+                         |
-| Flutter | Latest stable (for `app/` only) |
-| Python  | 3.12+ (for `honey/` only)       |
-| Docker  | Latest (for `honey/` only)      |
-
-### Quick start
-
 ```bash
-# Clone
-git clone https://github.com/nyuchitech/mukoko.git
+git clone https://github.com/mukoko-dev/mukoko.git
 cd mukoko
-
-# Install Node dependencies
 pnpm install
-
-# Build everything
-pnpm turbo run build
-
-# Run the marketing site locally
-cd web && pnpm dev
-
-# Run all packages in dev mode
-pnpm turbo run dev
-
-# Lint + typecheck
-pnpm turbo run lint typecheck
-
-# Test
-pnpm turbo run test
+pnpm build
 ```
 
-### Working on a specific package
+Python 3.12 and Docker are needed only for `honey/`.
 
-```bash
-pnpm turbo run dev --filter=@mukoko/ui      # Design system
-pnpm turbo run dev --filter=mukoko-news     # News mini-app
-cd services/gateway && pnpm dev             # API gateway (wrangler)
-cd app && flutter run                       # Flutter shell
-cd honey && docker compose up               # Your Honey AI
-```
+## Commands
+
+| Command                                  | Description                            |
+| ---------------------------------------- | -------------------------------------- |
+| `pnpm dev`                               | Every workspace in dev mode, via Turbo |
+| `pnpm build`                             | Build everything                       |
+| `pnpm lint`                              | ESLint across the workspace            |
+| `pnpm typecheck`                         | `tsc --noEmit` across the workspace    |
+| `pnpm test`                              | Vitest across the workspace            |
+| `pnpm format` / `pnpm format:check`      | Prettier                               |
+| `pnpm turbo run dev --filter=@mukoko/ui` | One package only                       |
+| `cd honey && docker compose up`          | Your Honey, locally                    |
+
+CI runs `pnpm turbo run build typecheck lint test` on every push and pull
+request to `main`. Husky and lint-staged run ESLint and Prettier on commit.
+
+---
+
+## Ecosystem
+
+| Repository                                                                  | What it is                                  |
+| --------------------------------------------------------------------------- | ------------------------------------------- |
+| [`mukoko-dev/mukoko-auth`](https://github.com/mukoko-dev/mukoko-auth)       | Mukoko ID — the identity service that ships |
+| [`mukoko-dev/mukoko-lingo`](https://github.com/mukoko-dev/mukoko-lingo)     | Language learning                           |
+| [`mukoko-dev/mukoko-circles`](https://github.com/mukoko-dev/mukoko-circles) | Communities                                 |
+| [`mukoko-dev/kweli-mcp`](https://github.com/mukoko-dev/kweli-mcp)           | Business, places and verification, over MCP |
+| `bundu-labs/marketing`                                                      | The marketing sites, including mukoko.com   |
 
 ---
 
 ## Contributing
 
-We welcome contributors who share the Ubuntu philosophy. Before submitting work, ensure it passes the **Ubuntu Test**:
+Before submitting work, check it against the Ubuntu Test:
 
 1. Does this strengthen community?
 2. Does this respect human dignity?
@@ -168,63 +178,33 @@ We welcome contributors who share the Ubuntu philosophy. Before submitting work,
 4. Would we explain this proudly to our elders?
 5. Does this align with "I am because we are"?
 
-### Workflow
+House rules that trip people up:
 
-1. Fork the repo and create a feature branch
-2. Make changes following the coding standards in [CLAUDE.md](./CLAUDE.md)
-3. Run `pnpm turbo run build typecheck lint test` before submitting
-4. Open a PR using the template (includes Ubuntu Test checklist)
+- Mini-apps use **Preact**, not React.
+- New workers use **Hono**.
+- Auth is **Stytch**; the primary database is **MongoDB Atlas**.
+- Brand wordmarks are lowercase: `mukoko`, `nyuchi`, `shamwari`, `bundu`.
+- Touch targets are at least 48px.
 
-### Key rules
-
-- Mini-apps use **Preact** (not React). `web/` uses React (Next.js requires it).
-- Auth is **Stytch** (not Supabase). Database is **MongoDB Atlas**.
-- New workers use **Hono**. Don't change existing itty-router workers.
-- No page-specific CSS. All styles go in shared `globals.css` primitives.
-- Brand wordmarks are always lowercase: `mukoko`, `nyuchi`, `shamwari`, `bundu`.
-- Touch targets minimum **48px** (default 56px).
-- Marketing site is **dark-mode only**.
-
-See [CLAUDE.md](./CLAUDE.md) for the complete developer guide and [ARCHITECTURE.md](./ARCHITECTURE.md) for the technical specification.
+[CLAUDE.md](./CLAUDE.md) is the full developer guide.
+[ARCHITECTURE.md](./ARCHITECTURE.md) is the technical specification.
 
 ---
 
-## Documentation
+## Governance
 
-| Document                             | Purpose                                                         |
-| ------------------------------------ | --------------------------------------------------------------- |
-| [CLAUDE.md](./CLAUDE.md)             | How we build — coding standards, patterns, tooling              |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Full technical specification (~50KB)                            |
-| [docs/adr/](./docs/adr/)             | Architecture Decision Records (001-009)                         |
-| [docs/guides/](./docs/guides/)       | Developer guides (getting started, creating mini-apps/services) |
+**Mukoko Foundation** (Mauritius) is the non-profit custodian of the protocol,
+the token economics and the Ubuntu charter, under a VASP licence per the
+VAITOS Act 2021. **Nyuchi Africa (Pvt) Ltd** (Zimbabwe) is the operating
+company that builds and runs the platform.
 
----
+## Licence
 
-## Legal structure
+**No `LICENSE` file is committed to this repository.** Until one is added the
+work is under exclusive copyright and carries no grant of use.
 
-**Mukoko Foundation** (Mauritius) — non-profit custodian of the protocol, token economics, and Ubuntu charter. VASP licence under VAITOS Act 2021.
-
-**Nyuchi Africa (Pvt) Ltd** (Zimbabwe) — for-profit operating company that builds and operates the platform.
-
-The Foundation protects the soul. Nyuchi Africa builds the product.
+© Mukoko Foundation, operated by Nyuchi Africa (Pvt) Ltd.
 
 ---
 
-## Links
-
-- **Website:** [mukoko.com](https://mukoko.com)
-- **Nyuchi Africa:** [nyuchi.com](https://nyuchi.com)
-- **Brand Assets:** [assets.nyuchi.com](https://assets.nyuchi.com)
-- **API Status:** [status.mukoko.com](https://status.mukoko.com)
-
----
-
-## License
-
-See [LICENSE](./LICENSE) for details.
-
----
-
-_Munhu munhu muvanhu — A person is a person through other persons._
-
-_Built with Ubuntu in Zimbabwe._
+_Ndiri nekuti tiri — I am because we are._
