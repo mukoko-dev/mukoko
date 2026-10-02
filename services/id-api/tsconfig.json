@@ -1,8 +1,0 @@
-{
-  "extends": "@mukoko/tsconfig/worker.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src"]
-}
