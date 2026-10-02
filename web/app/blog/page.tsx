@@ -11,8 +11,7 @@ export const metadata: Metadata = {
     "Stories, updates, and thinking from the mukoko team. Building digital infrastructure for African community life.",
   openGraph: {
     title: "Blog — mukoko",
-    description:
-      "Stories, updates, and thinking from the mukoko team.",
+    description: "Stories, updates, and thinking from the mukoko team.",
     type: "website",
     url: "https://mukoko.com/blog",
   },

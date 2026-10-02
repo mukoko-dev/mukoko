@@ -1,7 +1,7 @@
 {
   "extends": "@mukoko/tsconfig/preact.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "rootDir": "./src",
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -45,7 +45,12 @@ const sizeMap: Record<BadgeSize, JSX.CSSProperties> = {
   },
 };
 
-export function Badge({ variant = "tanzanite", children, size = "md", className }: BadgeProps) {
+export function Badge({
+  variant = "tanzanite",
+  children,
+  size = "md",
+  className,
+}: BadgeProps) {
   const colors = variantColorMap[variant];
 
   const style: JSX.CSSProperties = {

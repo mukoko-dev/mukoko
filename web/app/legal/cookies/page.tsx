@@ -21,8 +21,9 @@ export default function CookiesPage() {
             <section className="legal-section">
               <h2>What Are Cookies</h2>
               <p>
-                Cookies are small text files stored on your device when you visit a website.
-                They help us provide a better experience and understand how our site is used.
+                Cookies are small text files stored on your device when you
+                visit a website. They help us provide a better experience and
+                understand how our site is used.
               </p>
             </section>
 
@@ -31,14 +32,16 @@ export default function CookiesPage() {
 
               <h3>Essential Cookies</h3>
               <p>
-                Required for the site to function. These include authentication session
-                cookies managed by Stytch. You cannot opt out of essential cookies.
+                Required for the site to function. These include authentication
+                session cookies managed by Stytch. You cannot opt out of
+                essential cookies.
               </p>
 
               <h3>Analytics Cookies</h3>
               <p>
-                Help us understand how visitors interact with our site. We use Cloudflare
-                Analytics Engine, which is privacy-focused and does not track users across sites.
+                Help us understand how visitors interact with our site. We use
+                Cloudflare Analytics Engine, which is privacy-focused and does
+                not track users across sites.
               </p>
             </section>
 
@@ -55,8 +58,9 @@ export default function CookiesPage() {
             <section className="legal-section">
               <h2>Managing Cookies</h2>
               <p>
-                You can manage cookie preferences through your browser settings. Note that
-                disabling essential cookies may affect site functionality.
+                You can manage cookie preferences through your browser settings.
+                Note that disabling essential cookies may affect site
+                functionality.
               </p>
             </section>
 

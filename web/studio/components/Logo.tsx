@@ -1,16 +1,16 @@
-import React from 'react'
+import React from "react";
 
 export function Logo() {
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
+        display: "flex",
+        alignItems: "center",
+        gap: "0.5rem",
         fontFamily: '"Noto Serif", Georgia, serif',
         fontWeight: 700,
-        fontSize: '1.1rem',
-        color: '#4B0082',
+        fontSize: "1.1rem",
+        color: "#4B0082",
       }}
     >
       <svg width="24" height="24" viewBox="0 0 100 86" fill="none">
@@ -29,7 +29,7 @@ export function Logo() {
       </svg>
       mukoko
     </div>
-  )
+  );
 }
 
 export function Icon() {
@@ -42,5 +42,5 @@ export function Icon() {
         fill="none"
       />
     </svg>
-  )
+  );
 }

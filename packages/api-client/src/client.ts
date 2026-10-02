@@ -38,7 +38,11 @@ export class MukokoClient {
    * Core request method with auth, JSON handling, and retry logic.
    * Retries up to MAX_RETRIES times for 5xx errors with exponential backoff.
    */
-  private async request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
+  private async request<T>(
+    method: string,
+    path: string,
+    options?: RequestOptions,
+  ): Promise<T> {
     const url = this.buildUrl(path, options?.params);
 
     const headers: Record<string, string> = {
@@ -96,7 +100,12 @@ export class MukokoClient {
           // Response body was not valid JSON
         }
 
-        const apiError = new ApiClientError(errorMessage, response.status, errorCode, errorDetails);
+        const apiError = new ApiClientError(
+          errorMessage,
+          response.status,
+          errorCode,
+          errorDetails,
+        );
 
         // Only retry on server errors (5xx)
         if (response.status >= 500 && attempt < MAX_RETRIES) {
@@ -159,7 +168,10 @@ export class MukokoClient {
   /**
    * Perform a GET request.
    */
-  async get<T>(path: string, options?: Omit<RequestOptions, "body">): Promise<ApiResponse<T>> {
+  async get<T>(
+    path: string,
+    options?: Omit<RequestOptions, "body">,
+  ): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>("GET", path, options);
   }
 
@@ -208,7 +220,10 @@ export class MukokoClient {
   /**
    * Perform a DELETE request.
    */
-  async delete<T>(path: string, options?: Omit<RequestOptions, "body">): Promise<ApiResponse<T>> {
+  async delete<T>(
+    path: string,
+    options?: Omit<RequestOptions, "body">,
+  ): Promise<ApiResponse<T>> {
     return this.request<ApiResponse<T>>("DELETE", path, options);
   }
 
@@ -219,7 +234,10 @@ export class MukokoClient {
   /**
    * Fetch a paginated endpoint. Passes page/pageSize as query params.
    */
-  async paginated<T>(path: string, params?: Record<string, string>): Promise<PaginatedResponse<T>> {
+  async paginated<T>(
+    path: string,
+    params?: Record<string, string>,
+  ): Promise<PaginatedResponse<T>> {
     return this.request<PaginatedResponse<T>>("GET", path, { params });
   }
 }

@@ -28,11 +28,13 @@ export function Ubuntu() {
     <section className="section" id="ubuntu">
       <div className="ubuntu text-center">
         <h2 className="ubuntu__headline">Munhu munhu muvanhu</h2>
-        <p className="ubuntu__translation mt-1">A person is a person through other persons</p>
+        <p className="ubuntu__translation mt-1">
+          A person is a person through other persons
+        </p>
         <p className="mt-3">
-          mukoko is built on Ubuntu — the understanding that we exist through our relationships with
-          each other. Before every feature ships, it passes five questions we call the{" "}
-          <strong>Ubuntu Test</strong>.
+          mukoko is built on Ubuntu — the understanding that we exist through
+          our relationships with each other. Before every feature ships, it
+          passes five questions we call the <strong>Ubuntu Test</strong>.
         </p>
 
         <div className="ubuntu-questions">

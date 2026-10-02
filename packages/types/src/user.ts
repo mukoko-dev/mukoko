@@ -12,7 +12,12 @@ export interface MukokoUser {
   updatedAt: string;
 }
 
-export type UserRole = "user" | "creator" | "moderator" | "admin" | "super_admin";
+export type UserRole =
+  | "user"
+  | "creator"
+  | "moderator"
+  | "admin"
+  | "super_admin";
 
 export interface DigitalTwin {
   userId: string;

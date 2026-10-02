@@ -8,48 +8,64 @@
 
 :root {
   /* Five African Minerals — single set per registry */
-  --color-cobalt: #0047AB;
-  --color-tanzanite: #B388FF;
-  --color-malachite: #64FFDA;
-  --color-gold: #FFD740;
-  --color-terracotta: #D4A574;
+  --color-cobalt: #0047ab;
+  --color-tanzanite: #b388ff;
+  --color-malachite: #64ffda;
+  --color-gold: #ffd740;
+  --color-terracotta: #d4a574;
 
   /* Mineral containers (8% tint for card backgrounds) */
-  --color-cobalt-container: color-mix(in srgb, var(--color-cobalt) 8%, transparent);
-  --color-tanzanite-container: color-mix(in srgb, var(--color-tanzanite) 8%, transparent);
-  --color-malachite-container: color-mix(in srgb, var(--color-malachite) 8%, transparent);
+  --color-cobalt-container: color-mix(
+    in srgb,
+    var(--color-cobalt) 8%,
+    transparent
+  );
+  --color-tanzanite-container: color-mix(
+    in srgb,
+    var(--color-tanzanite) 8%,
+    transparent
+  );
+  --color-malachite-container: color-mix(
+    in srgb,
+    var(--color-malachite) 8%,
+    transparent
+  );
   --color-gold-container: color-mix(in srgb, var(--color-gold) 8%, transparent);
-  --color-terracotta-container: color-mix(in srgb, var(--color-terracotta) 8%, transparent);
+  --color-terracotta-container: color-mix(
+    in srgb,
+    var(--color-terracotta) 8%,
+    transparent
+  );
 
   /* Semantic: brand accent = cobalt (registry: "Primary blue, links, CTAs") */
-  --color-primary: #00B0FF;
-  --color-primary-fg: #0A0A0A;
+  --color-primary: #00b0ff;
+  --color-primary-fg: #0a0a0a;
 
   /* Semantic: surfaces */
-  --color-bg: #0A0A0A;
-  --color-bg-alt: #1E1E1E;
+  --color-bg: #0a0a0a;
+  --color-bg-alt: #1e1e1e;
   --color-card: #141414;
-  --color-surface-inverse: #F5F5F4;
+  --color-surface-inverse: #f5f5f4;
 
   /* Semantic: text */
-  --color-foreground: #F5F5F4;
-  --color-text: #F5F5F4;
-  --color-text-muted: #B8B8B3;
+  --color-foreground: #f5f5f4;
+  --color-text: #f5f5f4;
+  --color-text-muted: #b8b8b3;
 
   /* Semantic: border */
   --color-border: rgba(255, 255, 255, 0.08);
 
   /* Semantic: status */
-  --color-success: #64FFDA;
-  --color-warning: #FFD866;
-  --color-info: #00B0FF;
-  --color-destructive: #F2B8B5;
+  --color-success: #64ffda;
+  --color-warning: #ffd866;
+  --color-info: #00b0ff;
+  --color-destructive: #f2b8b5;
 
   /* Legacy aliases */
-  --color-secondary: #00B0FF;
-  --color-accent: #FFD740;
-  --color-shamwari: #64FFDA;
-  --color-community: #D4A574;
+  --color-secondary: #00b0ff;
+  --color-accent: #ffd740;
+  --color-shamwari: #64ffda;
+  --color-community: #d4a574;
 
   /* Typography — per registry */
   --font-display: "Noto Serif", serif;
@@ -185,7 +201,9 @@ body::before {
   margin-inline: auto;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
   line-height: 1.2;
 }
@@ -226,15 +244,33 @@ a:hover {
   border: 0;
 }
 
-.text-center { text-align: center; }
-.text-muted { color: var(--color-text-muted); }
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-.mt-4 { margin-top: 2rem; }
-.mt-5 { margin-top: 2.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 2rem; }
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
+.mt-1 {
+  margin-top: 0.5rem;
+}
+.mt-2 {
+  margin-top: 1rem;
+}
+.mt-3 {
+  margin-top: 1.5rem;
+}
+.mt-4 {
+  margin-top: 2rem;
+}
+.mt-5 {
+  margin-top: 2.5rem;
+}
+.mb-2 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 2rem;
+}
 
 /* ─── Section titles ─── */
 
@@ -262,7 +298,8 @@ a:hover {
   background: color-mix(in srgb, var(--color-bg) 70%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-border) 50%, transparent);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -527,7 +564,9 @@ a:hover {
   border-radius: var(--radius-card);
   border: 1px solid var(--color-border);
   background: var(--card-bg, var(--color-bg));
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 
 .app-card:hover {
@@ -842,7 +881,7 @@ a:hover {
 }
 
 .ubuntu-question__num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.68rem;
   color: var(--color-primary);
   opacity: 0.45;
@@ -1077,9 +1116,21 @@ a:hover {
   min-height: 100vh;
   background-color: var(--color-bg);
   background-image:
-    radial-gradient(ellipse 80% 60% at 15% 40%, color-mix(in srgb, var(--color-tanzanite) 40%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 80% 70%, color-mix(in srgb, var(--color-cobalt) 28%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 40% at 55% 15%, color-mix(in srgb, var(--color-malachite) 22%, transparent) 0%, transparent 50%);
+    radial-gradient(
+      ellipse 80% 60% at 15% 40%,
+      color-mix(in srgb, var(--color-tanzanite) 40%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 80% at 80% 70%,
+      color-mix(in srgb, var(--color-cobalt) 28%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 55% 15%,
+      color-mix(in srgb, var(--color-malachite) 22%, transparent) 0%,
+      transparent 50%
+    );
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1118,7 +1169,7 @@ a:hover {
   font-family: var(--font-display);
   font-size: clamp(3.2rem, 9vw, 6.5rem);
   font-weight: 700;
-  line-height: 1.0;
+  line-height: 1;
   letter-spacing: -0.025em;
   color: var(--color-cover-text);
   margin-bottom: 0.5rem;
@@ -1126,7 +1177,11 @@ a:hover {
 
 .hero-cover__title em {
   font-style: italic;
-  background: linear-gradient(130deg, var(--color-tanzanite) 0%, var(--color-malachite) 100%);
+  background: linear-gradient(
+    130deg,
+    var(--color-tanzanite) 0%,
+    var(--color-malachite) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1334,10 +1389,20 @@ a:hover {
   overflow-x: auto;
 }
 
-.code-tree span { display: block; }
-.code-tree .ct-name { color: var(--color-cover-code-name); font-weight: 500; }
-.code-tree .ct-anchor { color: var(--color-gold); font-weight: 700; }
-.code-tree .ct-infra { color: var(--color-malachite); }
+.code-tree span {
+  display: block;
+}
+.code-tree .ct-name {
+  color: var(--color-cover-code-name);
+  font-weight: 500;
+}
+.code-tree .ct-anchor {
+  color: var(--color-gold);
+  font-weight: 700;
+}
+.code-tree .ct-infra {
+  color: var(--color-malachite);
+}
 
 /* Card grid — 2-column grid of feature cards */
 .card-grid {
@@ -1399,11 +1464,21 @@ a:hover {
   margin-bottom: 0.5rem;
 }
 
-.mineral-card--cobalt .mineral-card__title { color: var(--color-cobalt); }
-.mineral-card--tanzanite .mineral-card__title { color: var(--color-tanzanite); }
-.mineral-card--malachite .mineral-card__title { color: var(--color-malachite); }
-.mineral-card--terracotta .mineral-card__title { color: var(--color-terracotta); }
-.mineral-card--gold .mineral-card__title { color: var(--color-gold); }
+.mineral-card--cobalt .mineral-card__title {
+  color: var(--color-cobalt);
+}
+.mineral-card--tanzanite .mineral-card__title {
+  color: var(--color-tanzanite);
+}
+.mineral-card--malachite .mineral-card__title {
+  color: var(--color-malachite);
+}
+.mineral-card--terracotta .mineral-card__title {
+  color: var(--color-terracotta);
+}
+.mineral-card--gold .mineral-card__title {
+  color: var(--color-gold);
+}
 
 .mineral-card__body {
   font-family: var(--font-body);
@@ -1427,10 +1502,18 @@ a:hover {
   background: var(--color-bg-alt);
 }
 
-.feature-block:nth-child(1) { border-left-color: var(--color-tanzanite); }
-.feature-block:nth-child(2) { border-left-color: var(--color-cobalt); }
-.feature-block:nth-child(3) { border-left-color: var(--color-malachite); }
-.feature-block:nth-child(4) { border-left-color: var(--color-accent); }
+.feature-block:nth-child(1) {
+  border-left-color: var(--color-tanzanite);
+}
+.feature-block:nth-child(2) {
+  border-left-color: var(--color-cobalt);
+}
+.feature-block:nth-child(3) {
+  border-left-color: var(--color-malachite);
+}
+.feature-block:nth-child(4) {
+  border-left-color: var(--color-accent);
+}
 
 .feature-block__label {
   font-family: var(--font-mono);
@@ -1513,7 +1596,7 @@ a:hover {
 }
 
 .cross-list__item::before {
-  content: '✕';
+  content: "✕";
   font-family: var(--font-mono);
   font-size: 0.62rem;
   color: var(--color-tanzanite);
@@ -1537,7 +1620,7 @@ a:hover {
 
 .prose-divider::before,
 .prose-divider::after {
-  content: '';
+  content: "";
   flex: 1;
   height: 1px;
   background: currentColor;
@@ -1558,7 +1641,8 @@ a:hover {
   color: var(--color-text);
   line-height: 1.5;
   padding-left: 1.4rem;
-  border-left: 2px solid color-mix(in srgb, var(--color-tanzanite) 20%, transparent);
+  border-left: 2px solid
+    color-mix(in srgb, var(--color-tanzanite) 20%, transparent);
 }
 
 .prose-stack__line--strong {
@@ -1979,7 +2063,8 @@ a:hover {
 
 .twin-card--active {
   border-color: color-mix(in srgb, var(--color-tanzanite) 30%, transparent);
-  box-shadow: 0 0 40px color-mix(in srgb, var(--color-tanzanite) 15%, transparent);
+  box-shadow: 0 0 40px
+    color-mix(in srgb, var(--color-tanzanite) 15%, transparent);
 }
 
 .twin-card__header {
@@ -1993,7 +2078,7 @@ a:hover {
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #4B0082, #0047AB);
+  background: linear-gradient(135deg, #4b0082, #0047ab);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2231,7 +2316,11 @@ a:hover {
 }
 
 .token-card--mit {
-  background: color-mix(in srgb, var(--color-tanzanite) 6%, var(--color-bg-alt));
+  background: color-mix(
+    in srgb,
+    var(--color-tanzanite) 6%,
+    var(--color-bg-alt)
+  );
   border: 1px solid color-mix(in srgb, var(--color-tanzanite) 25%, transparent);
 }
 
@@ -2284,8 +2373,12 @@ a:hover {
   font-weight: 600;
 }
 
-.token-card--mit .token-card__tagline { color: var(--color-tanzanite); }
-.token-card--mxt .token-card__tagline { color: var(--color-gold); }
+.token-card--mit .token-card__tagline {
+  color: var(--color-tanzanite);
+}
+.token-card--mxt .token-card__tagline {
+  color: var(--color-gold);
+}
 
 .token-card__attrs {
   margin-bottom: 1.25rem;
@@ -2410,9 +2503,15 @@ a:hover {
   margin-bottom: 0.25rem;
 }
 
-.sim-pool__name--year { color: var(--color-tanzanite); }
-.sim-pool__name--month { color: var(--color-cobalt); }
-.sim-pool__name--day { color: var(--color-gold); }
+.sim-pool__name--year {
+  color: var(--color-tanzanite);
+}
+.sim-pool__name--month {
+  color: var(--color-cobalt);
+}
+.sim-pool__name--day {
+  color: var(--color-gold);
+}
 
 .sim-pool__meta {
   font-family: var(--font-body);
@@ -2464,7 +2563,11 @@ a:hover {
   font-family: var(--font-display);
   font-size: 2.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-tanzanite), var(--color-gold));
+  background: linear-gradient(
+    135deg,
+    var(--color-tanzanite),
+    var(--color-gold)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -2847,11 +2950,19 @@ a:hover {
 }
 
 .honey-comparison__col--them {
-  background: color-mix(in srgb, var(--color-destructive) 5%, var(--color-bg-alt));
+  background: color-mix(
+    in srgb,
+    var(--color-destructive) 5%,
+    var(--color-bg-alt)
+  );
 }
 
 .honey-comparison__col--us {
-  background: color-mix(in srgb, var(--color-malachite) 5%, var(--color-bg-alt));
+  background: color-mix(
+    in srgb,
+    var(--color-malachite) 5%,
+    var(--color-bg-alt)
+  );
 }
 
 .honey-comparison__heading {

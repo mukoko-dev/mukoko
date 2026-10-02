@@ -1,5 +1,5 @@
-import {authorType} from './author'
-import {categoryType} from './category'
-import {postType} from './post'
+import { authorType } from "./author";
+import { categoryType } from "./category";
+import { postType } from "./post";
 
-export const schemaTypes = [authorType, categoryType, postType]
+export const schemaTypes = [authorType, categoryType, postType];

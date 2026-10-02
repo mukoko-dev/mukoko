@@ -4,6 +4,13 @@ import nextjsConfig from "@mukoko/eslint-config/nextjs";
 export default [
   ...nextjsConfig,
   {
-    ignores: [".next/**", "out/**", "dist/**", "node_modules/**", "studio/**", "next-env.d.ts"],
+    ignores: [
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "node_modules/**",
+      "studio/**",
+      "next-env.d.ts",
+    ],
   },
 ];

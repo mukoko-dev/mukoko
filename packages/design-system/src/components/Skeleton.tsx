@@ -17,7 +17,9 @@ export function Skeleton({
     display: "block",
     width,
     height,
-    borderRadius: rounded ? "var(--radius-full, 9999px)" : "var(--radius-button, 12px)",
+    borderRadius: rounded
+      ? "var(--radius-full, 9999px)"
+      : "var(--radius-button, 12px)",
     backgroundColor: "rgba(0, 0, 0, 0.08)",
     backgroundImage:
       "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)",
@@ -27,7 +29,13 @@ export function Skeleton({
   };
 
   return (
-    <span style={style} class={className} role="status" aria-label="Loading" aria-busy="true" />
+    <span
+      style={style}
+      class={className}
+      role="status"
+      aria-label="Loading"
+      aria-busy="true"
+    />
   );
 }
 

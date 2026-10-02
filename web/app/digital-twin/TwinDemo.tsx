@@ -26,7 +26,10 @@ export function TwinDemo() {
     <div className="twin-demo">
       {/* Interest selector */}
       <div>
-        <p className="content-section__number" style={{ marginBottom: "1.25rem" }}>
+        <p
+          className="content-section__number"
+          style={{ marginBottom: "1.25rem" }}
+        >
           Your interests
         </p>
         <div className="twin-interests">
@@ -38,7 +41,9 @@ export function TwinDemo() {
             >
               <span className="twin-interest-btn__icon">{i.icon}</span>
               {i.label}
-              {active === i.label && <span className="twin-interest-btn__dot" />}
+              {active === i.label && (
+                <span className="twin-interest-btn__dot" />
+              )}
             </button>
           ))}
         </div>
@@ -61,7 +66,15 @@ export function TwinDemo() {
         </div>
 
         <div>
-          <p className="twin-card__stat-label" style={{ marginBottom: "0.625rem", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
+          <p
+            className="twin-card__stat-label"
+            style={{
+              marginBottom: "0.625rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              fontWeight: 600,
+            }}
+          >
             Active interests
           </p>
           <div className="twin-card__tags">
@@ -96,8 +109,8 @@ export function TwinDemo() {
         </div>
 
         <div className="twin-card__privacy">
-          {"\u{1F6E1}\uFE0F"} Your twin is private by default. shamwari never sends
-          your data to any server.
+          {"\u{1F6E1}\uFE0F"} Your twin is private by default. shamwari never
+          sends your data to any server.
         </div>
       </div>
     </div>

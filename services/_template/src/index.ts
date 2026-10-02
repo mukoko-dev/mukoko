@@ -14,7 +14,11 @@ app.use("*", logger());
 app.use("*", cors());
 
 app.get("/health", (c) => {
-  return c.json({ status: "ok", service: "template", timestamp: new Date().toISOString() });
+  return c.json({
+    status: "ok",
+    service: "template",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 export default app;

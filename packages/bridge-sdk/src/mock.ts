@@ -22,7 +22,11 @@ const MOCK_USER: MukokoUser = {
   displayName: "Mukoko Dev",
   avatar: null,
   interests: [
-    { categoryId: "Technology", weight: 0.9, keywords: ["typescript", "flutter"] },
+    {
+      categoryId: "Technology",
+      weight: 0.9,
+      keywords: ["typescript", "flutter"],
+    },
     { categoryId: "Music", weight: 0.7, keywords: ["afrobeats", "gospel"] },
     { categoryId: "Business", weight: 0.5, keywords: ["startups", "fintech"] },
   ],
@@ -33,7 +37,11 @@ const MOCK_USER: MukokoUser = {
 };
 
 const MOCK_INTERESTS: Interest[] = [
-  { categoryId: "Technology", weight: 0.9, keywords: ["typescript", "flutter"] },
+  {
+    categoryId: "Technology",
+    weight: 0.9,
+    keywords: ["typescript", "flutter"],
+  },
   { categoryId: "Music", weight: 0.7, keywords: ["afrobeats", "gospel"] },
   { categoryId: "Business", weight: 0.5, keywords: ["startups", "fintech"] },
 ];
@@ -184,7 +192,11 @@ class MockBridge implements MukokoBridgeAPI {
       return { data: "https://mukoko.app/mock-qr" };
     },
 
-    share: async (params: { title: string; text?: string; url?: string }): Promise<void> => {
+    share: async (params: {
+      title: string;
+      text?: string;
+      url?: string;
+    }): Promise<void> => {
       console.log("[MockBridge] device.share", params);
     },
 

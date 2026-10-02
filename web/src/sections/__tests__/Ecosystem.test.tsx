@@ -5,7 +5,9 @@ import { Ecosystem } from "../Ecosystem";
 describe("Ecosystem", () => {
   it("renders the section title", () => {
     render(<Ecosystem />);
-    expect(screen.getByText(/15 mini-apps\. One ecosystem\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/15 mini-apps\. One ecosystem\./),
+    ).toBeInTheDocument();
   });
 
   it("renders key apps with new names", () => {
