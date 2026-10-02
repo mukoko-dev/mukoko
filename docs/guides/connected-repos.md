@@ -31,7 +31,7 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 | `mukoko-connect`  | Circles backend             | `circles.mukoko.com`  | `mini-apps/circles/`             |
 | `mukoko-novels`   | Novels backend              | `novels.mukoko.com`   | `mini-apps/novels/`              |
 | `mukoko-campfire` | Campfire backend            | `campfire.mukoko.com` | `mini-apps/campfire/`            |
-| `mukoko-auth`     | Auth backend (Stytch)       | `id.mukoko.com`       | `services/id-api/`               |
+| `mukoko-auth`     | Auth backend (Stytch)       | `id.mukoko.com`       | —                                |
 | `brand-warehouse` | Brand assets CDN            | —                     | `packages/design-system/assets/` |
 
 ### Monorepo-native features (no standalone repo)
@@ -57,7 +57,6 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 | Your Honey AI service   | `honey/`                     | Privacy-first personalization engine          |
 | Shared packages         | `packages/`                  | Types, design system, bridge SDK, API client  |
 | API gateway             | `services/gateway/`          | Routing + Stytch session verification         |
-| Mukoko ID               | `services/id-api/`           | Stytch auth + Your Honey cloud storage        |
 | Wallet                  | `services/wallet-api/`       | Payments + MXT tokens (ERC-20 on Polygon)     |
 | Shamwari AI             | `services/shamwari-api/`     | AI companion (reads Your Honey)               |
 | Mini-app registry       | `services/miniapp-registry/` | App manifests + R2 assets                     |
