@@ -48,7 +48,9 @@ export function Input({
     fontSize: "16px",
     fontFamily: "inherit",
     borderRadius: "var(--radius-button, 12px)",
-    border: error ? "2px solid #DC2626" : "1px solid var(--card-border, rgba(0, 0, 0, 0.2))",
+    border: error
+      ? "2px solid #DC2626"
+      : "1px solid var(--card-border, rgba(0, 0, 0, 0.2))",
     backgroundColor: disabled ? "rgba(0, 0, 0, 0.04)" : "transparent",
     color: "inherit",
     outline: "none",
@@ -88,7 +90,8 @@ export function Input({
         onFocus={(e: JSX.TargetedFocusEvent<HTMLInputElement>) => {
           if (!error) {
             e.currentTarget.style.borderColor = "var(--color-primary, #4B0082)";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(75, 0, 130, 0.15)";
+            e.currentTarget.style.boxShadow =
+              "0 0 0 3px rgba(75, 0, 130, 0.15)";
           }
         }}
         onBlur={(e: JSX.TargetedFocusEvent<HTMLInputElement>) => {

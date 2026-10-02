@@ -28,21 +28,15 @@ function formatDate(dateString: string): string {
 
 const portableTextComponents: PortableTextComponents = {
   block: {
-    h2: ({ children }) => (
-      <h2 className="blog-body__h2">{children}</h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="blog-body__h3">{children}</h3>
-    ),
-    h4: ({ children }) => (
-      <h4 className="blog-body__h4">{children}</h4>
-    ),
+    h2: ({ children }) => <h2 className="blog-body__h2">{children}</h2>,
+    h3: ({ children }) => <h3 className="blog-body__h3">{children}</h3>,
+    h4: ({ children }) => <h4 className="blog-body__h4">{children}</h4>,
     blockquote: ({ children }) => (
-      <blockquote className="pull-quote"><p>{children}</p></blockquote>
+      <blockquote className="pull-quote">
+        <p>{children}</p>
+      </blockquote>
     ),
-    normal: ({ children }) => (
-      <p className="blog-body__p">{children}</p>
-    ),
+    normal: ({ children }) => <p className="blog-body__p">{children}</p>,
   },
   marks: {
     strong: ({ children }) => <strong>{children}</strong>,
@@ -54,19 +48,17 @@ const portableTextComponents: PortableTextComponents = {
       <a
         href={value?.href}
         target={value?.href?.startsWith("http") ? "_blank" : undefined}
-        rel={value?.href?.startsWith("http") ? "noopener noreferrer" : undefined}
+        rel={
+          value?.href?.startsWith("http") ? "noopener noreferrer" : undefined
+        }
       >
         {children}
       </a>
     ),
   },
   list: {
-    bullet: ({ children }) => (
-      <ul className="blog-body__list">{children}</ul>
-    ),
-    number: ({ children }) => (
-      <ol className="blog-body__list">{children}</ol>
-    ),
+    bullet: ({ children }) => <ul className="blog-body__list">{children}</ul>,
+    number: ({ children }) => <ol className="blog-body__list">{children}</ol>,
   },
   listItem: {
     bullet: ({ children }) => <li className="blog-body__li">{children}</li>,
@@ -167,9 +159,7 @@ export default async function BlogPostPage({
 
           <h1 className="content-section__title">{post.title}</h1>
 
-          {post.excerpt && (
-            <p className="body-large">{post.excerpt}</p>
-          )}
+          {post.excerpt && <p className="body-large">{post.excerpt}</p>}
 
           {post.author && (
             <div className="blog-author">
@@ -186,9 +176,7 @@ export default async function BlogPostPage({
                   className="blog-author__img"
                 />
               )}
-              <span className="blog-author__name">
-                {post.author.name}
-              </span>
+              <span className="blog-author__name">{post.author.name}</span>
             </div>
           )}
         </header>

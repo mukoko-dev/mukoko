@@ -4,9 +4,15 @@ import { useState } from "react";
 
 const FORMSPREE_ID = "mwvnprag";
 
-export function WaitlistForm({ variant = "default" }: { variant?: "default" | "compact" }) {
+export function WaitlistForm({
+  variant = "default",
+}: {
+  variant?: "default" | "compact";
+}) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,7 +23,10 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
     try {
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({ email }),
       });
       if (!res.ok) throw new Error("submission failed");
@@ -57,9 +66,15 @@ export function WaitlistForm({ variant = "default" }: { variant?: "default" | "c
         required
         className="waitlist-input"
         disabled={status === "submitting"}
-        aria-describedby={status === "error" ? `waitlist-error-${variant}` : undefined}
+        aria-describedby={
+          status === "error" ? `waitlist-error-${variant}` : undefined
+        }
       />
-      <button type="submit" className="waitlist-button" disabled={status === "submitting"}>
+      <button
+        type="submit"
+        className="waitlist-button"
+        disabled={status === "submitting"}
+      >
         {status === "submitting" ? "Joining\u2026" : "Join the waitlist"}
       </button>
       {status === "error" && (

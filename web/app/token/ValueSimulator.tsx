@@ -78,21 +78,15 @@ export function ValueSimulator() {
           <div className="sim-pool__meta">
             Weight: 60% &middot; ~{simAge}yr cohort
           </div>
-          <div className="sim-pool__value">
-            {(poolMean / 1e9).toFixed(3)}
-          </div>
+          <div className="sim-pool__value">{(poolMean / 1e9).toFixed(3)}</div>
           <div className="sim-pool__unit">&times;10&sup9; seconds</div>
         </div>
         <div className="sim-pool">
-          <div className="sim-pool__name sim-pool__name--month">
-            Month Pool
-          </div>
+          <div className="sim-pool__name sim-pool__name--month">Month Pool</div>
           <div className="sim-pool__meta">
             Weight: 30% &middot; {months[simMonth - 1]} all years
           </div>
-          <div className="sim-pool__value">
-            {(monthMean / 1e9).toFixed(3)}
-          </div>
+          <div className="sim-pool__value">{(monthMean / 1e9).toFixed(3)}</div>
           <div className="sim-pool__unit">&times;10&sup9; seconds</div>
         </div>
         <div className="sim-pool">
@@ -100,9 +94,7 @@ export function ValueSimulator() {
           <div className="sim-pool__meta">
             Weight: 10% &middot; Cross-year, same day
           </div>
-          <div className="sim-pool__value">
-            {(dayMean / 1e9).toFixed(3)}
-          </div>
+          <div className="sim-pool__value">{(dayMean / 1e9).toFixed(3)}</div>
           <div className="sim-pool__unit">&times;10&sup9; seconds</div>
         </div>
       </div>

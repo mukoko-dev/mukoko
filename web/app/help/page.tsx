@@ -86,14 +86,13 @@ export default function HelpPage() {
                   <AccordionContent>
                     <p>
                       Yes. You can view, edit, and delete your Your Honey
-                      profile at any time. Full data sovereignty — no black boxes.
+                      profile at any time. Full data sovereignty — no black
+                      boxes.
                     </p>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="data-selling">
-                  <AccordionTrigger>
-                    Does mukoko sell my data?
-                  </AccordionTrigger>
+                  <AccordionTrigger>Does mukoko sell my data?</AccordionTrigger>
                   <AccordionContent>
                     <p>
                       Never. Your Honey runs on-device. We do not sell, trade,
@@ -109,9 +108,7 @@ export default function HelpPage() {
               <h2>Mini-Apps</h2>
               <Accordion type="multiple" className="help-accordion">
                 <AccordionItem value="apps-included">
-                  <AccordionTrigger>
-                    What apps are included?
-                  </AccordionTrigger>
+                  <AccordionTrigger>What apps are included?</AccordionTrigger>
                   <AccordionContent>
                     <p>
                       Campfire (messaging), Pulse (feed), Mukoko News, Bytes
@@ -139,9 +136,7 @@ export default function HelpPage() {
               <h2>Account &amp; Identity</h2>
               <Accordion type="multiple" className="help-accordion">
                 <AccordionItem value="digital-twin">
-                  <AccordionTrigger>
-                    What is a Digital Twin?
-                  </AccordionTrigger>
+                  <AccordionTrigger>What is a Digital Twin?</AccordionTrigger>
                   <AccordionContent>
                     <p>
                       Your Digital Twin is a soulbound token (MIT) on Polygon —
@@ -151,14 +146,12 @@ export default function HelpPage() {
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="delete-account">
-                  <AccordionTrigger>
-                    Can I delete my account?
-                  </AccordionTrigger>
+                  <AccordionTrigger>Can I delete my account?</AccordionTrigger>
                   <AccordionContent>
                     <p>
-                      Yes. You can delete your account, your Your Honey
-                      profile, and burn your Digital Twin at any time. Your data sovereignty
-                      is absolute.
+                      Yes. You can delete your account, your Your Honey profile,
+                      and burn your Digital Twin at any time. Your data
+                      sovereignty is absolute.
                     </p>
                   </AccordionContent>
                 </AccordionItem>
@@ -195,9 +188,7 @@ export default function HelpPage() {
               <h2>Community &amp; Safety</h2>
               <Accordion type="multiple" className="help-accordion">
                 <AccordionItem value="moderation">
-                  <AccordionTrigger>
-                    How is content moderated?
-                  </AccordionTrigger>
+                  <AccordionTrigger>How is content moderated?</AccordionTrigger>
                   <AccordionContent>
                     <p>
                       Using Ubuntu principles — restorative justice before

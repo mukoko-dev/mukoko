@@ -2,7 +2,9 @@
  * Returns `true` when `window.MukokoBridge` is defined.
  */
 export function isBridgeAvailable(): boolean {
-  return typeof window !== "undefined" && typeof window.MukokoBridge !== "undefined";
+  return (
+    typeof window !== "undefined" && typeof window.MukokoBridge !== "undefined"
+  );
 }
 
 /**
@@ -20,12 +22,18 @@ export function isInWebView(): boolean {
   if (window.MukokoBridge) return true;
 
   // UA sniffing as a secondary signal.
-  if (typeof navigator !== "undefined" && /MukokoApp/i.test(navigator.userAgent)) {
+  if (
+    typeof navigator !== "undefined" &&
+    /MukokoApp/i.test(navigator.userAgent)
+  ) {
     return true;
   }
 
   // Flutter InAppWebView typically exposes this handler.
-  if (typeof (window as unknown as Record<string, unknown>).flutter_inappwebview !== "undefined") {
+  if (
+    typeof (window as unknown as Record<string, unknown>)
+      .flutter_inappwebview !== "undefined"
+  ) {
     return true;
   }
 
@@ -62,7 +70,11 @@ export function waitForBridge(timeout = 5_000): Promise<void> {
       elapsed += pollInterval;
       if (elapsed >= timeout) {
         clearInterval(timer);
-        reject(new Error(`MukokoBridge did not become available within ${timeout} ms`));
+        reject(
+          new Error(
+            `MukokoBridge did not become available within ${timeout} ms`,
+          ),
+        );
       }
     }, pollInterval);
   });

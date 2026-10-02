@@ -16,7 +16,10 @@ export default [
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports" },
+      ],
       "no-console": ["error", { allow: ["warn", "error"] }],
     },
   },

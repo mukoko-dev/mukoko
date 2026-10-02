@@ -27,7 +27,9 @@ export function Header() {
         {/* Left: Logo */}
         <Link href="/" className="header__logo">
           <div className="header__icon">m</div>
-          <span className={`header__wordmark ${isScrolled ? "header__wordmark--hidden" : ""}`}>
+          <span
+            className={`header__wordmark ${isScrolled ? "header__wordmark--hidden" : ""}`}
+          >
             mukoko
           </span>
         </Link>
@@ -35,7 +37,11 @@ export function Header() {
         {/* Center: Nav links (hidden on mobile) */}
         <nav className="header__nav">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="header__link header__link--btn">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="header__link header__link--btn"
+            >
               {link.label}
             </Link>
           ))}
