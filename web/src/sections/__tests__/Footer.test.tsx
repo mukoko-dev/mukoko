@@ -33,7 +33,9 @@ describe("Footer", () => {
 
   it("renders the tagline", () => {
     render(<Footer />);
-    expect(screen.getByText(/Your Honey\. Your Identity\. Your Sovereignty\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your Honey\. Your Identity\. Your Sovereignty\./),
+    ).toBeInTheDocument();
   });
 
   it("renders new product names", () => {

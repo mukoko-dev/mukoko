@@ -12,7 +12,7 @@ This guide covers creating the super app frontend. The standalone PWA and backen
 cp -r mini-apps/_template mini-apps/your-app-name
 ```
 
-2. Update `package.json`:
+1. Update `package.json`:
 
 ```json
 {
@@ -21,7 +21,7 @@ cp -r mini-apps/_template mini-apps/your-app-name
 }
 ```
 
-3. Install and run:
+1. Install and run:
 
 ```bash
 pnpm install

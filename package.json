@@ -10,13 +10,17 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "vp lint",
+    "lint:turbo": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
     "clean": "turbo run clean && rm -rf node_modules",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check": "vp check",
+    "fmt": "vp fmt",
+    "ci:prepare": "turbo run build --filter=@mukoko/types"
   },
   "devDependencies": {
     "@mukoko/eslint-config": "workspace:*",
@@ -30,10 +34,10 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --max-warnings 0",
-      "prettier --check"
+      "vp fmt --check"
     ],
     "*.{json,md,css}": [
-      "prettier --check"
+      "vp fmt --check"
     ]
   },
   "pnpm": {

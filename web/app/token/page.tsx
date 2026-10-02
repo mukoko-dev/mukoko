@@ -188,10 +188,10 @@ export default function TokenPage() {
                 <p className="token-card__desc">
                   MXT is the currency you use every day — paying for event
                   tickets, renting equipment, rewarding novel authors, splitting
-                  a bill in chat. Its floor value is mathematically guaranteed by
-                  the MIT pool system and can never fall below that floor. The
-                  supply grows with the economy, like any functioning currency
-                  should.
+                  a bill in chat. Its floor value is mathematically guaranteed
+                  by the MIT pool system and can never fall below that floor.
+                  The supply grows with the economy, like any functioning
+                  currency should.
                 </p>
               </div>
             </div>
@@ -302,17 +302,15 @@ export default function TokenPage() {
                   Accra, a meal in Lagos, a chapter from your favourite author.
                 </p>
                 <p className="body-text">
-                  At continental scale — 1 billion users, trillions of dollars in
-                  transactions — a fixed supply would strangle the
+                  At continental scale — 1 billion users, trillions of dollars
+                  in transactions — a fixed supply would strangle the
                   platform&apos;s own success. So MXT&apos;s supply grows with
                   the economy, governed by mathematics, not by institutions.
                 </p>
 
                 <div className="supply-params">
                   <div className="supply-param">
-                    <span className="supply-param__key">
-                      Baseline emission
-                    </span>
+                    <span className="supply-param__key">Baseline emission</span>
                     <span className="supply-param__val">
                       10,000 MXT per new verified user
                     </span>
@@ -461,11 +459,11 @@ export default function TokenPage() {
             </div>
 
             <p className="body-text">
-              This separation is philosophically essential. Using token dominance
-              to protect founder control would mean concentrating economic wealth
-              at the top while claiming to build a community platform — a direct
-              contradiction of Ubuntu. The Reserved Powers structure separates
-              the question cleanly:{" "}
+              This separation is philosophically essential. Using token
+              dominance to protect founder control would mean concentrating
+              economic wealth at the top while claiming to build a community
+              platform — a direct contradiction of Ubuntu. The Reserved Powers
+              structure separates the question cleanly:{" "}
               <strong>
                 genuine community economic participation alongside genuine
                 constitutional founder protection

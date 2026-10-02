@@ -20,11 +20,13 @@ export function Problem() {
   return (
     <section className="section" id="problem">
       <div className="section__inner text-center">
-        <h2 className="section__title">47 passwords. 12 apps. Zero ownership.</h2>
+        <h2 className="section__title">
+          47 passwords. 12 apps. Zero ownership.
+        </h2>
         <p className="section__subtitle text-muted mt-2">
-          You live on platforms that don&rsquo;t know you, sell your attention, and lock you in.
-          Your identity is fragmented. Your data is someone else&rsquo;s product. Your community has
-          no voice.
+          You live on platforms that don&rsquo;t know you, sell your attention,
+          and lock you in. Your identity is fragmented. Your data is someone
+          else&rsquo;s product. Your community has no voice.
         </p>
         <div className="problem-cards mt-4">
           {problems.map((item) => (
