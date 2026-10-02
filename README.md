@@ -191,12 +191,13 @@ See [CLAUDE.md](./CLAUDE.md) for the complete developer guide and [ARCHITECTURE.
 
 ## Documentation
 
-| Document                             | Purpose                                                         |
-| ------------------------------------ | --------------------------------------------------------------- |
-| [CLAUDE.md](./CLAUDE.md)             | How we build — coding standards, patterns, tooling              |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Full technical specification (~50KB)                            |
-| [docs/adr/](./docs/adr/)             | Architecture Decision Records (001-009)                         |
-| [docs/guides/](./docs/guides/)       | Developer guides (getting started, creating mini-apps/services) |
+| Document                                                             | Purpose                                                                  |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [CLAUDE.md](./CLAUDE.md)                                             | How we build — coding standards, patterns, tooling                       |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                                 | Full technical specification (~50KB)                                     |
+| [Architecture v5.0](./docs/architecture/MUKOKO_ARCHITECTURE_v5.0.md) | Platform architecture v5.0 — the two APIs, data layers, live vs designed |
+| [docs/adr/](./docs/adr/)                                             | Architecture Decision Records (001-009)                                  |
+| [docs/guides/](./docs/guides/)                                       | Developer guides (getting started, creating mini-apps/services)          |
 
 ---
 
