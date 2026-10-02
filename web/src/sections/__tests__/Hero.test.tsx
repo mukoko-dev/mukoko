@@ -17,13 +17,19 @@ describe("Hero", () => {
 
   it("renders the description", () => {
     render(<Hero />);
-    expect(screen.getByText(/15 mini-apps, one identity, built on community/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/15 mini-apps, one identity, built on community/),
+    ).toBeInTheDocument();
   });
 
   it("renders the waitlist form", () => {
     render(<Hero />);
-    expect(screen.getByPlaceholderText("Your email address")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Join the waitlist/ })).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Your email address"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Join the waitlist/ }),
+    ).toBeInTheDocument();
   });
 
   it("renders the subheading", () => {

@@ -10,9 +10,9 @@ export function Hero() {
         </h1>
         <p className="hero__subheading">I am because we are</p>
         <p className="hero__description">
-          15 mini-apps, one identity, built on community. A digital twin social ecosystem for Africa
-          — where your data stays yours, your identity is sovereign, and the algorithm works for
-          you.
+          15 mini-apps, one identity, built on community. A digital twin social
+          ecosystem for Africa — where your data stays yours, your identity is
+          sovereign, and the algorithm works for you.
         </p>
         <WaitlistForm />
         <p className="hero__note text-muted">Early access coming soon.</p>

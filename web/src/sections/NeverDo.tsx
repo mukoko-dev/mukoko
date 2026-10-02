@@ -13,7 +13,10 @@ export function NeverDo() {
       <div className="section__inner text-center">
         <h2 className="section__title">What we will never do.</h2>
 
-        <div className="ubuntu-questions" style={{ maxWidth: 640, marginInline: "auto" }}>
+        <div
+          className="ubuntu-questions"
+          style={{ maxWidth: 640, marginInline: "auto" }}
+        >
           {commitments.map((item, i) => (
             <div className="ubuntu-question" key={i}>
               <span className="ubuntu-question__num">0{i + 1}</span>

@@ -17,7 +17,11 @@ app.use("*", cors());
 
 // Health check
 app.get("/health", (c) => {
-  return c.json({ status: "ok", service: "miniapp-registry", timestamp: new Date().toISOString() });
+  return c.json({
+    status: "ok",
+    service: "miniapp-registry",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Manifests
