@@ -51,7 +51,8 @@ export default [
         },
         {
           name: "Buffer",
-          message: "Buffer is not available in Cloudflare Workers. Use Uint8Array instead.",
+          message:
+            "Buffer is not available in Cloudflare Workers. Use Uint8Array instead.",
         },
       ],
     },

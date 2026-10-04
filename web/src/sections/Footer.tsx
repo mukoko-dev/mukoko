@@ -32,7 +32,11 @@ const columns = [
       { label: "Privacy Policy", href: "/legal/privacy", internal: true },
       { label: "Terms", href: "/legal/terms", internal: true },
       { label: "Cookie Policy", href: "/legal/cookies", internal: true },
-      { label: "Community Guidelines", href: "/legal/community-guidelines", internal: true },
+      {
+        label: "Community Guidelines",
+        href: "/legal/community-guidelines",
+        internal: true,
+      },
       { label: "Security", href: "mailto:security@nyuchi.com" },
     ],
   },
@@ -48,7 +52,9 @@ export function Footer() {
             <Link href="/" className="footer__logo-btn">
               <span className="footer__wordmark">mukoko</span>
             </Link>
-            <p className="footer__tagline">Your Honey. Your Identity. Your Sovereignty.</p>
+            <p className="footer__tagline">
+              Your Honey. Your Identity. Your Sovereignty.
+            </p>
           </div>
 
           {/* Link columns */}
@@ -74,8 +80,12 @@ export function Footer() {
 
         <div className="footer__bottom">
           <p className="text-muted">Built with Ubuntu &middot; Zimbabwe</p>
-          <p className="text-muted">&copy; 2026 Nyuchi Africa. All rights reserved.</p>
-          <p className="footer__motto text-muted">Ndiri nekuti tiri — I am because we are.</p>
+          <p className="text-muted">
+            &copy; 2026 Nyuchi Africa. All rights reserved.
+          </p>
+          <p className="footer__motto text-muted">
+            Ndiri nekuti tiri — I am because we are.
+          </p>
         </div>
       </div>
     </footer>

@@ -146,10 +146,6 @@ Each ecosystem app (Campfire, Pulse, Mukoko News, Circles, Nhimbe, Novels, etc.)
 - `USER_STORAGE` — Session cache, user preferences
 - `NEWS_STORAGE` — RSS feed cache, article summaries
 
-### Cloudflare D1 (Edge-Local Reads)
-
-- `mukoko_users` — Edge-local user lookups for fast auth verification
-
 ### Cloudflare R2 (Object Storage)
 
 - Media uploads, mini-app bundles, brand assets
@@ -232,7 +228,7 @@ Honey Engine (on-device)          Mukoko ID (cloud)
 | Worker                 | Purpose                                                               |
 | ---------------------- | --------------------------------------------------------------------- |
 | `mukoko-news-backend`  | Mukoko News feed + Bytes (app.mukoko.com) — owned by mukoko-news repo |
-| `mukoko-id-api`        | Authentication, profiles — Mukoko ID                                  |
+| `mukoko-id-api`        | Authentication, profiles — Mukoko ID (owned by mukoko-auth repo)      |
 | `mukoko-nhimbe-api`    | Events (canonical — owned by nhimbe repo)                             |
 | `mukoko-events-api`    | Events (legacy duplicate — consolidate into nhimbe)                   |
 | `nyuchi_api`           | Core Nyuchi platform                                                  |
@@ -250,7 +246,7 @@ Each ecosystem app has its own standalone repository containing its backend and 
 | `mukoko-news`     | Mukoko News + Bytes backend + standalone PWA | `mini-apps/news/`                |
 | `nhimbe`          | Nhimbe (events) backend + standalone PWA     | `mini-apps/nhimbe/`              |
 | `mukoko-weather`  | Weather backend + standalone PWA             | `mini-apps/weather/`             |
-| `mukoko-auth`     | Auth backend (Stytch)                        | `services/id-api/`               |
+| `mukoko-auth`     | Auth backend (Stytch)                        | —                                |
 | `mukoko-connect`  | Circles backend + standalone PWA             | `mini-apps/circles/`             |
 | `mukoko-novels`   | Novels backend + standalone PWA              | `mini-apps/novels/`              |
 | `mukoko-campfire` | Campfire backend + standalone PWA            | `mini-apps/campfire/`            |
@@ -302,7 +298,6 @@ mukoko/
 │
 ├── services/                      # Cloudflare Workers (super app infrastructure only)
 │   ├── gateway/                   # API gateway — routing + Stytch session verification
-│   ├── id-api/                    # Mukoko ID (Stytch auth)
 │   ├── wallet-api/                # Payments + MUKOKO tokens
 │   ├── shamwari-api/              # AI companion (Cloudflare AI)
 │   ├── miniapp-registry/          # Mini-app manifest + R2 assets
@@ -532,7 +527,7 @@ The gateway worker routes all API traffic and verifies Stytch sessions:
 
 | Route Path    | Upstream Service           |
 | ------------- | -------------------------- |
-| `/auth/*`     | `id-api`                   |
+| `/auth/*`     | Not wired (stub)           |
 | `/news/*`     | External (mukoko-news)     |
 | `/nhimbe/*`   | External (nhimbe)          |
 | `/pulse/*`    | Pulse API                  |
@@ -831,6 +826,18 @@ Reserved Powers cannot allocate tokens, direct treasury spending, or benefit the
 | ADRs              | `docs/adr/001-009`                       |
 | Dev guides        | `docs/guides/`                           |
 | CI                | GitHub Actions (`ci.yml`)                |
+
+---
+
+## Track big work in GitHub issues
+
+Any substantial build, migration, investigation or multi-step task gets a GitHub issue in the repo that owns it — before or as work starts — so another session, agent or person can pick it up.
+
+- The issue holds the goal, the owner's decisions (verbatim where given), the plan, acceptance criteria, owner-only steps and links.
+- Every PR references its issue (`Refs #n`; `Fixes #n` only when the merge completes it).
+- Post progress, decisions and a hand-off note (what's done, what's left, branch names) as issue comments — at each merge and before a session or agent finishes.
+- Work spanning repos gets a tracking issue that links the per-repo issues.
+- Never put secrets, credential status or exploitable detail in issues on public repos.
 
 ---
 

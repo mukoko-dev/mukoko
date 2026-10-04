@@ -2,13 +2,13 @@
 
 ## Digital Twin Social Ecosystem — Super App Architecture & Technical Specification
 
-**Version 2.0 | February 2026**
+> **Version 2.0 | February 2026**
 
 🟩🟨🟥⬛
 
-_A Product of The Bundu Family — Built by Nyuchi Africa_
-
-_Ndiri nekuti tiri — I am because we are_
+> _A Product of The Bundu Family — Built by Nyuchi Africa_
+>
+> _Ndiri nekuti tiri — I am because we are_
 
 **Your Honey. Your Identity. Your Sovereignty.**
 
@@ -505,20 +505,19 @@ The backend leverages existing Cloudflare Workers infrastructure already deploye
 | `nyuchi-africa-dispatcher-staging` | Dispatcher staging                       | —                   | Staging    |
 | `raspy-fog-4352-nlweb`             | NLWeb                                    | —                   | Production |
 
-**Total: 15 workers deployed**
+**Total: 15 workers deployed.**
 
 ### 8.2 Data Layer
 
-| Service              | Usage                                       | Key Resources                                                                                      |
-| -------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **MongoDB Atlas**    | Primary database — all application data     | `users`, `articles`, `events`, `novels`, `circles`, `pulse_posts`, `transactions`, `notifications` |
-| **Stytch**           | Authentication — sessions, OAuth, MFA, SSO  | Mukoko ID SSO across all Nyuchi products                                                           |
-| **Cloudflare D1**    | Edge-local reads for fast auth verification | `mukoko_users`                                                                                     |
-| **Cloudflare KV**    | Config, cache, sessions, news storage       | 4 namespaces: `CONFIG_STORAGE`, `CACHE_STORAGE`, `USER_STORAGE`, `NEWS_STORAGE`                    |
-| **Durable Objects**  | Real-time chat, user presence               | `ChatRoom`, `UserSession`                                                                          |
-| **Analytics Engine** | Interaction tracking                        | 3 datasets: `category_clicks`, `news_interactions`, `search_queries`                               |
-| **R2 Storage**       | Media, mini-app bundles, brand assets       | Brand assets bucket                                                                                |
-| **Nuchi Honey**      | Personalization AI (isolated)               | `honey.nyuchi.com` (Docker/FastAPI)                                                                |
+| Service              | Usage                                      | Key Resources                                                                                      |
+| -------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **MongoDB Atlas**    | Primary database — all application data    | `users`, `articles`, `events`, `novels`, `circles`, `pulse_posts`, `transactions`, `notifications` |
+| **Stytch**           | Authentication — sessions, OAuth, MFA, SSO | Mukoko ID SSO across all Nyuchi products                                                           |
+| **Cloudflare KV**    | Config, cache, sessions, news storage      | 4 namespaces: `CONFIG_STORAGE`, `CACHE_STORAGE`, `USER_STORAGE`, `NEWS_STORAGE`                    |
+| **Durable Objects**  | Real-time chat, user presence              | `ChatRoom`, `UserSession`                                                                          |
+| **Analytics Engine** | Interaction tracking                       | 3 datasets: `category_clicks`, `news_interactions`, `search_queries`                               |
+| **R2 Storage**       | Media, mini-app bundles, brand assets      | Brand assets bucket                                                                                |
+| **Nuchi Honey**      | Personalization AI (isolated)              | `honey.nyuchi.com` (Docker/FastAPI)                                                                |
 
 ### 8.3 Auth — Stytch
 
@@ -738,7 +737,6 @@ mukoko/
 │
 ├── services/                      # Cloudflare Workers — super app infrastructure only
 │   ├── gateway/                   # API gateway + Stytch session verification
-│   ├── id-api/                    # Mukoko ID (Stytch auth + Memory File storage)
 │   ├── wallet-api/                # Payments + MUKOKO tokens
 │   ├── shamwari-api/              # AI companion (reads Memory File)
 │   ├── miniapp-registry/          # Mini-app manifest + R2 assets
@@ -970,4 +968,4 @@ If the answer to any is "no," reconsider.
 **The identity belongs TO you.**
 **The community strengthens WITH you.**
 
-_Ndiri nekuti tiri — Built by Nyuchi Africa_
+> _Ndiri nekuti tiri — Built by Nyuchi Africa_
