@@ -20,7 +20,7 @@
 
 Mukoko is a Digital Twin Social Ecosystem for Africa and the global African diaspora, delivered as a WeChat-style super app on Android, iOS, and Huawei devices. It is the flagship product of The Bundu Family, built by Nyuchi Africa.
 
-The platform consists of 15 interconnected mini-apps — including Campfire, Pulse, Mukoko News, Bytes, Circles, Nhimbe, Novels, BushTrade, Mukoko Lingo, and more — all powered by "Your Honey," a privacy-first personalization engine that works FOR users, not against them. Your Honey runs on-device AI, meaning user behavior data never leaves the device. This is the core product: personalization that empowers rather than manipulates.
+The platform consists of 15 interconnected mini-apps — including Campfire, Pulse, Mukoko News, Bytes, Circles, Mukoko Events, Novels, BushTrade, Mukoko Lingo, and more — all powered by "Your Honey," a privacy-first personalization engine that works FOR users, not against them. Your Honey runs on-device AI, meaning user behavior data never leaves the device. This is the core product: personalization that empowers rather than manipulates.
 
 The application uses a hybrid architecture: a Flutter native shell provides the core platform services (authentication, wallet, Shamwari AI, notifications, device APIs), while the 15 ecosystem mini-apps run as optimized WebView mini-apps, enabling rapid development and independent deployment. Each app can also operate as a standalone PWA.
 
@@ -86,8 +86,8 @@ Your Honey is the single most important component of Mukoko. It is a personaliza
 ### 3.1 How Your Honey Works
 
 1. **You Choose Interests Explicitly** — 32 categories with granular keywords (e.g., "African tech startups" within Technology)
-2. **Your Digital Twin Learns On-Device** — As you engage across Mukoko News, Pulse, Circles, Novels, Nhimbe, your preferences evolve. All processing stays on YOUR device, never sent to servers.
-3. **Content Surfaces Across All Components** — Mukoko News shows news you care about, Pulse surfaces creators you'll love, Circles suggests matching communities, Novels recommends stories, Nhimbe highlights relevant gatherings.
+2. **Your Digital Twin Learns On-Device** — As you engage across Mukoko News, Pulse, Circles, Novels, Mukoko Events, your preferences evolve. All processing stays on YOUR device, never sent to servers.
+3. **Content Surfaces Across All Components** — Mukoko News shows news you care about, Pulse surfaces creators you'll love, Circles suggests matching communities, Novels recommends stories, Mukoko Events highlights relevant gatherings.
 4. **Preferences Evolve As You Grow** — Your Digital Twin captures personality evolution. Interests deepen, shift, and new passions emerge naturally.
 5. **Privacy Preserved Always** — On-device AI means no data sent to servers, no surveillance, no selling preferences, no manipulation.
 
@@ -143,7 +143,7 @@ Mukoko consists of 15 interconnected mini-apps, all sharing one Digital Twin, on
 | Mukoko News   | `news.mukoko.com`      | Context-rich news from trusted sources       | Core           |
 | Bytes         | `bytes.mukoko.com`     | Short-form video scrolling                   | Core           |
 | Circles       | `circles.mukoko.com`   | Interest-based communities                   | Core           |
-| Nhimbe        | `nhimbe.mukoko.com`    | Cultural gatherings, ticketing               | Core           |
+| Mukoko Events | `events.mukoko.com`    | Cultural gatherings, ticketing               | Core           |
 | Novels        | `novels.mukoko.com`    | African author platform, web novels          | Core           |
 | BushTrade     | `trade.mukoko.com`     | Peer-to-peer marketplace                     | Core           |
 | Mukoko Lingo  | `lingo.mukoko.com`     | Language learning                            | Core           |
@@ -168,7 +168,7 @@ Mukoko News is the evolution of Harare Metro. It provides context-rich news from
 
 Pulse is the super app's aggregated feed — a monorepo-native feature that pulls content from ALL ecosystem apps into a single, personalized stream. It exists only within the super app, powered by **Your Honey**.
 
-- Aggregates content from Mukoko News, Circles, Novels, Nhimbe, and creator content
+- Aggregates content from Mukoko News, Circles, Novels, Mukoko Events, and creator content
 - Personalized by **Your Honey** (on-device learning + Mukoko ID cloud profile)
 - Combines TikTok-style vertical scrolling with Instagram-style discovery
 - MUKOKO token rewards for quality content creation
@@ -194,9 +194,9 @@ Web novel platform supporting African authors. Authors keep 80%+ of revenue. You
 - MUKOKO token payments for premium chapters
 - Genre categorization aligned with Your Honey interest categories
 
-### 4.5 Nhimbe — Community Gatherings
+### 4.5 Mukoko Events — Community Gatherings
 
-Cultural celebrations, meetups, and community events. Evolves from the existing Nhimbe Events platform. Digital connection should enhance physical community, not replace it. Integrates with Mukoko Wallet for ticket purchasing.
+Cultural celebrations, meetups, and community events. Evolves from the existing Mukoko Events platform (events.mukoko.com, formerly branded Nhimbe). Digital connection should enhance physical community, not replace it. Integrates with Mukoko Wallet for ticket purchasing.
 
 - Migrates from existing `mukoko-nhimbe-api` Cloudflare Worker
 - Event discovery powered by Your Honey (location + interests)
@@ -731,7 +731,7 @@ mukoko/
 │   ├── pulse/                     # Pulse — personalized aggregated feed (monorepo-native)
 │   ├── connect/                   # Connect — Circles (backend in mukoko-connect repo)
 │   ├── novels/                    # Novels — author platform (backend in mukoko-novels repo)
-│   ├── events/                    # Events — gatherings (backend in nhimbe repo)
+│   ├── events/                    # Mukoko Events — gatherings (backend in nhimbe repo)
 │   ├── weather/                   # Weather — utility (backend in mukoko-weather repo)
 │   └── _template/                 # Starter template for new mini-apps
 │
@@ -841,7 +841,7 @@ All UI uses the Five African Minerals palette. Mukoko Platform: Tanzanite primar
 ### Phase 2: Core Ecosystem (Weeks 9–18)
 
 - Clips mini-app: migrate Harare Metro/Mukoko News to Preact, integrate Your Honey
-- Events mini-app: migrate Nhimbe, add ticket purchasing flow
+- Events mini-app: migrate Mukoko Events, add ticket purchasing flow
 - Pulse mini-app: short-form content, creator profiles, trending
 - Connect mini-app: Circles, interest communities, discussions
 - Shamwari AI: onboarding flow, basic conversational assistance

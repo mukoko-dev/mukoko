@@ -17,7 +17,7 @@ Mukoko uses MongoDB Atlas as its primary database, chosen for its flexible docum
 | `miniApps`      | Mini-app registry and metadata          |
 | `transactions`  | Wallet and payment records              |
 | `content`       | User-generated content (clips, posts)   |
-| `events`        | Nhimbe event listings                   |
+| `events`        | Mukoko Events listings                  |
 
 ## Connection
 

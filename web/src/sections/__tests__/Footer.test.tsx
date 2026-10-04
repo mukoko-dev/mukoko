@@ -42,7 +42,7 @@ describe("Footer", () => {
     render(<Footer />);
     expect(screen.getByText("Campfire")).toBeInTheDocument();
     expect(screen.getByText("Circles")).toBeInTheDocument();
-    expect(screen.getByText("Nhimbe")).toBeInTheDocument();
+    expect(screen.getByText("Mukoko Events")).toBeInTheDocument();
     expect(screen.getByText("Mukoko News")).toBeInTheDocument();
   });
 });
