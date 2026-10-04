@@ -45,7 +45,7 @@ BUNDU (Container)     — The wilderness. Parent brand. SEPARATE APP.
 | **Mukoko News**   | `news.mukoko.com`      | Context-rich news from trusted sources       | Core           | `mukoko-news`      |
 | **Bytes**         | `bytes.mukoko.com`     | Short-form video scrolling                   | Core           | `mukoko-news`      |
 | **Circles**       | `circles.mukoko.com`   | Interest-based communities                   | Core           | `mukoko-connect`   |
-| **Nhimbe**        | `nhimbe.mukoko.com`    | Cultural gatherings, ticketing               | Core           | `nhimbe`           |
+| **Mukoko Events** | `events.mukoko.com`    | Cultural gatherings, ticketing               | Core           | `nhimbe`           |
 | **Novels**        | `novels.mukoko.com`    | African author platform, web novels          | Core           | `mukoko-novels`    |
 | **BushTrade**     | `trade.mukoko.com`     | Peer-to-peer marketplace                     | Core           | `mukoko-bushtrade` |
 | **Mukoko Lingo**  | `lingo.mukoko.com`     | Language learning                            | Core           | `mukoko-lingo`     |
@@ -58,7 +58,7 @@ BUNDU (Container)     — The wilderness. Parent brand. SEPARATE APP.
 
 **Campfire** is the platform anchor — messaging + payments in one place. Think WeChat's core chat experience.
 
-**Pulse** is the super app's unified feed. It aggregates content from Mukoko News, Nhimbe, Circles, Novels, and more — personalized by **Your Honey** (see below). Pulse lives in this monorepo, not in a standalone repo.
+**Pulse** is the super app's unified feed. It aggregates content from Mukoko News, Mukoko Events, Circles, Novels, and more — personalized by **Your Honey** (see below). Pulse lives in this monorepo, not in a standalone repo.
 
 **Mukoko News** (`mukoko-news` repo) is the news/articles app. **Bytes** (TikTok-style short-form scrolling) is also in the standalone version.
 
@@ -105,7 +105,7 @@ Containers = heavy compute (AI inference, media processing, blockchain)
 
 ### Mini-App Architecture — Two Frontends, One Backend
 
-Each ecosystem app (Campfire, Pulse, Mukoko News, Circles, Nhimbe, Novels, etc.) exists as **two frontends** sharing a single backend:
+Each ecosystem app (Campfire, Pulse, Mukoko News, Circles, Mukoko Events, Novels, etc.) exists as **two frontends** sharing a single backend:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -244,7 +244,7 @@ Each ecosystem app has its own standalone repository containing its backend and 
 | Standalone Repo   | Owns                                         | Super App Frontend In            |
 | ----------------- | -------------------------------------------- | -------------------------------- |
 | `mukoko-news`     | Mukoko News + Bytes backend + standalone PWA | `mini-apps/news/`                |
-| `nhimbe`          | Nhimbe (events) backend + standalone PWA     | `mini-apps/nhimbe/`              |
+| `nhimbe`          | Mukoko Events backend + standalone PWA       | `mini-apps/events/`              |
 | `mukoko-weather`  | Weather backend + standalone PWA             | `mini-apps/weather/`             |
 | `mukoko-auth`     | Auth backend (Stytch)                        | —                                |
 | `mukoko-connect`  | Circles backend + standalone PWA             | `mini-apps/circles/`             |
@@ -288,7 +288,7 @@ mukoko/
 │   ├── news/                      # Mukoko News — super app UI (backend in mukoko-news repo)
 │   ├── bytes/                     # Short-form video (backend in mukoko-news repo)
 │   ├── circles/                   # Communities — super app UI (backend in mukoko-connect repo)
-│   ├── nhimbe/                    # Events — super app UI (backend in nhimbe repo)
+│   ├── events/                    # Mukoko Events — super app UI (backend in nhimbe repo)
 │   ├── novels/                    # Author platform — super app UI (backend in mukoko-novels repo)
 │   ├── bushtrade/                 # Marketplace — super app UI (backend in mukoko-bushtrade repo)
 │   ├── lingo/                     # Language learning — super app UI (backend in mukoko-lingo repo)

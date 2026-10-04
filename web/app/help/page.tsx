@@ -112,7 +112,7 @@ export default function HelpPage() {
                   <AccordionContent>
                     <p>
                       Campfire (messaging), Pulse (feed), Mukoko News, Bytes
-                      (short video), Circles (communities), Nhimbe (events),
+                      (short video), Circles (communities), Mukoko Events,
                       Novels, BushTrade (marketplace), Mukoko Lingo (language),
                       Weather, Transport, and more.
                     </p>

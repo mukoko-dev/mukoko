@@ -162,7 +162,7 @@ export default function ManifestoPage() {
                 communities
               </span>
               <span>
-                ├─ <span className="ct-name">Nhimbe</span> — cultural
+                ├─ <span className="ct-name">Mukoko Events</span> — cultural
                 gatherings, ticketing
               </span>
               <span>
@@ -202,9 +202,9 @@ export default function ManifestoPage() {
 
             <p className="body-text">
               Your interests in Mukoko News inform your Pulse feed. Your Pulse
-              feed surfaces Nhimbe events near you. Your attendance builds your
-              reputation in Circles. Your reputation earns MUKOKO tokens. This
-              is <strong>compound community value</strong>.
+              feed surfaces Mukoko Events gatherings near you. Your attendance
+              builds your reputation in Circles. Your reputation earns MUKOKO
+              tokens. This is <strong>compound community value</strong>.
             </p>
           </section>
 

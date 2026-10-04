@@ -8,7 +8,7 @@ const columns = [
       { label: "Pulse", href: "/#apps" },
       { label: "Bytes", href: "https://bytes.mukoko.com" },
       { label: "Circles", href: "https://circles.mukoko.com" },
-      { label: "Nhimbe", href: "https://nhimbe.mukoko.com" },
+      { label: "Mukoko Events", href: "https://events.mukoko.com" },
       { label: "BushTrade", href: "https://trade.mukoko.com" },
       { label: "Mukoko Lingo", href: "https://lingo.mukoko.com" },
       { label: "Mukoko News", href: "https://news.mukoko.com" },
