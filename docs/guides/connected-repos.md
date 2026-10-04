@@ -26,7 +26,7 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 | Standalone Repo   | Owns                        | Standalone PWA        | Super App Frontend               |
 | ----------------- | --------------------------- | --------------------- | -------------------------------- |
 | `mukoko-news`     | Mukoko News + Bytes backend | `news.mukoko.com`     | `mini-apps/news/`                |
-| `nhimbe`          | Nhimbe (events) backend     | `nhimbe.mukoko.com`   | `mini-apps/nhimbe/`              |
+| `nhimbe`          | Mukoko Events backend       | `events.mukoko.com`   | `mini-apps/events/`              |
 | `mukoko-weather`  | Weather backend             | `weather.mukoko.com`  | `mini-apps/weather/`             |
 | `mukoko-connect`  | Circles backend             | `circles.mukoko.com`  | `mini-apps/circles/`             |
 | `mukoko-novels`   | Novels backend              | `novels.mukoko.com`   | `mini-apps/novels/`              |
@@ -76,7 +76,7 @@ Both frontends call the **same backend API** — the standalone repo owns the ba
 | ---------------------- | ----------------------------- | ----------------------------------------- |
 | Standalone repos       | `mukoko-{name}` or brand name | `mukoko-news`, `nhimbe`, `mukoko-connect` |
 | Super app frontends    | `mini-apps/{name}/`           | `mini-apps/news/`, `mini-apps/campfire/`  |
-| Standalone PWA domains | `{name}.mukoko.com`           | `news.mukoko.com`, `nhimbe.mukoko.com`    |
+| Standalone PWA domains | `{name}.mukoko.com`           | `news.mukoko.com`, `events.mukoko.com`    |
 
 ## Rules
 

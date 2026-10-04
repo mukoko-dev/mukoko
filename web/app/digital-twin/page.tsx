@@ -41,7 +41,7 @@ const twinStages = [
   {
     step: "04",
     title: "Your twin becomes you",
-    desc: "Your digital twin carries your interests across every mini-app simultaneously. The same you that loves Afrobeats in Mukoko News also gets Afrobeats event recommendations in Nhimbe, Afrobeats articles in Pulse, and Afrobeats creators to follow in Circles. One identity. One twin. Everywhere.",
+    desc: "Your digital twin carries your interests across every mini-app simultaneously. The same you that loves Afrobeats in Mukoko News also gets Afrobeats event recommendations in Mukoko Events, Afrobeats articles in Pulse, and Afrobeats creators to follow in Circles. One identity. One twin. Everywhere.",
     icon: "\u2728",
     color: "var(--color-gold)",
   },

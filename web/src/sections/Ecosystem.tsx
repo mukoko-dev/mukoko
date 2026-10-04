@@ -41,7 +41,7 @@ const apps = [
     colorBg: "var(--color-terracotta-container)",
   },
   {
-    name: "Nhimbe",
+    name: "Mukoko Events",
     description:
       "Cultural gatherings, concerts, meetups — discover and book what's happening near you.",
     icon: "🎉",

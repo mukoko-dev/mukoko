@@ -60,7 +60,7 @@ export default function TermsPage() {
               <ul>
                 <li>Novel authors — 85% of chapter revenue</li>
                 <li>Pulse creators — 80% of tipping revenue</li>
-                <li>Nhimbe event organisers — 90% of ticket revenue</li>
+                <li>Mukoko Events organisers — 90% of ticket revenue</li>
               </ul>
             </section>
 
