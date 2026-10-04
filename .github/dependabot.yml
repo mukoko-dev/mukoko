@@ -1,0 +1,17 @@
+# Automated dependency updates for the pnpm workspace (root "/" covers every
+# workspace package). Security updates open PRs as soon as an advisory lands;
+# version updates run weekly and are grouped to keep PR noise low.
+#
+# The npm entry was missing from main, which left Dependabot's open npm PRs
+# orphaned ("the dependabot.yml entry that created this PR has been deleted").
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
