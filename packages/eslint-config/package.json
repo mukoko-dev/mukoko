@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "^15.0.0",
-    "typescript-eslint": "^8.0.0",
+    "typescript-eslint": "^8.71.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-react-hooks": "^5.0.0"
   },
