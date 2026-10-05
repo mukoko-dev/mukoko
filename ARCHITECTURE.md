@@ -755,10 +755,6 @@ mukoko/
 │   ├── api-client/                # @mukoko/api (shared API client)
 │   └── types/                     # @mukoko/types (shared TypeScript)
 │
-├── web/                           # Marketing landing page (mukoko.com → Vercel)
-│   ├── src/                       # Preact + Vite, Formspree waitlist
-│   ├── vercel.json                # Vercel deployment config
-│   └── index.html                 # Entry with OG tags
 ├── docs/                          # Architecture, API docs, guides
 ├── .github/                       # CI/CD workflows
 └── turbo.json                     # Monorepo orchestration

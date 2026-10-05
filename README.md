@@ -29,7 +29,9 @@ the architecture decisions are real and settled. The implementations are not:
   domain, so nothing here is deployed.
 - `honey/` exposes `/health` and `/` and nothing else; its `models/`,
   `routes/` and `services/` directories are empty.
-- `web/` has been stubbed out — see [`web/MIGRATED.md`](./web/MIGRATED.md).
+- mukoko.com is not built here: it lives in
+  [`bundu-labs/marketing` `apps/mukoko`](https://github.com/bundu-labs/marketing/tree/main/apps/mukoko).
+  The retired Next.js `web/` tree and its Sanity studio were removed.
 - The Flutter shell that earlier revisions of this README described was
   removed in [#75](https://github.com/mukoko-dev/mukoko/pull/75). There is no
   `app/` directory.
@@ -98,13 +100,12 @@ attached: personalization is meant to run for the user, not on them. It is a
 Python 3.12 FastAPI service (`nuchi-honey`, version 0.1.0) with a Dockerfile
 and a `docker-compose.yml`. Today it serves a health check and a root message.
 
-### Marketing site — `web/`
+### Marketing site (mukoko.com)
 
-Stubbed. The Mukoko marketing site moved to the shared Bundu Family marketing
-monorepo, `bundu-labs/marketing`, and was rebuilt in Astro 6. The old Next.js
-tree is kept on `main` only so deploys can be rolled back, and a follow-up PR
-removes it. [`web/MIGRATED.md`](./web/MIGRATED.md) has the details. Do not
-develop here.
+Not in this repo. mukoko.com is the Astro site in
+[`bundu-labs/marketing` `apps/mukoko`](https://github.com/bundu-labs/marketing/tree/main/apps/mukoko),
+with its Sanity studio in `studio-mukoko-blog` there. The retired Next.js
+`web/` tree and `web/studio/` were removed from this repo.
 
 ---
 
@@ -117,7 +118,7 @@ develop here.
 | Workers        | Hono for anything new                | [ADR 003](./docs/adr/003-hono-for-new-workers.md)   |
 | Primary data   | MongoDB Atlas                        | [ADR 004](./docs/adr/004-mongodb-atlas-primary.md)  |
 | Authentication | Stytch                               | [ADR 005](./docs/adr/005-stytch-auth.md)            |
-| Web hosting    | Vercel                               | [ADR 006](./docs/adr/006-vercel-web-deployment.md)  |
+| Web hosting    | Vercel (superseded)                  | [ADR 006](./docs/adr/006-vercel-web-deployment.md)  |
 | Mini-app host  | Workers for Platforms                | [ADR 007](./docs/adr/007-workers-for-platforms.md)  |
 | Token economy  | Two tokens on Polygon PoS            | [ADR 008](./docs/adr/008-polygon-two-token.md)      |
 | Governance     | Foundation / operating company split | [ADR 009](./docs/adr/009-foundation-dual-entity.md) |
