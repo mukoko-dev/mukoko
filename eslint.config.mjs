@@ -8,7 +8,6 @@ export default [
       "**/dist/**",
       "**/.next/**",
       "**/out/**",
-      "web/studio/**",
       ".turbo/**",
       ".husky/**",
     ],

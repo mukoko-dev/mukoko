@@ -26,9 +26,6 @@ const config = {
     ],
   },
   lint: {
-    // web/studio is a separate Sanity project with its own lockfile, outside
-    // the pnpm workspace: its dependencies are not installed here.
-    ignorePatterns: ["web/studio/**"],
     // Without typeCheck, `vp check` is oxlint only and passes type errors.
     options: { typeAware: true, typeCheck: true },
   },
