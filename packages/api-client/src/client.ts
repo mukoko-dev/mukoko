@@ -14,6 +14,17 @@ interface RequestOptions {
 }
 
 const MAX_RETRIES = 2;
+
+/**
+ * Remove trailing slashes in linear time. A `/\/+$/` regex backtracks
+ * polynomially on inputs with many slashes not at the end (CodeQL
+ * js/polynomial-redos), so scan from the end instead.
+ */
+export function stripTrailingSlashes(url: string): string {
+  let end = url.length;
+  while (end > 0 && url.charCodeAt(end - 1) === 47) end--;
+  return url.slice(0, end);
+}
 const INITIAL_BACKOFF_MS = 500;
 
 /**
@@ -26,7 +37,7 @@ export class MukokoClient {
 
   constructor(config: ClientConfig) {
     // Strip trailing slash from baseUrl for consistent path joining
-    this.baseUrl = config.baseUrl.replace(/\/+$/, "");
+    this.baseUrl = stripTrailingSlashes(config.baseUrl);
     this.getToken = config.getToken;
   }
 
