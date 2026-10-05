@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Superseded (2026-10-05). The `web/` tree this ADR describes was removed; mukoko.com is the Astro site in [`bundu-labs/marketing` `apps/mukoko`](https://github.com/bundu-labs/marketing/tree/main/apps/mukoko).
 
 ## Context
 
