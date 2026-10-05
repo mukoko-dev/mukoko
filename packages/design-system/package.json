@@ -21,12 +21,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "preact": "^10.25.0",
-    "@mukoko/types": "workspace:*"
+    "@mukoko/types": "workspace:*",
+    "preact": "^10.29.8"
   },
   "devDependencies": {
     "@mukoko/tsconfig": "workspace:*",
-    "typescript": "^5.7.0",
-    "vitest": "^3.0.0"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
   }
 }
