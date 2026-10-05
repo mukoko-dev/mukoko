@@ -82,7 +82,7 @@ BUNDU (Container)     — The wilderness. Parent brand. SEPARATE APP.
 | **AI**               | Cloudflare AI + TFLite/CoreML on-device + FastAPI backend (honey.nyuchi.com)   |
 | **Storage**          | Cloudflare R2                                                                  |
 | **Blockchain**       | Polygon PoS (MIT soulbound + MXT ERC-20)                                       |
-| **Web Deployment**   | Vercel (landing page + mini-app PWAs)                                          |
+| **Web Deployment**   | Vercel (mini-app PWAs); mukoko.com is in bundu-labs/marketing                  |
 | **Monorepo**         | Turborepo + pnpm workspaces                                                    |
 
 ### Platforms
@@ -319,17 +319,6 @@ mukoko/
 │   ├── bridge-sdk/                # @mukoko/bridge (TypeScript)
 │   └── api-client/                # @mukoko/api
 │
-├── web/                           # Landing page (Next.js 15 + Sanity CMS, deployed to Vercel)
-│   ├── app/                       # Next.js app router (layout, pages)
-│   ├── src/
-│   │   ├── components/            # Header, HoneycombBackground, WaitlistForm, shadcn/ui
-│   │   ├── sections/              # Hero, Problem, Ecosystem, YourHoney, Ubuntu, NeverDo, FinalCTA, Footer
-│   │   └── lib/                   # Sanity client, utilities
-│   ├── studio/                    # Sanity Studio (blog CMS)
-│   │   └── schemaTypes/           # author, category, post schemas
-│   ├── public/                    # Static assets
-│   └── vercel.json                # Vercel deployment config
-│
 ├── docs/                          # Architecture docs, guides, ADRs
 │   ├── adr/                       # Architecture Decision Records
 │   │   ├── 001-monorepo-turborepo.md
@@ -388,18 +377,16 @@ Pre-commit hook runs `lint-staged` automatically on staged files. Configured via
 
 ### Key Dependency Versions
 
-| Package    | Version | Used In                     |
-| ---------- | ------- | --------------------------- |
-| turbo      | 2.4.0   | Root monorepo               |
-| typescript | 5.7.0   | All TS packages             |
-| preact     | 10.25.0 | Mini-apps                   |
-| vite       | 6.0     | Mini-apps                   |
-| hono       | 4.12.8  | New workers/services        |
-| wrangler   | 4.0.0   | Worker deployment           |
-| next       | 15      | `web/` landing page         |
-| react      | 19      | `web/` only (NOT mini-apps) |
-| eslint     | 10.0.0  | Linting                     |
-| prettier   | 3.4.0   | Formatting                  |
+| Package    | Version | Used In              |
+| ---------- | ------- | -------------------- |
+| turbo      | 2.4.0   | Root monorepo        |
+| typescript | 5.7.0   | All TS packages      |
+| preact     | 10.25.0 | Mini-apps            |
+| vite       | 6.0     | Mini-apps            |
+| hono       | 4.12.8  | New workers/services |
+| wrangler   | 4.0.0   | Worker deployment    |
+| eslint     | 10.0.0  | Linting              |
+| prettier   | 3.4.0   | Formatting           |
 
 ---
 
@@ -432,15 +419,6 @@ pnpm turbo run test --filter=@mukoko/bridge
 # Single service
 cd services/gateway && pnpm dev          # wrangler dev
 cd services/gateway && pnpm deploy       # wrangler deploy
-
-# Landing page (web/)
-cd web && pnpm dev                       # Next.js dev server
-cd web && pnpm build                     # Next.js production build
-cd web && pnpm test                      # Vitest
-
-# Sanity Studio (web/studio/)
-cd web && pnpm sanity dev                # Sanity Studio dev
-cd web && pnpm sanity deploy             # Deploy Sanity Studio
 
 # Flutter
 cd app && flutter pub get
@@ -477,7 +455,7 @@ Uses pnpm v4 action, Node 22, Turborepo cache. Concurrency group cancels in-prog
 | `packages/design-system/` | `@nyuchitech/design`   |
 | `services/`               | `@nyuchitech/backend`  |
 | `honey/`                  | `@nyuchitech/ai`       |
-| `mini-apps/` + `web/`     | `@nyuchitech/frontend` |
+| `mini-apps/`              | `@nyuchitech/frontend` |
 
 ### PR Template
 
@@ -485,39 +463,9 @@ All PRs use `.github/PULL_REQUEST_TEMPLATE.md` which includes the Ubuntu Test ch
 
 ---
 
-## LANDING PAGE — WEB (`web/`)
+## MARKETING SITE (mukoko.com)
 
-The landing page at `mukoko.com` is a **Next.js 15** app (NOT Preact — React 19 is used here only).
-
-| Component     | Technology                              |
-| ------------- | --------------------------------------- |
-| Framework     | Next.js 15, React 19                    |
-| CMS           | Sanity (next-sanity v9, Portable Text)  |
-| 3D Visuals    | Three.js (honeycomb background)         |
-| UI Components | shadcn/ui (registry.mukoko.com) + Radix |
-| Styling       | Tailwind CSS 4                          |
-| Testing       | Vitest                                  |
-| Deployment    | Vercel (`vercel.json`)                  |
-
-**Note:** React is used in `web/` because Next.js requires it. Mini-apps use Preact. Do not confuse the two.
-
-### Pages
-
-- `/` — Home (hero, problem, ecosystem, Your Honey, shamwari, Mukoko ID, ubuntu, never-do, CTA)
-- `/manifesto` — Brand manifesto
-- `/digital-twin` — Digital Twin marketing page (soulbound identity, three-pool system, data sovereignty)
-- `/token` — Token Economics marketing page (MIT + MXT, elastic supply, governance, Foundation)
-- `/help` — FAQ page (accordion sections, search)
-- `/legal/privacy` — Privacy policy
-- `/legal/terms` — Terms of service
-- `/legal/cookies` — Cookie policy
-- `/legal/community-guidelines` — Ubuntu-grounded community guidelines
-- `/blog` — Blog (Sanity CMS + ISR)
-- `/blog/[slug]` — Individual blog posts
-
-### Sanity Studio
-
-Content schemas for blog: `author`, `category`, `post`. Studio runs at `/studio` route or standalone via `pnpm sanity dev`.
+Not in this repo. mukoko.com is the Astro site in [`bundu-labs/marketing` `apps/mukoko`](https://github.com/bundu-labs/marketing/tree/main/apps/mukoko) (Sanity studio: `studio-mukoko-blog` there). The retired Next.js `web/` tree and `web/studio/` were removed from this repo; do not recreate them.
 
 ---
 
@@ -797,7 +745,7 @@ Reserved Powers cannot allocate tokens, direct treasury spending, or benefit the
 14. **DO NOT** confuse the super app frontend (`mini-apps/`) with the standalone PWA. They are separate codebases sharing the same backend API.
 15. **DO NOT** create page-specific CSS. All pages use the same shared brand primitives from `globals.css` (and ultimately from `@mukoko/ui` registry). No page should have its own parallel styling system. New primitives must be submitted as issues to `nyuchitech/mukoko-registry`.
 16. **DO NOT** set touch targets below 48px. Default touch target is **56px**; minimum is **48px** (only for compact inline form elements). All interactive elements must meet these minimums.
-17. **DO NOT** use light mode on the marketing site. The marketing site (`web/`) is **dark-mode only** — no `prefers-color-scheme` media queries, no light theme.
+17. **DO NOT** add a marketing site here. mukoko.com lives in `bundu-labs/marketing` (`apps/mukoko`).
 
 ---
 
