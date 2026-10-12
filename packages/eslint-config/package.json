@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "eslint-config-prettier": "^10.1.8",
-    "typescript-eslint": "^8.71.0"
+    "typescript-eslint": "^8.71.1"
   },
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0"
