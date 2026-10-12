@@ -17,7 +17,7 @@
     "@mukoko/bridge": "workspace:*",
     "@mukoko/types": "workspace:*",
     "@mukoko/ui": "workspace:*",
-    "preact": "^10.29.8"
+    "preact": "^11.0.1"
   },
   "devDependencies": {
     "@mukoko/tsconfig": "workspace:*",

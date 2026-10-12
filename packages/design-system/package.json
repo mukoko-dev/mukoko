@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@mukoko/types": "workspace:*",
-    "preact": "^10.29.8"
+    "preact": "^11.0.1"
   },
   "devDependencies": {
     "@mukoko/tsconfig": "workspace:*",
