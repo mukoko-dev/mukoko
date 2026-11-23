@@ -17,13 +17,13 @@
     "@mukoko/bridge": "workspace:*",
     "@mukoko/types": "workspace:*",
     "@mukoko/ui": "workspace:*",
-    "preact": "^10.29.8"
+    "preact": "^11.0.1"
   },
   "devDependencies": {
     "@mukoko/tsconfig": "workspace:*",
     "@preact/preset-vite": "^2.10.6",
-    "typescript": "^5.9.3",
-    "vite": "^6.4.3",
-    "vitest": "^4.1.11"
+    "typescript": "^6.0.3",
+    "vite": "^6.4.6",
+    "vitest": "^5.1.1"
   }
 }
