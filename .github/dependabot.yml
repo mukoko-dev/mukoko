@@ -11,7 +11,14 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    # A new release waits a week before Dependabot proposes it.
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # Until Astro and typescript-eslint support TS 7; remove then.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
