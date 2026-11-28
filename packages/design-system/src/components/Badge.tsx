@@ -1,4 +1,4 @@
-import type { JSX, ComponentChildren } from "preact";
+import type { ComponentChildren, CSSProperties } from "preact";
 import type { MineralName } from "../tokens.js";
 
 export type BadgeVariant = MineralName;
@@ -34,7 +34,7 @@ const variantColorMap: Record<BadgeVariant, { bg: string; text: string }> = {
   },
 };
 
-const sizeMap: Record<BadgeSize, JSX.CSSProperties> = {
+const sizeMap: Record<BadgeSize, CSSProperties> = {
   sm: {
     padding: "2px 10px",
     fontSize: "12px",
@@ -53,7 +53,7 @@ export function Badge({
 }: BadgeProps) {
   const colors = variantColorMap[variant];
 
-  const style: JSX.CSSProperties = {
+  const style: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",

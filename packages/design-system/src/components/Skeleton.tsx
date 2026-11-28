@@ -1,4 +1,4 @@
-import type { JSX } from "preact";
+import type { CSSProperties } from "preact";
 
 export interface SkeletonProps {
   width?: string;
@@ -13,7 +13,7 @@ export function Skeleton({
   rounded = false,
   className,
 }: SkeletonProps) {
-  const style: JSX.CSSProperties = {
+  const style: CSSProperties = {
     display: "block",
     width,
     height,

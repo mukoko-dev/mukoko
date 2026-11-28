@@ -1,11 +1,21 @@
-import type { JSX } from "preact";
+import type { CSSProperties, TargetedEvent, TargetedFocusEvent } from "preact";
+
+/** The input types this single-line field renders; Preact 11 types `<input type>` per kind. */
+export type TextInputType =
+  | "text"
+  | "email"
+  | "password"
+  | "search"
+  | "tel"
+  | "url"
+  | "number";
 
 export interface InputProps {
   label?: string;
   placeholder?: string;
   value?: string;
-  onChange?: (e: JSX.TargetedEvent<HTMLInputElement>) => void;
-  type?: string;
+  onChange?: (e: TargetedEvent<HTMLInputElement>) => void;
+  type?: TextInputType;
   error?: string;
   disabled?: boolean;
   id?: string;
@@ -30,20 +40,20 @@ export function Input({
   const inputId = id || `mukoko-input-${++inputIdCounter}`;
   const errorId = error ? `${inputId}-error` : undefined;
 
-  const wrapperStyle: JSX.CSSProperties = {
+  const wrapperStyle: CSSProperties = {
     display: "flex",
     flexDirection: "column",
     gap: "6px",
     fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
   };
 
-  const labelStyle: JSX.CSSProperties = {
+  const labelStyle: CSSProperties = {
     fontSize: "14px",
     fontWeight: "500",
     color: "var(--color-primary, #4B0082)",
   };
 
-  const inputStyle: JSX.CSSProperties = {
+  const inputStyle: CSSProperties = {
     padding: "10px 14px",
     fontSize: "16px",
     fontFamily: "inherit",
@@ -62,7 +72,7 @@ export function Input({
     cursor: disabled ? "not-allowed" : "text",
   };
 
-  const errorStyle: JSX.CSSProperties = {
+  const errorStyle: CSSProperties = {
     fontSize: "13px",
     color: "#DC2626",
     marginTop: "2px",
@@ -78,7 +88,9 @@ export function Input({
       <input
         id={inputId}
         name={name}
-        type={type}
+        // Every TextInputType shares the text input's attributes; Preact 11 only discriminates
+        // `type` as a literal, so a union value is narrowed here.
+        type={type as "text"}
         placeholder={placeholder}
         value={value}
         onInput={onChange}
@@ -87,14 +99,14 @@ export function Input({
         aria-invalid={error ? "true" : undefined}
         aria-describedby={errorId}
         aria-disabled={disabled || undefined}
-        onFocus={(e: JSX.TargetedFocusEvent<HTMLInputElement>) => {
+        onFocus={(e: TargetedFocusEvent<HTMLInputElement>) => {
           if (!error) {
             e.currentTarget.style.borderColor = "var(--color-primary, #4B0082)";
             e.currentTarget.style.boxShadow =
               "0 0 0 3px rgba(75, 0, 130, 0.15)";
           }
         }}
-        onBlur={(e: JSX.TargetedFocusEvent<HTMLInputElement>) => {
+        onBlur={(e: TargetedFocusEvent<HTMLInputElement>) => {
           if (!error) {
             e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.2)";
             e.currentTarget.style.boxShadow = "none";

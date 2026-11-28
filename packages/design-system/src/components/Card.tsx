@@ -1,4 +1,8 @@
-import type { JSX, ComponentChildren } from "preact";
+import type {
+  ComponentChildren,
+  CSSProperties,
+  TargetedMouseEvent,
+} from "preact";
 
 export type CardPadding = "sm" | "md" | "lg";
 
@@ -21,7 +25,7 @@ export function Card({
   padding = "md",
   interactive = false,
 }: CardProps) {
-  const style: JSX.CSSProperties = {
+  const style: CSSProperties = {
     borderRadius: "var(--radius-card, 16px)",
     padding: paddingMap[padding],
     backgroundColor: "var(--card-bg, #ffffff)",
@@ -42,7 +46,7 @@ export function Card({
       tabIndex={interactive ? 0 : undefined}
       onMouseEnter={
         interactive
-          ? (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
+          ? (e: TargetedMouseEvent<HTMLDivElement>) => {
               const el = e.currentTarget;
               el.style.boxShadow =
                 "0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)";
@@ -52,7 +56,7 @@ export function Card({
       }
       onMouseLeave={
         interactive
-          ? (e: JSX.TargetedMouseEvent<HTMLDivElement>) => {
+          ? (e: TargetedMouseEvent<HTMLDivElement>) => {
               const el = e.currentTarget;
               el.style.boxShadow =
                 "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)";

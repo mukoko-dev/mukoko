@@ -1,4 +1,4 @@
-import type { JSX } from "preact";
+import type { JSX, CSSProperties, TargetedMouseEvent } from "preact";
 
 export type ButtonVariant = "primary" | "secondary" | "accent" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -7,14 +7,14 @@ export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   children: JSX.Element | string;
-  onClick?: (e: JSX.TargetedMouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: TargetedMouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   loading?: boolean;
   className?: string;
   type?: "button" | "submit" | "reset";
 }
 
-const variantStyles: Record<ButtonVariant, JSX.CSSProperties> = {
+const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
     backgroundColor: "var(--color-primary)",
     color: "#ffffff",
@@ -37,7 +37,7 @@ const variantStyles: Record<ButtonVariant, JSX.CSSProperties> = {
   },
 };
 
-const sizeStyles: Record<ButtonSize, JSX.CSSProperties> = {
+const sizeStyles: Record<ButtonSize, CSSProperties> = {
   sm: {
     padding: "8px 16px",
     fontSize: "14px",
@@ -65,7 +65,7 @@ export function Button({
   className,
   type = "button",
 }: ButtonProps) {
-  const baseStyle: JSX.CSSProperties = {
+  const baseStyle: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
