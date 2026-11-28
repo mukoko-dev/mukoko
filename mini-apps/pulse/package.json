@@ -23,7 +23,7 @@
     "@mukoko/tsconfig": "workspace:*",
     "@preact/preset-vite": "^2.10.6",
     "typescript": "^6.0.3",
-    "vite": "^6.4.6",
+    "vite": "^8.3.8",
     "vitest": "^5.1.1"
   }
 }
