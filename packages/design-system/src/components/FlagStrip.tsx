@@ -1,4 +1,4 @@
-import type { JSX } from "preact";
+import type { CSSProperties } from "preact";
 
 export interface FlagStripProps {
   className?: string;
@@ -10,7 +10,7 @@ export interface FlagStripProps {
  * Hidden below 480px viewport width.
  */
 export function FlagStrip({ className }: FlagStripProps) {
-  const containerStyle: JSX.CSSProperties = {
+  const containerStyle: CSSProperties = {
     position: "absolute",
     left: 0,
     top: 0,
@@ -21,7 +21,7 @@ export function FlagStrip({ className }: FlagStripProps) {
     overflow: "hidden",
   };
 
-  const stripeStyle = (color: string): JSX.CSSProperties => ({
+  const stripeStyle = (color: string): CSSProperties => ({
     flex: 1,
     backgroundColor: color,
   });

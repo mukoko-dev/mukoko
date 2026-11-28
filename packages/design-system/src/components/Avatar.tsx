@@ -1,4 +1,4 @@
-import type { JSX } from "preact";
+import type { CSSProperties } from "preact";
 
 export type AvatarSize = "sm" | "md" | "lg";
 
@@ -48,7 +48,7 @@ export function Avatar({ src, name, size = "md", className }: AvatarProps) {
   const initials = getInitials(name);
   const bgColor = fallbackColors[hashName(name) % fallbackColors.length];
 
-  const baseStyle: JSX.CSSProperties = {
+  const baseStyle: CSSProperties = {
     width: dimension,
     height: dimension,
     borderRadius: "50%",
